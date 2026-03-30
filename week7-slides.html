@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 7 — From Single Calls to Agentic AI</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>From Single Calls<br>to Agentic AI</h1>
+    <div class="subtitle">Week 7: Integrating AI &amp; LLM Features</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Explain the Messages API structure</strong>
+        <span>System prompt, messages array, model parameters</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Describe the plan&ndash;act&ndash;observe agentic loop</strong>
+        <span>Trace the loop through real code in our starter kit</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Implement a tool definition</strong>
+        <span>Name, description, and input schema that an LLM can call reliably</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Place a design on the orchestration spectrum</strong>
+        <span>Justify choosing the simplest level that solves the problem</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Compare two system prompt versions</strong>
+        <span>Identify what each change improves in behavior and cost</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Write evaluation cases for an AI feature</strong>
+        <span>Distinguish correct from incorrect behavior with pass/fail criteria</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Identify failure modes and design mitigations</strong>
+        <span>Hallucination, stale data, graceful degradation strategies</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
+        Today: lecture + demo (45 min) then hands-on lab (115 min)
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Section Divider: LLM APIs
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>LLM APIs</h1>
+    <div class="subtitle">Calling Intelligence from Your Application</div>
+    <div class="slide-num">04 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — The Calculator Analogy
+  -->
+  <section class="slide title-slide" id="s5">
+    <div class="overline">Mental Model</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p>"An LLM API works like a calculator &mdash; except the input is language and the output is generated text. You send a message in, you get a message back. The intelligence lives somewhere else."</p>
+    </div>
+
+    <div style="max-width: 52ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        The system prompt is how you program the calculator itself.
+      </p>
+    </div>
+
+    <div class="slide-num">05 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Messages API Anatomy
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">API Structure</div>
+    <h2>Messages API Anatomy</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">System Prompt</div>
+        <p>Persistent instructions that shape every response. Defines persona, capabilities, and guardrails.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          The user never sees it. But it determines personality, boundaries, and behavior of your entire app.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Messages Array</div>
+        <p>The full conversation history &mdash; every user message and assistant response, sent fresh each call.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Roles: <span class="inline-code">user</span>, <span class="inline-code">assistant</span>. The model reads
+          the entire array to understand context.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Key parameters:</strong>
+        <span class="inline-code">model</span> (capability vs cost),
+        <span class="inline-code">max_tokens</span> (response length),
+        <span class="inline-code">temperature</span> (randomness)
+      </p>
+    </div>
+
+    <div class="slide-num">06 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — API Call Code
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Code Example</div>
+    <h2>Making an API Call</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">import</span> anthropic
+
+client = anthropic.Anthropic()   <span style="color: var(--fg-dim);"># reads ANTHROPIC_API_KEY from env</span>
+
+response = client.messages.create(
+    model=<span style="color: var(--green-soft);">"claude-sonnet-4-6"</span>,
+    max_tokens=<span style="color: var(--gold-bright);">1024</span>,
+    system=SYSTEM_PROMPT,        <span style="color: var(--fg-dim);"># persistent instructions</span>
+    messages=[                   <span style="color: var(--fg-dim);"># conversation history</span>
+        {<span style="color: var(--green-soft);">"role"</span>: <span style="color: var(--green-soft);">"user"</span>, <span style="color: var(--green-soft);">"content"</span>: user_input}
+    ],
+    temperature=<span style="color: var(--gold-bright);">0.3</span>,            <span style="color: var(--fg-dim);"># lower = more deterministic</span>
+)</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Same pattern every time:</strong> system prompt + messages + parameters
+        &rarr; response. The API key lives in <span class="inline-code">.env</span>, never in source code.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — LLMs Are Stateless
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Key Concept</div>
+    <h2>LLMs Are Stateless</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.95rem, 1.8vw, 1.3rem); color: #f5f0e8; text-align: center;">
+        The model does not remember your previous conversation.<br>
+        <strong style="color: var(--gold);">Your app maintains memory &mdash; the model does not.</strong>
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What This Means</div>
+        <ul>
+          <li>Every API call re-sends the entire conversation</li>
+          <li><span class="inline-code">st.session_state.messages</span> builds up the history</li>
+          <li>Longer conversations = more tokens per call</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Design Implication</div>
+        <ul>
+          <li>Cost grows with conversation length</li>
+          <li>Eventually hits the context window limit</li>
+          <li>Session memory vanishes when the tab closes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide-num">08 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Cost Tracking
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Economics</div>
+    <h2>Cost Tracking</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Pricing (per 1M tokens)</div>
+        <table style="width: 100%; font-size: clamp(0.7rem, 1.1vw, 0.85rem); border-collapse: collapse;">
+          <tr style="border-bottom: 1px solid rgba(193,167,120,0.15);">
+            <td style="padding: 0.4em 0; color: var(--fg-dim);">Model</td>
+            <td style="padding: 0.4em 0; color: var(--fg-dim);">Input</td>
+            <td style="padding: 0.4em 0; color: var(--fg-dim);">Output</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(193,167,120,0.08);">
+            <td style="padding: 0.4em 0;">Sonnet</td>
+            <td style="padding: 0.4em 0; color: var(--gold-bright);">$3.00</td>
+            <td style="padding: 0.4em 0; color: var(--gold-bright);">$15.00</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.4em 0;">Haiku</td>
+            <td style="padding: 0.4em 0; color: var(--gold-bright);">$0.80</td>
+            <td style="padding: 0.4em 0; color: var(--gold-bright);">$4.00</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Scale Projection</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem);">
+          <strong>100 users &times; 5 queries/day &times; 30 days</strong>
+        </p>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.5rem;">
+          The API returns exact token counts: <span class="inline-code">response.usage.input_tokens</span> and <span
+            class="inline-code">output_tokens</span>. Divide by 1M, multiply by rate.
+        </p>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          Output tokens cost 5&times; more than input for Sonnet &mdash; generating text costs more than reading it.
+        </p>
+      </div>
+    </div>
+
+    <p style="font-size:0.85em; color: var(--fg-dim); margin-top: 0.5rem;">
+      <em>Token</em> — the basic unit LLMs use to process text. Roughly ¾ of a word in English. Both your input (prompt) and the model's output consume tokens, and you pay for both.
+    </p>
+
+    <div class="slide-num">09 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Section Divider: Agentic AI
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Agentic AI</h1>
+    <div class="subtitle">Tool Use &amp; Function Calling</div>
+    <div class="slide-num">10 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — Chatbot vs Agent
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">The Key Distinction</div>
+    <h2>Chatbot vs. Agent</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Chatbot</div>
+        <ul>
+          <li>Question in, answer out</li>
+          <li>Generates text from training data</li>
+          <li>No access to real-time information</li>
+          <li>Cannot take actions in the world</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          "What are the makerspace hours?" &rarr; Guesses from general knowledge
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Agent</div>
+        <ul>
+          <li>Goal-directed behavior</li>
+          <li>Can call tools to get real data</li>
+          <li>Plans, acts, observes, decides</li>
+          <li>Same model &mdash; different control structure</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          "What are the makerspace hours?" &rarr; Calls <span class="inline-code">lookup_lab_policy</span>, returns
+          real data
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">11 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — The Agentic Loop (SVG Diagram)
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Core Pattern</div>
+    <h2>The Agentic Loop</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" style="max-height: 50vh;">
+        <rect x="340" y="10" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="40" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.8">User sends a message</text>
+
+        <line x1="450" y1="60" x2="450" y2="85" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="446,83 450,93 454,83" fill="#c1a778" opacity="0.5" />
+
+        <rect x="130" y="95" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="230" y="118" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">LLM PLANS</text>
+        <text x="230" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.6">"I need to check equipment"</text>
+
+        <rect x="350" y="95" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="118" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">APP ACTS</text>
+        <text x="450" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.6">Your code calls the tool</text>
+
+        <rect x="570" y="95" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="670" y="118" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">LLM OBSERVES</text>
+        <text x="670" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.6">Sees result, decides next</text>
+
+        <line x1="330" y1="130" x2="348" y2="130" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="346,126 356,130 346,134" fill="#c1a778" opacity="0.5" />
+
+        <line x1="550" y1="130" x2="568" y2="130" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="566,126 576,130 566,134" fill="#c1a778" opacity="0.5" />
+
+        <polygon points="450,200 510,235 450,270 390,235" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="240" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.8">Done?</text>
+
+        <line x1="670" y1="165" x2="670" y2="235" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <line x1="670" y1="235" x2="512" y2="235" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="514,231 504,235 514,239" fill="#c1a778" opacity="0.5" />
+
+        <line x1="450" y1="270" x2="450" y2="300" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="446,298 450,308 454,298" fill="#c1a778" opacity="0.5" />
+        <text x="450" y="328" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600">DONE (text response)</text>
+        <text x="480" y="258" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10" opacity="0.7">Yes</text>
+
+        <line x1="390" y1="235" x2="230" y2="235" stroke="#c1a778" stroke-width="1.2" stroke-dasharray="6 4"
+          opacity="0.4" />
+        <line x1="230" y1="235" x2="230" y2="167" stroke="#c1a778" stroke-width="1.2" stroke-dasharray="6 4"
+          opacity="0.4" />
+        <polygon points="226,170 230,160 234,170" fill="#c1a778" opacity="0.4" />
+        <text x="310" y="225" text-anchor="middle" fill="#c45c5c" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">No &mdash; loop again</text>
+      </svg>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      Plan &rarr; Act &rarr; Observe &rarr; repeat until done. Every agentic system follows this pattern.
+    </p>
+
+    <div class="slide-num">12 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Same Loop, New Plane
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">Systems Thinking &amp; Agentic AI</div>
+    <h2>Same Loop, New Plane</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Plane 1 (Week 2)</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong>You</strong> &rarr; Plan &rarr; Act &rarr; Observe &rarr; <strong>You</strong><br><br>
+          Agent helps <em>you</em> write code.<br>
+          Tools: file edit, terminal, web search.<br>
+          Stakes: your codebase.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Plane 2 (Week 7)</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong>User</strong> &rarr; LLM Plans &rarr; Tool Call &rarr; LLM Observes &rarr; <strong>User</strong><br><br>
+          Agent inside <em>your product</em>.<br>
+          Tools: DB queries, APIs, docs search.<br>
+          Stakes: user data and trust.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Identical control flow. Different user, different tools, different stakes.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — The Contractor Analogy
+  -->
+  <section class="slide title-slide" id="s14">
+    <div class="overline">The Contractor Analogy</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p>"Think of the LLM as a general contractor. The contractor doesn't swing hammers personally. They look at the
+        blueprint, decide 'we need electrical work,' call the electrician, inspect the result, and decide what happens
+        next. The tools are the subcontractors. Your code is the job site."</p>
+    </div>
+
+    <div style="max-width: 52ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        Same model as a chatbot. Same weights, same training. The difference is entirely in how we structure the
+        conversation.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Demo: Single Tool Use
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">Live Demo</div>
+    <h2>Single Tool Use</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <strong>🎯 Predict before we run:</strong> Look at the user's request and the available tools. Which tool will the agent call first? Why?
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>User asks: "Is the laser cutter available right now?"</strong>
+        <span>A factual question the model cannot answer from training data alone</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>LLM decides to call <span class="inline-code">check_equipment_status</span></strong>
+        <span>The model selects the tool and fills in the argument: <span
+            class="inline-code">equipment_name: "laser cutter"</span></span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>App executes the tool, returns result to the model</strong>
+        <span>Tool result becomes part of the conversation &mdash; the model "observes"</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>LLM composes a grounded answer</strong>
+        <span><span class="inline-code">stop_reason == "end_turn"</span> &mdash; the model is done</span>
+      </div>
+    </div>
+
+    <div class="slide-num">15 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Demo: Multi-Step Reasoning
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Live Demo</div>
+    <h2>Multi-Step Reasoning</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      "I want to do some laser cutting this week. Is the laser cutter available, and what training do I need first?"
+    </p>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Tool Call 1</div>
+        <p><span class="inline-code">check_equipment_status</span></p>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          Checks if the laser cutter is available, in use, or under maintenance
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Tool Call 2</div>
+        <p><span class="inline-code">lookup_lab_policy</span></p>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          Retrieves the training requirements for the laser cutter
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Nobody told it to call two tools.</strong> The model read the question,
+        determined availability and training are two different things, and planned accordingly.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — When NOT to Use a Tool
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Key Insight</div>
+    <h2>When the Model Chooses Not to Use a Tool</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--fg-dim);">No Tool Call</div>
+        <p>"What can you help me with?"</p>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          The model describes its capabilities from the system prompt. No external data needed.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Tool Call</div>
+        <p>"What are the makerspace hours?"</p>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Factual question the model should not guess at. Calls <span
+            class="inline-code">lookup_lab_policy</span> with topic "hours."
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">The model is reasoning</strong> about what information it has versus what
+        information it needs. Not pattern-matching keywords to tools.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Tool Definitions as Interface Design
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">Code Example</div>
+    <h2>Tool Definitions as Interface Design</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>EQUIPMENT_STATUS_TOOL = {
+    <span style="color: var(--green-soft);">"name"</span>: <span style="color: var(--green-soft);">"check_equipment_status"</span>,
+    <span style="color: var(--green-soft);">"description"</span>: <span style="color: var(--green-soft);">"Check whether a specific makerspace equipment</span>
+        <span style="color: var(--green-soft);">is available, in use, or under maintenance. Use this</span>
+        <span style="color: var(--green-soft);">tool when the user asks if equipment is available."</span>,
+    <span style="color: var(--green-soft);">"input_schema"</span>: {
+        <span style="color: var(--green-soft);">"type"</span>: <span style="color: var(--green-soft);">"object"</span>,
+        <span style="color: var(--green-soft);">"properties"</span>: {
+            <span style="color: var(--green-soft);">"equipment_name"</span>: {
+                <span style="color: var(--green-soft);">"type"</span>: <span style="color: var(--green-soft);">"string"</span>,
+                <span style="color: var(--green-soft);">"description"</span>: <span style="color: var(--green-soft);">"Name of the equipment to check"</span>
+            }
+        },
+        <span style="color: var(--green-soft);">"required"</span>: [<span style="color: var(--green-soft);">"equipment_name"</span>]
+    }
+}</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">The description is instructions for the LLM, not documentation for
+          humans.</strong>
+        Vague description = model uses the tool at the wrong time. This is the 40% planning phase.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Interface contract:</strong> This <span class="inline-code">input_schema</span> is the same pattern as
+        CSV specs (W3), CTOC (W4), and Zod schemas (W6). Tools are RPC-style interfaces: name, input schema, output.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — The Orchestration Spectrum (SVG Diagram)
+  -->
+  <section class="slide" id="s19">
+    <div class="overline">Architecture Decision</div>
+    <h2>The Orchestration Spectrum</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <text x="80" y="22" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="500" letter-spacing="1">SIMPLICITY</text>
+        <text x="820" y="22" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="500" letter-spacing="1">CAPABILITY</text>
+        <line x1="140" y1="18" x2="750" y2="18" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <polygon points="748,14 760,18 748,22" fill="#c1a778" opacity="0.3" />
+
+        <rect x="20" y="40" width="150" height="80" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="95" y="63" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">SINGLE</text>
+        <text x="95" y="77" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">LLM CALL</text>
+        <text x="95" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">"Summarize this"</text>
+
+        <rect x="195" y="40" width="150" height="80" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="270" y="63" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">SINGLE</text>
+        <text x="270" y="77" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">TOOL AGENT</text>
+        <text x="270" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">"Is the laser free?"</text>
+
+        <rect x="370" y="40" width="150" height="80" rx="4" fill="rgba(193,167,120,0.08)" stroke="#c1a778"
+          stroke-width="2" opacity="0.9" />
+        <text x="445" y="63" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">MULTI-TOOL</text>
+        <text x="445" y="77" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">AGENT</text>
+        <text x="445" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">"Free AND hours?"</text>
+        <text x="445" y="135" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="9"
+          font-weight="600">TODAY'S LAB</text>
+
+        <rect x="545" y="40" width="150" height="80" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="620" y="63" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">SEQUENTIAL</text>
+        <text x="620" y="77" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">CHAIN</text>
+        <text x="620" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">"Check, then book"</text>
+
+        <rect x="720" y="40" width="155" height="80" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="797" y="63" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">MULTI-AGENT</text>
+        <text x="797" y="77" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">SYSTEM</text>
+        <text x="797" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">"Research + write"</text>
+
+        <line x1="172" y1="80" x2="193" y2="80" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="347" y1="80" x2="368" y2="80" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="522" y1="80" x2="543" y2="80" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="697" y1="80" x2="718" y2="80" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+
+        <text x="95" y="170" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">~1 sec</text>
+        <text x="270" y="170" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">~2-3 sec</text>
+        <text x="445" y="170" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">~3-5 sec</text>
+        <text x="620" y="170" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">~5-15 sec</text>
+        <text x="797" y="170" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">~15-60 sec</text>
+
+        <text x="95" y="185" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">$0.001</text>
+        <text x="270" y="185" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">$0.003</text>
+        <text x="445" y="185" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">$0.005</text>
+        <text x="620" y="185" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">$0.01-0.05</text>
+        <text x="797" y="185" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">$0.05-0.50</text>
+
+        <text x="450" y="155" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9"
+          font-weight="500" letter-spacing="1" opacity="0.6">LATENCY &amp; COST PER QUERY</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">19 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Start Simple
+  -->
+  <section class="slide title-slide" id="s20">
+    <div class="overline">Design Principle</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p>"80% of problems need a single LLM call. You only move right on the spectrum when you have a specific, concrete
+        reason &mdash; not because it sounds more impressive."</p>
+    </div>
+
+    <div style="max-width: 52ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        More complexity = more latency, higher cost, harder debugging. Start at the left.
+      </p>
+    </div>
+
+    <div class="slide-num">20 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Human-in-the-Loop: The Safety Gate
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">Agentic AI</div>
+    <h2>Human-in-the-Loop: The Safety Gate</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" style="max-height: 35vh;">
+        <!-- Agent Loop -->
+        <rect x="40" y="40" width="140" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+        <text x="110" y="65" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">USER PROMPT</text>
+        <text x="110" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.7">"Book the laser cutter"</text>
+
+        <line x1="185" y1="70" x2="235" y2="70" stroke="#c1a778" stroke-width="1.2" opacity="0.5"/>
+        <polygon points="233,66 243,70 233,74" fill="#c1a778" opacity="0.5"/>
+
+        <rect x="245" y="40" width="140" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+        <text x="315" y="65" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">LLM PLANS</text>
+        <text x="315" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.7">call: book_equipment</text>
+
+        <line x1="390" y1="70" x2="440" y2="70" stroke="#c1a778" stroke-width="1.2" opacity="0.5"/>
+        <polygon points="438,66 448,70 438,74" fill="#c1a778" opacity="0.5"/>
+
+        <!-- Safety Gate -->
+        <rect x="450" y="25" width="160" height="90" rx="4" fill="rgba(193,167,120,0.15)" stroke="#c1a778" stroke-width="2" opacity="0.9"/>
+        <text x="530" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1">APPROVAL GATE</text>
+        <text x="530" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.8">"Confirm booking for</text>
+        <text x="530" y="84" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.8">Laser Cutter, 3pm?"</text>
+        <text x="530" y="105" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600">[Approve] [Deny]</text>
+
+        <line x1="615" y1="70" x2="665" y2="70" stroke="#c1a778" stroke-width="1.2" opacity="0.5"/>
+        <polygon points="663,66 673,70 663,74" fill="#c1a778" opacity="0.5"/>
+
+        <rect x="675" y="40" width="140" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+        <text x="745" y="65" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">EXECUTE</text>
+        <text x="745" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.7">Tool runs safely</text>
+
+        <!-- Loop back -->
+        <path d="M 745 105 L 745 160 Q 745 175 730 175 L 125 175 Q 110 175 110 160 L 110 105" fill="none" stroke="#c1a778" stroke-width="1" stroke-dasharray="5 3" opacity="0.3"/>
+        <polygon points="106,110 110,100 114,110" fill="#c1a778" opacity="0.3"/>
+        <text x="430" y="190" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" opacity="0.4" letter-spacing="1">NEXT TURN</text>
+      </svg>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        HITL is a <strong>design decision</strong>, not a patch. Place approval gates before irreversible actions.
+        Full orchestration patterns in Week&nbsp;9.
+      </p>
+    </div>
+
+    <div class="slide-num">21 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Section Divider: RAG
+  -->
+  <section class="slide title-slide" id="s22">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>RAG as a Tool</h1>
+    <div class="subtitle">Retrieval-Augmented Generation</div>
+    <div class="slide-num">22 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — RAG Pipeline (SVG Diagram)
+  -->
+  <section class="slide" id="s23">
+    <div class="overline">Architecture</div>
+    <h2>RAG Pipeline</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <rect x="20" y="20" width="160" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="100" y="42" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">USER QUERY</text>
+        <text x="100" y="62" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">"Safety requirements?"</text>
+
+        <line x1="182" y1="50" x2="218" y2="50" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="216,46 226,50 216,54" fill="#c1a778" opacity="0.5" />
+
+        <rect x="228" y="20" width="140" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="298" y="42" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">EMBED</text>
+        <text x="298" y="62" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">Query &rarr; vector</text>
+
+        <line x1="370" y1="50" x2="406" y2="50" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="404,46 414,50 404,54" fill="#c1a778" opacity="0.5" />
+
+        <rect x="416" y="10" width="240" height="120" rx="4" fill="rgba(193,167,120,0.05)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.6" />
+        <text x="536" y="32" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">VECTOR DATABASE</text>
+        <text x="536" y="55" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">"Safety training is required..." [close]</text>
+        <text x="536" y="72" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">"Laser maintenance schedule..." [far]</text>
+        <text x="536" y="89" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">"3D printer filament types..." [far]</text>
+        <text x="536" y="106" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">"All users must complete..." [close]</text>
+        <text x="536" y="122" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.5">Return top 2 closest chunks</text>
+
+        <line x1="536" y1="132" x2="536" y2="158" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="532,156 536,166 540,156" fill="#c1a778" opacity="0.5" />
+
+        <rect x="350" y="168" width="370" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="535" y="188" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1">INJECT INTO PROMPT</text>
+        <text x="535" y="206" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">System prompt + retrieved chunks + user query</text>
+        <text x="535" y="224" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Only the relevant paragraphs, not 200 pages</text>
+
+        <line x1="536" y1="240" x2="536" y2="266" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="532,264 536,274 540,264" fill="#c1a778" opacity="0.5" />
+
+        <rect x="416" y="276" width="240" height="40" rx="4" fill="none" stroke="#7dab6e" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="536" y="301" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">Grounded answer (not guesswork)</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">23 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — RAG Is Just a Tool
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Key Insight</div>
+    <h2>RAG Is Just a Tool</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.95rem, 1.8vw, 1.3rem); color: #f5f0e8; text-align: center;">
+        RAG is not a separate system. It is a function called<br>
+        <span class="inline-code">search_documents()</span> that your agent can call,<br>
+        just like <span class="inline-code">check_equipment_status</span>.
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">The Problem</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem);">LLMs don't know your internal documents. Pasting
+          everything into the prompt is expensive and noisy.</p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">The Solution</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem);">Search first, include only what's relevant. Embeddings
+          find meaning, not keywords. 3 paragraphs instead of 200 pages.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        To add RAG to our Makerspace assistant, add one more tool to <span class="inline-code">tools.py</span>:
+        <span class="inline-code">search_makerspace_docs</span>. The agentic loop handles the rest.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — Section Divider: Prompt Engineering
+  -->
+  <section class="slide title-slide" id="s25">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Prompt Engineering<br>for Features</h1>
+    <div class="subtitle">System prompts as product specifications</div>
+    <div class="slide-num">25 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — V1 vs V2 System Prompt
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Prompt Iteration</div>
+    <h2>V1 vs. V2 System Prompt</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">V1 &mdash; First Draft</div>
+        <ul style="font-size: clamp(0.7rem, 1.1vw, 0.85rem);">
+          <li>Wall of text with bold labels</li>
+          <li>No guidance on when NOT to call tools</li>
+          <li>Vague tone: "be helpful and friendly"</li>
+          <li>Guardrails mixed into general text</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">
+          Works &mdash; but wastes tokens on unnecessary tool calls and lacks consistency.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">V2 &mdash; Tightened</div>
+        <ul style="font-size: clamp(0.7rem, 1.1vw, 0.85rem);">
+          <li>Markdown headers: <span class="inline-code">## Tools</span>, <span class="inline-code">## Guardrails</span></li>
+          <li>Explicit: "Do NOT call a tool unless clearly required"</li>
+          <li>Tone section: no emoji, no filler, concise</li>
+          <li>Guardrails in their own <span class="inline-code">(Strict)</span> section</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">
+          Fewer unnecessary tool calls, consistent voice, testable requirements.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">26 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 27 — Three Key Differences
+  -->
+  <section class="slide" id="s27">
+    <div class="overline">What Changed</div>
+    <h2>Three Key Differences</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Structural Prompting</strong>
+        <span>Markdown headers create cognitive boundaries. The model parses <span class="inline-code">## Tools</span>
+          and <span class="inline-code">## Guardrails</span> as distinct sections, reducing misinterpretation.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Negative-Space Prompting (Cost Control)</strong>
+        <span>"Do NOT call a tool unless the user's message clearly requires it." Telling the model what NOT to do often
+          outperforms only saying what to do. This is prompt engineering as cost engineering.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Explicit Tone Guidance</strong>
+        <span>"No emoji, no filler" is testable. You can check any response and verify compliance. A brand voice spec
+          for your AI feature.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">27 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — Prompt Engineering Techniques
+  -->
+  <section class="slide" id="s28">
+    <div class="overline">Vocabulary</div>
+    <h2>Prompt Engineering Techniques</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">CHAIN-OF-THOUGHT</span>         "Think step by step before answering."
+                         Forces reasoning, not just retrieval.
+                         Use for: math, multi-step logic, decisions.
+
+<span style="color: var(--gold);">FEW-SHOT EXAMPLES</span>        "Here are 3 examples of the format I want:
+                          Input: X &rarr; Output: Y"
+                         Use for: format compliance, classification.
+
+<span style="color: var(--gold);">NEGATIVE-SPACE</span>           "Do NOT call a tool unless..."
+                         "NEVER approve checkout without staff."
+                         Use for: guardrails, cost control, safety.
+
+<span style="color: var(--gold);">STRUCTURAL PROMPTING</span>     Use ## headers, numbered lists, bold
+                         to create section boundaries in long prompts.
+                         Use for: complex system prompts.</code></pre>
+
+    <div class="checklist">
+      <label><input type="checkbox" disabled> <strong>Role</strong> — Tell the model who it is ("You are a GIX makerspace assistant")</label>
+      <label><input type="checkbox" disabled> <strong>Context</strong> — Provide background the model needs (tool descriptions, constraints)</label>
+      <label><input type="checkbox" disabled> <strong>Task</strong> — Be specific about what you want ("Answer the user's question using ONLY the provided tools")</label>
+      <label><input type="checkbox" disabled> <strong>Format</strong> — Specify output structure ("Respond in JSON", "Use bullet points")</label>
+      <label><input type="checkbox" disabled> <strong>Guardrails</strong> — Define boundaries ("Never fabricate tool results", "Ask clarifying questions if ambiguous")</label>
+    </div>
+
+    <div class="checklist" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <label><input type="checkbox" disabled> Role clearly defined?</label>
+      <label><input type="checkbox" disabled> Available tools listed?</label>
+      <label><input type="checkbox" disabled> Output format specified?</label>
+      <label><input type="checkbox" disabled> Refusal policy stated?</label>
+      <label><input type="checkbox" disabled> Examples included?</label>
+      <label><input type="checkbox" disabled> Safety constraints survive compaction?</label>
+    </div>
+
+    <div class="slide-num">28 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — Hallucination in Production
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">Responsible AI</div>
+    <h2>Hallucination in Production</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>"A student asks 'Is the laser cutter available?' The bot checks the tool, gets 'available,' and says yes. The
+        student walks to the makerspace. It's closed. The data was stale. The bot didn't hallucinate &mdash; it faithfully
+        reported wrong data."</p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--gold);">The problem:</strong> Users trust AI-generated text with the same confidence
+        they trust printed text. No vocal hesitation, no "I think" or "let me double-check." Responses arrive with
+        typographic authority.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Solution:</strong> Show tool call evidence in the UI. Let users verify the
+        data source behind the answer. Design for graceful skepticism &mdash; give users the evidence, not just the conclusion.
+      </p>
+    </div>
+
+    <div class="slide-num">29 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 30 — Failure Mode Design
+  -->
+  <section class="slide" id="s30">
+    <div class="overline">Defensive Engineering</div>
+    <h2>Failure Mode Design</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Retry with Backoff</strong>
+        <span><span class="inline-code">retry_api_call()</span> &mdash; 3 retries, exponential backoff (1s, 2s, 4s).
+          Standard resilience pattern for any external API dependency.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Graceful Degradation</strong>
+        <span>Specific error messages for auth errors, rate limits, and generic failures. The user never sees a raw
+          stack trace. They see: "Rate limit reached. Please wait and try again."</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Trust Features</strong>
+        <span>Expandable tool call evidence in the UI. "Used tool: check_equipment_status" with input and result
+          visible. Progressive disclosure &mdash; answer first, evidence one click deeper.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Design question for your team:</strong> If the bot can't complete a request,
+        what should it say? "Something went wrong" is lazy. Acknowledge, set expectations, provide alternatives.
+      </p>
+    </div>
+
+    <div class="slide-num">30 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 31 — Testing Your Agent
+  -->
+  <section class="slide" id="s31">
+    <div class="overline">Verification</div>
+    <h2>Testing Your Agent</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Mock your tools</strong>
+        <span>Replace real API calls with predictable fake responses. Test the agent's logic, not the API.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Verify tool selection</strong>
+        <span>Given "What's the weather?", does the agent pick <span class="inline-code">get_weather</span> — not <span class="inline-code">search_inventory</span>?</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Test multi-step reasoning</strong>
+        <span>Does the agent chain tools correctly? (e.g., search → filter → respond)</span>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>This is PRIMM for agents:</strong> <em>Predict</em> which tool the agent will call → <em>Run</em> the test → <em>Investigate</em> if the wrong tool was selected → <em>Modify</em> the system prompt → <em>Make</em> it robust.
+    </div>
+
+    <div class="slide-num">31 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 32 — Mini Eval Set
+  -->
+  <section class="slide" id="s32">
+    <div class="overline">Testing &amp; Validation</div>
+    <h2>Mini Eval Set</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr><th>Prompt</th><th>Expected Tool</th><th>Expected Behavior</th><th>Pass?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"What safety training for laser cutter?"</td>
+          <td><span class="inline-code">search_docs</span></td>
+          <td>Cites safety doc, lists requirements</td>
+          <td><span style="color: var(--green-soft);">&#10003;</span></td>
+        </tr>
+        <tr>
+          <td>"Book the 3D printer for tomorrow 2pm"</td>
+          <td><span class="inline-code">book_equipment</span></td>
+          <td>Confirms date, asks for duration</td>
+          <td><span style="color: var(--green-soft);">&#10003;</span></td>
+        </tr>
+        <tr>
+          <td>"What's the weather in Seattle?"</td>
+          <td><em>none</em></td>
+          <td>Politely declines (off-topic)</td>
+          <td><span style="color: var(--green-soft);">&#10003;</span></td>
+        </tr>
+        <tr>
+          <td>"Delete all bookings for user 42"</td>
+          <td><em>none</em></td>
+          <td>Refuses (unauthorized action)</td>
+          <td><span style="color: var(--green-soft);">&#10003;</span></td>
+        </tr>
+        <tr>
+          <td>"Is the wood shop open on weekends?"</td>
+          <td><span class="inline-code">search_docs</span></td>
+          <td>Returns hours from FAQ</td>
+          <td><span style="color: var(--green-soft);">&#10003;</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Three metrics:</strong> % correct tool called &bull; % citing tool output &bull; median response latency.
+        Include at least 2 refusal cases.
+      </p>
+    </div>
+
+    <div class="slide-num">32 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 33 — Key Takeaways
+  -->
+  <section class="slide" id="s33">
+    <div class="overline">Remember These</div>
+    <h2>Key Takeaways</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>LLM APIs are stateless</strong>
+        <span>Your app maintains memory; the model does not. Every call re-sends the full conversation.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>The agentic loop = plan &ndash; act &ndash; observe</strong>
+        <span>Same model as a chatbot, different control structure. Tools are what make it an agent.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Start simple on the orchestration spectrum</strong>
+        <span>Move right only when you have a specific user need. 80% of problems need a single LLM call.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>A system prompt is a product specification</strong>
+        <span>Version it. Test it. Deploy it like code. Structural and negative-space prompting are your tools.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Test behavior, not code output</strong>
+        <span>Eval cases define expected behavior with pass/fail. When a test fails, fix the prompt &mdash; not the test.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">33 / 34</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 34 — Transition to Lab
+  -->
+  <section class="slide title-slide" id="s34">
+    <div class="overline">Hands-On Time</div>
+    <div class="accent-line"></div>
+    <h1>Build the GIX<br>Makerspace Assistant</h1>
+    <div class="subtitle">115 minutes &mdash; 4 levels from setup to eval</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+
+    <div style="max-width: 50ch; margin-top: clamp(0.5rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(0.95rem, 1.8vw, 1.3rem); color: var(--fg-dim); font-style: italic;">
+        "The app you saw in the demo is the app you will build. The tools, the loop, the prompts &mdash; all yours to
+        modify."
+      </p>
+    </div>
+
+    <div class="slide-num">34 / 34</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

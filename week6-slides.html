@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 6 — Full-Stack Applications</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Full-Stack Applications</h1>
+    <div class="subtitle">Week 6: Architecture, Auth, CRUD &amp; Security</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Explain why RLS is necessary</strong>
+        <span>Understand data exposure risks without Row Level Security</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Implement authentication flows</strong>
+        <span>Supabase Auth: sign-up, sign-in, and session management</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Design a relational data model</strong>
+        <span>Work backward from user-facing screens and JTBD requirements</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Build a validated form</strong>
+        <span>Client-side and server-side input validation to prevent malformed data</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Write an RLS policy in Supabase</strong>
+        <span>Verify that users cannot access each other&rsquo;s data</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Identify AI-generated security vulnerabilities</strong>
+        <span>Explain why they occur and how to catch them</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Use a spec as AI context</strong>
+        <span>PRD / CLAUDE.md drives architecture-aligned, security-aware code generation</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
+        Today: lecture + demo (55 min) then hands-on lab (105 min)
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Section Divider: Application Architecture
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Application<br>Architecture</h1>
+    <div class="subtitle">Three layers, three security boundaries</div>
+    <div class="slide-num">04 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Security Stack Across the Quarter
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">Systems Thinking</div>
+    <h2>Security Stack Across the Quarter</h2>
+    <div class="accent-line"></div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W1</strong> &mdash; No secrets needed (free APIs)
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W3</strong> &mdash; Format contracts (CSV specs, validation)
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W4</strong> &mdash; Asserts (DataFrame consistency checks)
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W5</strong> &mdash; Environment variables + error boundaries
+        </div>
+      </div>
+      <div class="timeline-item" style="border-left-color: var(--gold);">
+        <div class="timeline-marker" style="background: var(--gold);"></div>
+        <div class="timeline-content">
+          <strong style="color: var(--gold);">W6</strong> &mdash; <strong style="color: var(--gold);">Auth + RLS + defense in depth</strong>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W7</strong> &mdash; Agent guardrails (tool constraints, refusal policies)
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W8</strong> &mdash; Automated tests + CI pipelines
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <strong>W9</strong> &mdash; Agent evaluation sets + demo stability
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-num">05 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Opening Hook
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">The Security Demo</div>
+    <h2>Every Row, Every User</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;Every task in this database &mdash; every to-do, every note, every piece of personal data &mdash; is
+        visible to any authenticated user. Not just their own tasks. Everyone&rsquo;s.&rdquo;</p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">If this were a medical records system, that&rsquo;s a HIPAA
+      violation. If it were a university system, that&rsquo;s FERPA. If it were a financial app, that&rsquo;s potential
+      litigation.</p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        This isn&rsquo;t a bug in the code. The code works perfectly. This is an <strong
+          style="color: var(--gold);">architectural failure</strong>.
+      </p>
+    </div>
+
+    <div class="slide-num">06 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Three-Layer Architecture (SVG diagram)
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Architecture</div>
+    <h2>Three-Layer Architecture</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="max-height: 55vh;">
+        <rect x="80" y="10" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="35" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">BROWSER</text>
+        <rect x="110" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="200" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">/login</text>
+        <text x="200" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(public)</text>
+        <rect x="360" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="450" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">/dashboard</text>
+        <text x="450" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(protected)</text>
+        <rect x="610" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="700" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">/settings</text>
+        <text x="700" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(protected)</text>
+
+        <line x1="450" y1="115" x2="450" y2="145" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="446,143 450,153 454,143" fill="#c1a778" opacity="0.5" />
+        <text x="490" y="137" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" opacity="0.5">HTTP
+          Request</text>
+
+        <rect x="80" y="155" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="178" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">NEXT.JS SERVER</text>
+        <rect x="130" y="190" width="280" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="270" y="212" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">Pages &amp; Layout</text>
+        <text x="270" y="228" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(React Server Components)</text>
+        <rect x="490" y="190" width="280" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="630" y="212" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">API Routes</text>
+        <text x="630" y="228" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">/api/tasks · /api/profile</text>
+
+        <line x1="450" y1="260" x2="450" y2="290" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="446,288 450,298 454,288" fill="#c1a778" opacity="0.5" />
+        <text x="498" y="282" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" opacity="0.5">SQL (with
+          RLS)</text>
+
+        <rect x="80" y="300" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="323" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">SUPABASE (POSTGRESQL)</text>
+        <rect x="110" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="200" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">auth.users</text>
+        <text x="200" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(managed)</text>
+        <rect x="360" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="450" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">tasks</text>
+        <text x="450" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(with RLS)</text>
+        <rect x="610" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
+          stroke-width="0.8" opacity="0.4" />
+        <text x="700" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">profiles</text>
+        <text x="700" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">(with RLS)</text>
+      </svg>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      Three separate locations, three different security boundaries. Defense in depth: every layer checks.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Defense in Depth.</strong> Client checks catch mistakes. Server checks enforce rules.
+        RLS enforces ownership. No single layer is trusted alone.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — User-First Data Modeling
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Data Modeling</div>
+    <h2>User-First Data Modeling</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Dashboard Card</div>
+        <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); margin-bottom: 0.5rem;">What the user sees:</p>
+        <div
+          style="background: rgba(0,0,0,0.35); border: 1px solid rgba(193,167,120,0.15); border-radius: 4px; padding: clamp(0.6rem, 1.5vw, 1rem);">
+          <p style="font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--gold); margin-bottom: 0.3rem;"><strong>My
+              Tasks</strong></p>
+          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">Title &bull; Status &bull; Created
+          </p>
+          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim); margin-top: 0.2rem;">Buy groceries
+            &bull; pending &bull; Mar 4</p>
+          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">Review PR &bull; done &bull; Mar 3
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">SQL Schema</div>
+        <pre style="margin: 0;"><code>CREATE TABLE tasks (
+  id         uuid PRIMARY KEY
+             DEFAULT gen_random_uuid(),
+  user_id    uuid REFERENCES
+             auth.users NOT NULL,
+  title      text NOT NULL,
+  status     text DEFAULT 'pending',
+  created_at timestamptz
+             DEFAULT now()
+);</code></pre>
+      </div>
+    </div>
+
+    <div class="slide-num">08 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Principle: Screen → Spec → Schema → RLS
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Design Principle</div>
+    <h2>Screen &rarr; Spec &rarr; Schema &rarr; RLS</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;The screen is the spec. The spec drives the schema. The schema drives the RLS policy.&rdquo;</p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">If the dashboard shows &ldquo;My Tasks,&rdquo; then the
+      <span class="inline-code">tasks</span> table must have a <span class="inline-code">user_id</span> column, and the
+      RLS policy must filter on that column. A direct, traceable line from UX decision to database security rule.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--gold);">AI principle:</strong> AI writes code layer by layer. If you don&rsquo;t
+        understand the layers, you can&rsquo;t verify what the AI built &mdash; or catch the RLS it forgot to enable.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Section Divider: Auth & Protected Routes
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Auth &amp;<br>Protected Routes</h1>
+    <div class="subtitle">Who is this person?</div>
+    <div class="slide-num">10 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — Auth Flow: Sign-Up vs Sign-In
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Authentication</div>
+    <h2>Sign-Up vs. Sign-In</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Sign-Up (creates user)</div>
+        <pre style="margin: 0;"><code>const { data, error } =
+  await supabase.auth.signUp({
+    email: 'alice@example.com',
+    password: 'securepassword123'
+  });</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Sign-In (creates session)</div>
+        <pre style="margin: 0;"><code>const { data, error } =
+  await supabase.auth
+    .signInWithPassword({
+      email: 'alice@example.com',
+      password: 'securepassword123'
+    });</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        Always write <span class="inline-code">if (error) throw error;</span> after every auth call. AI-generated auth
+        code often skips the error check.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Session Management
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Authentication</div>
+    <h2>Session Management</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;Sign-up is a one-time event. Session management is ongoing.&rdquo;</p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">The session &mdash; stored as a JWT in the browser &mdash; is
+      what your app checks on every subsequent request to decide whether this person is allowed in.</p>
+
+    <div class="card" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">JWT (JSON Web Token):</strong> A signed, self-contained token that carries
+        the user&rsquo;s identity. Supabase creates it automatically on sign-in. Your app never stores passwords
+        &mdash; only the token.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Protected Routes: The Bug
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">Protected Routes</div>
+    <h2>The Bug: Flash of Content</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>// Naive guard — looks correct but has a UX/security flaw
+const { data: { user } } = await supabase.auth.getUser();
+
+if (!user) {
+  redirect('/login');
+}
+
+// Dashboard content renders here...</code></pre>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">Navigate to <span class="inline-code">/dashboard</span> while
+      logged out. For a fraction of a second, the dashboard is visible before the redirect fires.</p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--red-soft);">Flash-of-content:</strong> Users see content they should not see, even
+        briefly. A UX problem <em>and</em> a trust problem. Extremely common in AI-generated protected routes.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — Protected Routes: The Fix
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Protected Routes</div>
+    <h2>The Fix: Loading State First</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>const [user, setUser] = useState(null);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user);
+    setLoading(false);
+  });
+}, []);
+
+if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+if (!user) redirect('/login');</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--green-soft);">Loading state first, auth check second, content third.</strong> The
+        order of these three lines is not a style preference &mdash; it is a security decision.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — CRUD Pattern
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">CRUD</div>
+    <h2>Inserting with user_id</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>const { data: { user } } = await supabase.auth.getUser();
+if (!user) return;
+
+const { data, error } = await supabase
+  .from('tasks')
+  .insert({
+    title: newTaskTitle.trim(),
+    user_id: user.id    // critical: always attach user_id
+  })
+  .select()
+  .single();</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--gold);">AI warning:</strong> AI-generated forms almost always skip input validation.
+        Every form needs required fields checked, length limits enforced, and special characters handled safely.
+      </p>
+    </div>
+
+    <div class="slide-num">15 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Form Validation with Zod
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Data Integrity</div>
+    <h2>Form Validation with Zod</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="margin-bottom:0.75rem;">Define the Schema</h3>
+        <pre><code><span style="color:var(--gold)">import</span> { z } <span style="color:var(--gold)">from</span> <span style="color:var(--green-soft)">"zod"</span>;
+
+<span style="color:var(--gold)">const</span> TaskSchema = z.object({
+  title: z.string().min(<span style="color:var(--gold)">1</span>).max(<span style="color:var(--gold)">100</span>),
+  due:   z.string().datetime().optional(),
+  done:  z.boolean().default(<span style="color:var(--gold)">false</span>),
+});</code></pre>
+      </div>
+      <div>
+        <h3 style="margin-bottom:0.75rem;">Server-Side Parse</h3>
+        <pre><code><span style="color:var(--gold)">const</span> result = TaskSchema
+  .safeParse(formData);
+
+<span style="color:var(--gold)">if</span> (!result.success) {
+  <span style="color:var(--fg-dim)">// result.error.issues[]</span>
+  <span style="color:var(--gold)">return</span> { error: result.error };
+}
+
+<span style="color:var(--fg-dim)">// result.data is typed &amp; safe</span>
+<span style="color:var(--gold)">await</span> db.insert(result.data);</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Client validation is UX. Server validation is security.</strong> You need both. Zod lets you share one schema across client and server.
+    </div>
+
+    <div class="slide-num">16 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Data Contracts at Every Boundary
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Architecture</div>
+    <h2>Data Contracts at Every Boundary</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr><th>Boundary</th><th>Contract Mechanism</th><th>What It Enforces</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Browser &rarr; Server</td>
+          <td>Zod schema</td>
+          <td>Input shape and types before processing</td>
+        </tr>
+        <tr>
+          <td>Server &rarr; Server</td>
+          <td>TypeScript interface</td>
+          <td>Function signatures and return types</td>
+        </tr>
+        <tr>
+          <td>Server &rarr; Database</td>
+          <td>SQL constraints</td>
+          <td>NOT NULL, UNIQUE, CHECK, foreign keys</td>
+        </tr>
+        <tr>
+          <td>Database &rarr; User</td>
+          <td><span class="inline-code">auth.uid()</span> RLS</td>
+          <td>Row-level ownership enforcement</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Same idea as CSV format contract (W3) and CTOC (W4).</strong>
+        Every boundary needs a contract. The mechanism changes; the principle doesn&rsquo;t.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Check: The Auth Chain
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">Check Your Understanding</div>
+    <h2>The Auth Chain</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <div class="num-feature">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Sign-up</strong>
+          <span>creates the user record</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Sign-in</strong>
+          <span>creates the session (JWT)</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Session</strong>
+          <span>guards the route</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">4</div>
+        <div class="num-text">
+          <strong>user_id</strong>
+          <span>links every row to its owner &rarr; enables RLS</span>
+        </div>
+      </div>
+    </div>
+
+    <p
+      style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      This chain is the backbone of everything we build today.
+    </p>
+
+    <div class="slide-num">18 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Section Divider: UX for AI Applications
+  -->
+  <section class="slide title-slide" id="s19">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>UX for AI<br>Applications</h1>
+    <div class="subtitle">Context engineering for humans</div>
+    <div class="slide-num">19 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Context Engineering for Users
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">UX Principle</div>
+    <h2>Context Engineering for Users</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;Claude streams tokens as they generate. This is not just a performance trick &mdash; this is a design
+        decision about trust. While that text appears, you know the system is working.&rdquo;</p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">We talk about context engineering for giving AI the right
+      information. The same concept applies in reverse: giving <em>users</em> the right information about what the
+      system is doing at any given moment.</p>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Perplexity:</strong> &ldquo;Searching 14 sources&hellip;&rdquo; &mdash; that
+        sentence tells you the system is not frozen, and the answer is based on something. Compare that to a blank white
+        screen for 3 seconds.
+      </p>
+    </div>
+
+    <div class="slide-num">20 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Three UX Patterns
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">UX Patterns</div>
+    <h2>Three Patterns That Matter</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Loading states are context signals</strong>
+        <span>A spinner or skeleton screen is the system telling the user &ldquo;I am working, not broken.&rdquo; In
+          Next.js, the <span class="inline-code">loading.tsx</span> file does exactly this.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Progressive disclosure in AI apps</strong>
+        <span>Show results as they become available. Users can begin processing partial information. Perplexity&rsquo;s
+          source count, Copilot&rsquo;s grayed-out suggestions &mdash; the system narrating its own reasoning.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Flash-of-content is a context failure</strong>
+        <span>When protected content briefly appears, users doubt whether the system is actually protecting their data.
+          The loading state is not a UX nicety &mdash; it is a security layer.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">21 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — UX Principle
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">Principle</div>
+    <h2>Context Engineering for Humans</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); color: #f5f0e8; text-align: center;">
+        &ldquo;Great UX for AI-powered applications is context engineering for humans.&rdquo;
+      </p>
+    </div>
+
+    <p
+      style="margin-top: clamp(1rem, 2vh, 1.5rem); font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center;">
+      Every loading state, every streaming token, every progress indicator is the system giving users the context they
+      need to maintain trust.
+    </p>
+
+    <div class="slide-num">22 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Section Divider: Verification & Security
+  -->
+  <section class="slide title-slide" id="s23">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Verification<br>&amp; Security</h1>
+    <div class="subtitle">Row Level Security and defense in depth</div>
+    <div class="slide-num">23 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — RLS Demo: Enable
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Row Level Security</div>
+    <h2>RLS: Enable &rarr; Deny All</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); color: #f5f0e8;">
+        RLS enabled + no policy = <strong style="color: var(--red-soft);">zero rows returned</strong>
+      </p>
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); margin-top: 0.5rem;">
+        Not a bug. RLS defaults to deny-all. The database would rather silently return zero rows than accidentally
+        return the wrong rows.
+      </p>
+    </div>
+
+    <p style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">Toggle RLS on in Supabase &rarr; reload the app &rarr; nothing
+      loads. That is intentional design. Now we write the policy that opens up exactly the access we want.</p>
+
+    <div class="slide-num">24 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — RLS Policy: SELECT
+  -->
+  <section class="slide" id="s25">
+    <div class="overline">Row Level Security</div>
+    <h2>SELECT Policy</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>CREATE POLICY "Users can only see their own data"
+ON tasks
+FOR SELECT
+USING (auth.uid() = user_id);</code></pre>
+    <p style="font-size:0.85em; color: var(--fg-dim); margin-top: 0.3rem;">
+      <span class="inline-code">auth.uid()</span> — Supabase function that returns the current user's UUID from their JWT. Used in RLS policies to restrict rows to their owner.
+    </p>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">The <span class="inline-code">USING</span> clause is the
+      enforcement condition. The database evaluates this for every row, every query, automatically.</p>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Your TypeScript code never has to remember to add a <span class="inline-code">WHERE</span> clause &mdash; the
+        database adds it for you. Same table, same query. Alice sees Alice&rsquo;s data. Bob sees Bob&rsquo;s.
+      </p>
+    </div>
+
+    <div class="slide-num">25 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — RLS Comparison: Without vs With
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Defense in Depth</div>
+    <h2>Without RLS vs. With RLS</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Without RLS</div>
+        <pre style="margin: 0;"><code>Your code:
+SELECT * FROM tasks
+  WHERE user_id = current_user
+
+Bug in code:
+SELECT * FROM tasks
+  ← forgets WHERE clause
+
+Result: ALL data exposed</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label good">With RLS</div>
+        <pre style="margin: 0;"><code>Your code:
+SELECT * FROM tasks
+  ← no WHERE clause needed
+
+Database automatically adds:
+WHERE user_id = auth.uid()
+
+Result: only user's data,
+EVEN IF your code has a bug</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Code-level filtering and database-level enforcement are not redundant &mdash; they are two different lines of
+        defense. Your code <em>will</em> have bugs. RLS is the safety net.
+      </p>
+    </div>
+
+    <div class="slide-num">26 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 27 — RLS Is Non-Negotiable for Agents
+  -->
+  <section class="slide" id="s27">
+    <div class="overline">Agentic AI</div>
+    <h2>RLS Is Non-Negotiable for Agents</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">The Bug</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Agent uses <span class="inline-code">service_role</span> key.<br>
+          Query: <span class="inline-code">SELECT * FROM todos</span><br>
+          Result: <strong style="color: var(--red-soft);">Returns ALL users' data.</strong>
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">The Fix</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Agent uses <span class="inline-code">user JWT</span>.<br>
+          Same query, RLS enforces: <span class="inline-code">auth.uid() = user_id</span><br>
+          Result: <strong style="color: var(--green-soft);">Only that user's data.</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Overlay Plane&nbsp;2 agent locations on your architecture diagram.
+        Every agent endpoint needs the same auth + RLS stack as every human endpoint.
+      </p>
+    </div>
+
+    <div class="slide-num">27 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — RLS Policies: INSERT & UPDATE
+  -->
+  <section class="slide" id="s28">
+    <div class="overline">Row Level Security</div>
+    <h2>INSERT &amp; UPDATE Policies</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>CREATE POLICY "Users can insert their own data"
+ON tasks FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own data"
+ON tasks FOR UPDATE
+USING (auth.uid() = user_id);
+
+<span style="color:var(--fg-dim)">-- DELETE: users can only delete their own rows</span>
+<span style="color:var(--gold)">CREATE POLICY</span> <span style="color:var(--green-soft)">"delete_own"</span> <span style="color:var(--gold)">ON</span> tasks
+  <span style="color:var(--gold)">FOR DELETE USING</span> (auth.uid() = user_id);</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--gold);">USING vs WITH CHECK:</strong>
+        <span class="inline-code">USING</span> filters rows going <strong>out</strong> (SELECT, UPDATE, DELETE).
+        <span class="inline-code">WITH CHECK</span> filters rows coming <strong>in</strong> (INSERT, UPDATE).
+        Both need to be present &mdash; or you have a half-locked door.
+      </p>
+    </div>
+
+    <div class="slide-num">28 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — Testing Your RLS
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">Security Verification</div>
+    <h2>Testing Your RLS</h2>
+    <div class="accent-line"></div>
+
+    <p>After writing policies, <strong>verify they work</strong> in the Supabase SQL Editor:</p>
+
+    <pre><code><span style="color:var(--fg-dim)">-- Simulate being user A</span>
+<span style="color:var(--gold)">SET</span> request.jwt.claims = '{"sub":"user-a-uuid"}';
+
+<span style="color:var(--fg-dim)">-- Try to read user B's data — should return 0 rows</span>
+<span style="color:var(--gold)">SELECT</span> * <span style="color:var(--gold)">FROM</span> tasks
+<span style="color:var(--gold)">WHERE</span> user_id = <span style="color:var(--green-soft)">'user-b-uuid'</span>;
+
+<span style="color:var(--fg-dim)">-- ✓ If 0 rows: RLS is working</span>
+<span style="color:var(--fg-dim)">-- ✗ If rows appear: policy is broken</span></code></pre>
+
+    <div class="highlight-box">
+      <strong>Test every policy.</strong> A missing RLS policy means any authenticated user can read/modify any row. This is the #1 Supabase security mistake.
+    </div>
+
+    <table class="slide-table" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <thead>
+        <tr><th>Test Case</th><th>Expected Result</th><th>Pass Criteria</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Same-user query</td>
+          <td>Returns user's own rows</td>
+          <td><span style="color: var(--green-soft);">count &gt; 0</span></td>
+        </tr>
+        <tr>
+          <td>Cross-user query</td>
+          <td>Returns zero rows</td>
+          <td><strong style="color: var(--red-soft);">count == 0 always</strong></td>
+        </tr>
+        <tr>
+          <td>Unauthenticated query</td>
+          <td>Request blocked</td>
+          <td>401 or empty result</td>
+        </tr>
+        <tr>
+          <td>Admin / service role</td>
+          <td>Broadened access (intentional)</td>
+          <td>Only via server-side, never client</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Key metric:</strong> Cross-user queries must <em>always</em> return 0 rows.
+      </p>
+    </div>
+
+    <div class="slide-num">29 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 30 — Find the Vulnerability
+  -->
+  <section class="slide" id="s30">
+    <div class="overline">PRIMM: Predict</div>
+    <h2>Find the Vulnerability</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>// Snippet A: Missing input validation
+async function createTask(title: string, description: string) {
+  await supabase.from('tasks').insert({
+    title: title,           // no length check, no sanitization
+    description: description,
+    user_id: user.id
+  });
+}
+
+// Snippet B: Client-side-only auth check
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) window.location.href = '/login';
+      else setUser(data.user);
+    });
+  }, []);
+  // Dashboard content renders here — no server-side verification
+}
+
+// Snippet C: No RLS enabled
+// Table 'tasks' has RLS disabled
+// Anyone with the Supabase anon key can query all rows</code></pre>
+
+    <div class="slide-num">30 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 31 — Vulnerability Debrief
+  -->
+  <section class="slide" id="s31">
+    <div class="overline">PRIMM: Investigate</div>
+    <h2>Vulnerability Debrief</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">A</div>
+      <div class="num-text">
+        <strong>Missing input validation</strong>
+        <span>No length limit, no sanitization. An XSS payload goes straight into the database and renders in another
+          user&rsquo;s browser. Fix: validate on the server before the insert.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">B</div>
+      <div class="num-text">
+        <strong>Client-side-only auth check</strong>
+        <span>The <span class="inline-code">useEffect</span> runs in the browser. JavaScript can be disabled. A direct
+          API call bypasses it entirely. The redirect is a UX affordance, not a security control.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">C</div>
+      <div class="num-text">
+        <strong>No RLS enabled</strong>
+        <span>The Supabase anon key is public &mdash; it&rsquo;s in your client-side bundle. Without RLS, that key is a
+          skeleton key to your entire table. This is the default state of a new Supabase project.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">31 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 32 — AI Security Checklist
+  -->
+  <section class="slide" id="s32">
+    <div class="overline">Security</div>
+    <h2>AI Security Checklist</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.9rem, 1.5vw, 1.15rem); color: #f5f0e8; margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+        These three are the <strong style="color: var(--gold);">top vulnerabilities</strong> in AI-generated full-stack
+        code:
+      </p>
+      <div class="num-feature">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Missing input validation</strong>
+          <span>Does the form check length, type, and special characters on the server?</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Client-side-only auth</strong>
+          <span>Is there a server-side auth check, or only a browser redirect?</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>No Row Level Security</strong>
+          <span>Is RLS enabled on every table with user-specific data?</span>
+        </div>
+      </div>
+    </div>
+
+    <p
+      style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      Run this checklist every time AI generates a form, a protected route, or a database insert.
+    </p>
+
+    <div class="slide-num">32 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 33 — Section Divider: Spec as Context
+  -->
+  <section class="slide title-slide" id="s33">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Spec as Context</h1>
+    <div class="subtitle">The planning artifact that codes for you</div>
+    <div class="slide-num">33 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 34 — CLAUDE.md
+  -->
+  <section class="slide" id="s34">
+    <div class="overline">Spec-Driven AI</div>
+    <h2>CLAUDE.md as Context</h2>
+    <div class="accent-line"></div>
+
+    <pre><code># CLAUDE.md
+
+## Data Model
+- Table: tasks (id, title, description, user_id, created_at)
+- RLS: users can only CRUD their own tasks
+- Auth: Supabase email auth required for all pages
+
+## Rules
+- All inputs validated: title max 100 chars, description max 500 chars
+- Server-side auth check on all API routes</code></pre>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">When the data model, auth requirements, and RLS rules are in
+      <span class="inline-code">CLAUDE.md</span>, the AI generates correct Supabase queries on the first try. No prompt
+      iteration, no back-and-forth.
+    </p>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Key insight:</strong> A chat prompt is ephemeral. A <span
+          class="inline-code">CLAUDE.md</span> is re-read at the start of every session &mdash; the 10th query is as
+        accurate as the 1st.
+      </p>
+    </div>
+
+    <div class="slide-num">34 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 35 — OpenSpec: Specs Before Code
+  -->
+  <section class="slide" id="s35">
+    <div class="overline">SPEC-DRIVEN AI</div>
+    <h2>OpenSpec: Specs Before Code</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div>
+        <div class="num-feature">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Propose</strong>
+            <span>Write <em>what</em> changes and <em>why</em> before touching code &mdash; ADDED / MODIFIED / REMOVED delta markers</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Apply</strong>
+            <span>Implement tasks from the approved spec checklist</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">3</div>
+          <div class="num-text">
+            <strong>Archive</strong>
+            <span>Completed specs become project history</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <pre style="margin: 0;"><code><span style="color: var(--fg-dim);"># install &amp; initialize</span>
+<span style="color: var(--gold);">$ npx openspec init</span>
+
+<span style="color: var(--fg-dim);"># write a proposal</span>
+<span style="color: var(--gold);">$ openspec propose</span>
+<span style="color: var(--green-soft);">  title: Add task filtering
+  why:   Users need to find tasks by status
+  what:
+    ADDED   FilterBar component
+    MODIFIED TaskList to accept filter prop
+  checklist:
+    [ ] FilterBar renders status options
+    [ ] TaskList filters by selected status
+    [ ] Default: show all tasks</span>
+
+<span style="color: var(--fg-dim);"># implement from the checklist</span>
+<span style="color: var(--gold);">$ openspec apply</span></code></pre>
+      </div>
+    </div>
+
+    <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      Free, no API keys. Works with Claude Code, Cursor, Copilot, and 20+ tools.
+    </p>
+
+    <div class="slide-num">35 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 36 — Your Spec Stack So Far
+  -->
+  <section class="slide" id="s36">
+    <div class="overline">SPEC-DRIVEN AI</div>
+    <h2>Your Spec Stack So Far</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W3</div>
+      <div class="num-text">
+        <strong>Format Contract</strong>
+        <span>Data boundaries &mdash; agree on shape before processing</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W4</div>
+      <div class="num-text">
+        <strong>CTOC</strong>
+        <span>Chart-level functional spec &mdash; what the visualization must show</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W6</div>
+      <div class="num-text">
+        <strong>CLAUDE.md / PRD</strong>
+        <span>Persistent project context &mdash; re-read every session</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W6</div>
+      <div class="num-text">
+        <strong>OpenSpec</strong>
+        <span>Enforced propose &rarr; apply &rarr; archive workflow</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--gold); text-align: center;">
+        Same principle at every scale: agree on <em>what</em> before writing <em>how</em>.
+      </p>
+    </div>
+
+    <div class="slide-num">36 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 37 — Closing
+  -->
+  <section class="slide title-slide" id="s37">
+    <div class="overline">Week 6 Takeaway</div>
+    <div class="accent-line"></div>
+    <h2>The Spec Is the Prompt</h2>
+
+    <div class="quote-block" style="text-align: left; max-width: 50ch; margin: clamp(0.5rem, 2vh, 1.5rem) auto;">
+      <p>&ldquo;The spec is the prompt &mdash; it just persists.&rdquo;</p>
+    </div>
+
+    <div
+      style="display: flex; width: min(85vw, 700px); height: clamp(32px, 5vh, 50px); border-radius: 4px; overflow: hidden; margin: clamp(1rem, 2.5vh, 2rem) auto;">
+      <div
+        style="flex: 40; background: linear-gradient(135deg, rgba(193,167,120,0.3), rgba(193,167,120,0.15)); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--gold);">40%
+          Planning</span>
+      </div>
+      <div
+        style="flex: 20; background: linear-gradient(135deg, rgba(125,171,110,0.35), rgba(125,171,110,0.15)); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--green-soft);">20%
+          Coding</span>
+      </div>
+      <div
+        style="flex: 40; background: linear-gradient(135deg, rgba(193,167,120,0.3), rgba(193,167,120,0.15)); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--gold);">40%
+          Testing</span>
+      </div>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      The antidote to the vibe coding hangover: write the spec in the planning phase, and it does the security work in
+      the coding phase.
+    </p>
+
+    <div class="slide-num">37 / 37</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

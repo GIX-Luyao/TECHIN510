@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 5 — APIs, Databases & the Full-Stack Transition</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>APIs, Databases &amp;<br>the Full-Stack Transition</h1>
+    <div class="subtitle">Week 5: From Streamlit to Next.js + Supabase</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Explain why we transition from Streamlit to Next.js + Supabase</strong>
+        <span>Name at least three things Streamlit cannot do</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Justify a tech stack choice based on user requirements</strong>
+        <span>Not personal preference or familiarity</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Read TypeScript by mapping Python equivalents</strong>
+        <span><span class="inline-code">def</span> &rarr; <span class="inline-code">function</span>, <span class="inline-code">const</span>/<span class="inline-code">let</span>, unions &amp; optional fields, <span class="inline-code">interface</span> / <span class="inline-code">type</span></span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Diagram the three-tier architecture</strong>
+        <span>Browser &harr; Server &harr; Database &mdash; contrast with single-tier</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Call a REST API and parse the JSON response</strong>
+        <span>Define an API and when to use it (server vs. client); use <span class="inline-code">curl</span> and Python <span class="inline-code">requests</span>, handle error cases</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Insert and query data from Supabase</strong>
+        <span>Contrast database categories and why relational/Postgres fits this course; explain why data persists after the process terminates</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Identify security vulnerabilities in code</strong>
+        <span>Hardcoded keys, leaking error internals, client-side secrets</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">8</div>
+      <div class="num-text">
+        <strong>Use Claude Code in Plan Mode to scaffold a Next.js project</strong>
+        <span>Evaluate which scaffold decisions required human judgment</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
+        Today: lecture + demo (55 min) then hands-on lab (105 min)
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Section Divider: The Transition
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>The Transition</h1>
+    <div class="subtitle">Why we change tech stacks</div>
+    <div class="slide-num">04 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — What Streamlit Cannot Do
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">The Limitation</div>
+    <h2>What Streamlit Cannot Do</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>User accounts</strong>
+        <span>No built-in authentication. Each session is a sealed box with no connection to any other.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Persistent data</strong>
+        <span>Close the app, lose the data. No database, no memory between sessions.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Multi-user access</strong>
+        <span>Two tabs, two separate worlds. No shared state between users.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        These are not edge cases. They are the <strong style="color: var(--gold);">core requirements</strong> of your final project.
+      </p>
+    </div>
+
+    <div class="slide-num">05 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Architecture Bridge
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">Systems Thinking</div>
+    <h2>Architecture Bridge</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--fg-dim);">Single-Tier (Weeks 1&ndash;4)</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          One file: <span class="inline-code">app.py</span><br>
+          UI + logic + data access all together.<br>
+          Fast to prototype, hard to scale.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Three-Tier (Weeks 5+)</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Presentation &bull; Application &bull; Data<br>
+          Same responsibilities, separated for<br>
+          scale, security, and team collaboration.
+        </p>
+      </div>
+    </div>
+
+    <table class="slide-table" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <thead>
+        <tr><th>Weeks 1&ndash;4 Artifact</th><th>&rarr;</th><th>Weeks 5+ Artifact</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>CSV schema / format contract</td><td>&rarr;</td><td>SQL schema + migrations</td></tr>
+        <tr><td>DataFrame assert</td><td>&rarr;</td><td>Row-level security (RLS) policy</td></tr>
+        <tr><td><span class="inline-code">st.metric()</span></td><td>&rarr;</td><td>React component</td></tr>
+      </tbody>
+    </table>
+
+    <div class="slide-num">06 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Section Divider: Tech Stack Decision
+  -->
+  <section class="slide title-slide" id="s7">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Tech Stack Decision</h1>
+    <div class="subtitle">Active learning: you predict first</div>
+    <div class="slide-num">07 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Tech Stack Scenarios
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Think-Pair-Share</div>
+    <h2>Which Stack Wins?</h2>
+    <div class="accent-line"></div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width: 60%;">Scenario</th>
+          <th>Streamlit?</th>
+          <th>Next.js?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GIX study-space sensor dashboard &mdash; one researcher, read-only, no login</td>
+          <td style="color: var(--green-soft); font-weight: 600;">Yes</td>
+          <td style="color: var(--fg-dim);">Over-engineering</td>
+        </tr>
+        <tr>
+          <td>Shared incident-tracking app &mdash; login required, per-user data</td>
+          <td style="color: var(--fg-dim);">Fighting the framework</td>
+          <td style="color: var(--green-soft); font-weight: 600;">Yes</td>
+        </tr>
+        <tr>
+          <td>Quick prototype to test if users want a bookmark feature</td>
+          <td style="color: var(--green-soft); font-weight: 600;">Yes</td>
+          <td style="color: var(--fg-dim);">Too much infra for a test</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Invest production infrastructure only after you have validated the idea.</strong>
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Section Divider: TypeScript Bridge
+  -->
+  <section class="slide title-slide" id="s9">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>The TypeScript Bridge</h1>
+    <div class="subtitle">Same concepts, different punctuation</div>
+    <div class="slide-num">09 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Python vs. TypeScript Syntax
+  -->
+  <section class="slide" id="s10">
+    <div class="overline">Syntax Equivalence</div>
+    <h2>Python &harr; TypeScript</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Python</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);">def</span> greet(name: str) -> str:
+    <span style="color: var(--gold);">return</span> f"Hello, {name}!"
+
+user = {"name": "Alice", "age": 25}
+print(user["name"])
+
+numbers = [1, 2, 3]
+doubled = [n * 2 <span style="color: var(--gold);">for</span> n in numbers]</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">TypeScript</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);">function</span> greet(name: string): string {
+  <span style="color: var(--gold);">return</span> `Hello, ${name}!`;
+}
+const user = { name: "Alice", age: 25 };
+console.log(user.name);
+
+const numbers = [1, 2, 3];
+const doubled = numbers.map(n => n * 2);</code></pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <span class="inline-code">def</span> &rarr; <span class="inline-code">function</span> &bull;
+        Indentation &rarr; curly braces &bull;
+        f-strings &rarr; backtick template literals &bull;
+        List comprehension &rarr; <span class="inline-code">.map()</span>
+      </p>
+    </div>
+
+    <div class="slide-num">10 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — Async Comparison
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Syntax Equivalence</div>
+    <h2>Async &amp; Data Fetching</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Python</div>
+        <pre style="margin:0;"><code>import requests
+
+response = requests.get(url)
+data = response.json()</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">TypeScript</div>
+        <pre style="margin:0;"><code>const res = <span style="color: var(--gold);">await</span> fetch(url);
+const data = <span style="color: var(--gold);">await</span> res.json();</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Key insight:</strong> <span class="inline-code">async</span>/<span class="inline-code">await</span> in TypeScript looks almost identical to Python.
+        In web development, every API call and database query is asynchronous &mdash; the pattern becomes second nature fast.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — TypeScript Types &amp; Interfaces
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Your Safety Net</div>
+    <h2>TypeScript Types &amp; Interfaces</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Without Types (JavaScript)</div>
+        <pre style="margin:0;"><code>function greet(user) {
+  return `Hello, ${user.name}`;
+}
+
+greet({ username: "Alice" });
+<span style="color: var(--red-soft);">// Returns "Hello, undefined"
+// Silent bug at runtime</span></code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label good">With Types (TypeScript)</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);">interface</span> User {
+  name: string;
+  email: string;
+}
+
+function greet(user: User): string {
+  return `Hello, ${user.name}`;
+}
+
+greet({ username: "Alice" });
+<span style="color: var(--green-soft);">// ERROR at compile time!
+// "Did you mean 'name'?"</span></code></pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        An <span class="inline-code">interface</span> is a contract: "anything labeled as a <span class="inline-code">User</span> must have these fields." When AI generates code that passes the wrong shape, TypeScript catches it <strong style="color: var(--gold);">before you run anything</strong>.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Interface Example: Todo
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">Reading Interfaces</div>
+    <h2>The Todo Interface</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">// This interface says: every Todo from the database
+// has exactly these fields.</span>
+export interface Todo {
+  id: string;          <span style="color: var(--fg-dim);">// UUID from Supabase</span>
+  user_id: string;     <span style="color: var(--fg-dim);">// who owns this record</span>
+  title: string;       <span style="color: var(--fg-dim);">// the content</span>
+  is_complete: boolean;
+  created_at: string;
+}</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        When you see an interface, translate it as: <strong style="color: var(--gold);">"here is the shape of data that flows through this boundary."</strong> If AI accidentally calls <span class="inline-code">todo.body</span> instead of <span class="inline-code">todo.title</span>, TypeScript tells you right now &mdash; not when a user complains.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — TypeScript: Syntax in Starter Kits
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">TypeScript</div>
+    <h2>Syntax You Will See in Starter Kits</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Variables</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);">const</span> name = "Ada";   <span style="color: var(--fg-dim);">// default: cannot reassign</span>
+<span style="color: var(--gold);">let</span> count = 0;      <span style="color: var(--fg-dim);">// when reassignment is needed</span></code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Think Python: <span class="inline-code">const</span> &asymp; a name that does not get rebound; <span class="inline-code">let</span> when you update the value.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Primitives &amp; arrays</div>
+        <pre style="margin:0;"><code><span style="color: var(--fg-dim);">// primitives</span>
+<span style="color: var(--gold);">const</span> n: number = 42;
+<span style="color: var(--gold);">const</span> ok: boolean = true;
+<span style="color: var(--gold);">const</span> label: string = "hi";
+
+<span style="color: var(--fg-dim);">// array of strings</span>
+<span style="color: var(--gold);">const</span> tags: string[] = ["ui", "lab"];</code></pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <div class="col-label" style="color: var(--gold);">Objects &amp; optional fields</div>
+      <pre style="margin:0;"><code><span style="color: var(--gold);">interface</span> Profile {
+  name: string;
+  email?: string;   <span style="color: var(--fg-dim);">// optional — may be absent</span>
+}
+
+<span style="color: var(--fg-dim);">// inline object type (common in callbacks)</span>
+<span style="color: var(--gold);">function</span> onSave(data: { title: string; id?: string }) { <span style="color: var(--fg-dim);">/* ... */</span> }</code></pre>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Reading order:</strong> types sit to the right of <span class="inline-code">:</span> on variables and parameters. The editor uses them to flag mistakes before you run the app.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — TypeScript: Unions, Narrowing, and type
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">TypeScript</div>
+    <h2>Unions, Narrowing, and <span class="inline-code">type</span></h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Union types &amp; narrowing</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);">type</span> Status = "idle" | "loading" | "error";
+
+<span style="color: var(--gold);">function</span> fmt(value: string | null): string {
+  <span style="color: var(--gold);">if</span> (value === null) <span style="color: var(--gold);">return</span> "";
+  <span style="color: var(--fg-dim);">// TS knows `value` is string here</span>
+  <span style="color: var(--gold);">return</span> value.toUpperCase();
+}</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);"><span class="inline-code">interface</span> vs <span class="inline-code">type</span></div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); margin:0;">
+          <strong style="color: var(--gold);">interface</strong> &mdash; named object shape; common as <span class="inline-code">export interface Props</span>. Often extended.<br><br>
+          <strong style="color: var(--gold);">type</strong> &mdash; alias for unions, primitives, tuples: <span class="inline-code">type ID = string;</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Narrowing:</strong> after <span class="inline-code">if (x === null) return;</span>, TypeScript treats <span class="inline-code">x</span> as defined below. Same idea as checking <span class="inline-code">response.ok</span> before <span class="inline-code">response.json()</span>.
+      </p>
+    </div>
+
+    <div class="slide-num">15 / 33</div>
+  </section>
+
+
+  <!-- ============================================================
+     SLIDE 16 — React Hooks vs. Streamlit
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Mental Model Shift</div>
+    <h2>Hooks vs. Streamlit Re-Run</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--red-soft);">Streamlit</div>
+        <p>Every interaction &rarr; <strong>entire script re-runs</strong> from top to bottom.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Simple, but cannot build real-time interactive UIs.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--green-soft);">React (Hooks)</div>
+        <p>Only the <strong>affected component</strong> re-renders when its state changes.</p>
+        <pre style="margin-top:0.5rem;"><code>const [todos, setTodos] = useState([]);
+<span style="color: var(--fg-dim);">// setTodos(newData) → re-renders
+// ONLY this component</span></code></pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <span class="inline-code">useState</span> declares reactive state. <span class="inline-code">useEffect</span> runs code after the component appears (like "on_load"). You don't need to master these &mdash; just <strong style="color: var(--gold);">recognize them</strong> in the starter kit.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Server vs. Client Components
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Next.js 15</div>
+    <h2>Server vs. Client Components</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--green-soft);">Server Component (default)</div>
+        <p>Runs on the server <strong>before</strong> the browser receives HTML.</p>
+        <ul style="margin-top:0.4rem;">
+          <li>Fetch from Supabase safely</li>
+          <li>Access server env vars</li>
+          <li>Run database queries</li>
+        </ul>
+        <p style="margin-top:0.4rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">Cannot: <span class="inline-code">useState</span>, <span class="inline-code">useEffect</span>, <span class="inline-code">onClick</span></p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Client Component</div>
+        <pre style="margin: 0 0 0.5rem 0;"><code><span style="color: var(--gold);">"use client";</span> <span style="color: var(--fg-dim);">// ← this line matters</span></code></pre>
+        <p>Runs in the <strong>user's browser</strong>.</p>
+        <ul style="margin-top:0.4rem;">
+          <li>Use <span class="inline-code">useState</span>, <span class="inline-code">useEffect</span></li>
+          <li>Respond to clicks, typing</li>
+          <li>Call client-side APIs</li>
+        </ul>
+        <p style="margin-top:0.4rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">Cannot: access server secrets safely</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Rule of thumb:</strong> Add <span class="inline-code">'use client'</span> only when you need <span class="inline-code">useState</span>, <span class="inline-code">useEffect</span>, or event handlers. Otherwise, keep it as a Server Component.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Section Divider: Architecture
+  -->
+  <section class="slide title-slide" id="s18">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Multi-Tier Architecture</h1>
+    <div class="subtitle">From one file to three layers</div>
+    <div class="slide-num">18 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Architecture Diagram
+  -->
+  <section class="slide" id="s19">
+    <div class="overline">Architecture Shift</div>
+    <h2>Single-Tier &rarr; Three-Tier</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" style="max-height: 52vh;">
+        <text x="155" y="25" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">WEEKS 1-4</text>
+        <rect x="55" y="40" width="200" height="260" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.4" />
+        <text x="155" y="70" text-anchor="middle" fill="#c1a778" font-family="JetBrains Mono, monospace" font-size="13"
+          font-weight="500">app.py</text>
+        <rect x="80" y="85" width="150" height="40" rx="3" fill="rgba(193,167,120,0.08)" stroke="#c1a778"
+          stroke-width="1" opacity="0.4" />
+        <text x="155" y="110" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">UI</text>
+        <rect x="80" y="135" width="150" height="40" rx="3" fill="rgba(193,167,120,0.08)" stroke="#c1a778"
+          stroke-width="1" opacity="0.4" />
+        <text x="155" y="160" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">Business Logic</text>
+        <rect x="80" y="185" width="150" height="40" rx="3" fill="rgba(193,167,120,0.08)" stroke="#c1a778"
+          stroke-width="1" opacity="0.4" />
+        <text x="155" y="210" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">Data Access</text>
+        <text x="155" y="270" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.45">Everyone sees everything</text>
+
+        <line x1="300" y1="170" x2="400" y2="170" stroke="#c1a778" stroke-width="1.5" opacity="0.3" />
+        <polygon points="398,166 408,170 398,174" fill="#c1a778" opacity="0.3" />
+
+        <text x="640" y="25" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">WEEKS 5-10</text>
+
+        <rect x="470" y="40" width="340" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="640" y="65" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">BROWSER</text>
+        <text x="640" y="85" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">React / Next.js &mdash; User Interface</text>
+
+        <line x1="640" y1="115" x2="640" y2="140" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="636,138 640,148 644,138" fill="#c1a778" opacity="0.5" />
+        <text x="680" y="132" text-anchor="start" fill="#c1a778" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.4">HTTP / JSON</text>
+
+        <rect x="470" y="150" width="340" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="640" y="175" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">SERVER</text>
+        <text x="640" y="200" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">Next.js API Routes &mdash; Secrets live here</text>
+
+        <line x1="640" y1="225" x2="640" y2="250" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="636,248 640,258 644,248" fill="#c1a778" opacity="0.5" />
+        <text x="680" y="242" text-anchor="start" fill="#c1a778" font-family="Inter, sans-serif" font-size="9"
+          opacity="0.4">SQL</text>
+
+        <rect x="470" y="260" width="340" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="640" y="285" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">DATABASE</text>
+        <text x="640" y="310" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">Supabase &mdash; Persistent Storage + RLS</text>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Standard tier names:</strong>
+        Browser (Presentation) &rarr; Server (Application) &rarr; Database (Data).
+        Arrows between tiers are <em>boundaries</em>. Mixing tiers = &ldquo;framework mismatch&rdquo; anti-pattern.
+      </p>
+    </div>
+
+    <div class="slide-num">19 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — What Is an API?
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">APIs</div>
+    <h2>What Is an API?</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>A contract between programs</strong>
+        <span>It defines how one piece of software requests data or actions from another over a network &mdash; not the same as an HTML page meant for humans to read.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Request and response</strong>
+        <span>The client sends a <strong>method</strong> (GET, POST, &hellip;), a <strong>URL</strong>, optional <strong>headers</strong> and <strong>body</strong>. The server replies with a <strong>status code</strong> and a body (often JSON).</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Browsers vs. APIs</strong>
+        <span>Navigating to a site returns HTML for rendering. Calling an API returns <strong>machine-readable data</strong> (usually JSON) for your code to parse &mdash; the same workflow you have used since Week 1.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">20 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — When and How to Use APIs
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">APIs</div>
+    <h2>When and How to Use APIs</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">When</div>
+        <ul style="margin:0; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <li>Pull in <strong>third-party data</strong> (weather, maps, payments)</li>
+          <li>Expose <strong>your backend</strong> to web, mobile, or partners</li>
+          <li>Keep <strong>secrets on the server</strong> (API keys, LLM calls)</li>
+          <li>Define <strong>service boundaries</strong> between systems</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">How</div>
+        <ul style="margin:0; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <li>Choose an HTTP method: <span class="inline-code">GET</span> read, <span class="inline-code">POST</span> create, <span class="inline-code">PUT</span>/<span class="inline-code">PATCH</span> update, <span class="inline-code">DELETE</span> remove</li>
+          <li>Send <strong>auth in headers</strong> (e.g. <span class="inline-code">Authorization: Bearer &hellip;</span>) &mdash; not query strings for secrets</li>
+          <li>Parse JSON; handle <strong>errors and timeouts</strong> (following slides)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">This course:</strong> use <span class="inline-code">fetch</span> to <strong>public HTTPS APIs</strong> or to <strong>your Next.js routes</strong>. Private keys stay in Server Components or API routes &mdash; same rule as &ldquo;where would an agent live?&rdquo;
+      </p>
+    </div>
+
+    <div class="slide-num">21 / 33</div>
+  </section>
+
+
+  <!-- ============================================================
+     SLIDE 22 — Raw API Call
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">Phase A</div>
+    <h2>Raw API Call with curl</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>curl "https://api.open-meteo.com/v1/forecast?\
+  latitude=47.65&amp;longitude=-122.30&amp;\
+  hourly=temperature_2m&amp;forecast_days=1"</code></pre>
+
+    <div class="num-feature" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Concrete URL + JSON response</strong>
+        <span>Open-Meteo returns the same JSON shapes you have parsed since Week 1</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>The source changed, the pipeline did not</strong>
+        <span>Recall Week 3: 9 stages from sensor to chart. An API compresses stages 1&ndash;4 into one call.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">22 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Python Error Handling
+  -->
+  <section class="slide" id="s23">
+    <div class="overline">Phase B</div>
+    <h2>Python with Error Handling</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>response = requests.get(url, params=params, timeout=10)
+response.raise_for_status()
+data = response.json()
+
+<span style="color: var(--gold);"># Three error cases — not one:</span>
+<span style="color: var(--red-soft);">except requests.exceptions.Timeout:</span>
+    <span style="color: var(--fg-dim);"># Server slow or unreachable</span>
+<span style="color: var(--red-soft);">except requests.exceptions.HTTPError as e:</span>
+    <span style="color: var(--fg-dim);"># Server replied with 4xx or 5xx</span>
+<span style="color: var(--red-soft);">except requests.exceptions.ConnectionError:</span>
+    <span style="color: var(--fg-dim);"># Network itself failed</span></code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Same defensive mindset as Week 3:</strong> external systems fail. <span class="inline-code">raise_for_status()</span> makes failures loud &mdash; a blank chart three interactions later is your enemy.
+      </p>
+    </div>
+
+    <div class="slide-num">23 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — API Test Matrix
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Testing &amp; Validation</div>
+    <h2>API Test Matrix</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr><th>Scenario</th><th>Status</th><th>What to Assert</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Happy path</td>
+          <td><span style="color: var(--green-soft);">200 OK</span></td>
+          <td>Response body matches expected schema</td>
+        </tr>
+        <tr>
+          <td>Auth failure</td>
+          <td><span style="color: var(--red-soft);">401</span></td>
+          <td>No data leaked, clear error message</td>
+        </tr>
+        <tr>
+          <td>Network error</td>
+          <td><span style="color: var(--red-soft);">timeout</span></td>
+          <td>UI shows fallback, no crash</td>
+        </tr>
+        <tr>
+          <td>Malformed input</td>
+          <td><span style="color: var(--red-soft);">400</span></td>
+          <td>Validation error returned, not a 500</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <pre style="margin-top: clamp(0.5rem, 1.5vh, 1rem);"><code><span style="color: var(--gold);">// Your first integration test</span>
+const res = await fetch('/api/items', { method: 'GET' });
+expect(res.status).toBe(200);
+const data = await res.json();
+expect(data).toHaveProperty('items');</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Your first integration test. Four scenarios, four assertions.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 33</div>
+  </section>
+
+
+  <!-- ============================================================
+     SLIDE 25 — What Is a Database?
+  -->
+  <section class="slide" id="s25">
+    <div class="overline">Data Layer</div>
+    <h2>What Is a Database?</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Persistent, structured storage</strong>
+        <span>Data survives process restarts and deploys. A <strong>schema</strong> describes tables or collections; a <strong>query language</strong> (often SQL) reads and updates rows reliably.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>More than a file or in-memory list</strong>
+        <span>Databases support <strong>many concurrent users</strong>, enforce rules, and (for relational systems) <strong>transactions</strong> so related changes commit or roll back together.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        If closing Streamlit wipes your state, you need a database (or equivalent hosted storage) for multi-user or durable apps.
+      </p>
+    </div>
+
+    <div class="slide-num">25 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — Database Categories and Choosing
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Data Layer</div>
+    <h2>Categories &amp; When to Use Them</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table" style="font-size: clamp(0.62rem, 0.95vw, 0.78rem);">
+      <thead>
+        <tr><th>Category</th><th>Examples</th><th>Typical use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Relational / SQL</td>
+          <td>PostgreSQL (Supabase), SQLite</td>
+          <td>Structured rows, joins, ACID, multi-user apps</td>
+        </tr>
+        <tr>
+          <td>Document</td>
+          <td>MongoDB</td>
+          <td>Flexible JSON-shaped documents, rapid iteration</td>
+        </tr>
+        <tr>
+          <td>Key-value / cache</td>
+          <td>Redis</td>
+          <td>Sessions, rate limits, speed</td>
+        </tr>
+        <tr>
+          <td>Vector</td>
+          <td>pgvector, dedicated vector DBs</td>
+          <td>Embeddings, semantic search (later weeks)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="two-col" style="margin-top: clamp(0.45rem, 1.2vh, 0.7rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">When (this course)</div>
+        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin:0;">
+          Default to <strong>relational</strong> for durable state, relationships between entities, auth-linked rows, and shared access &mdash; aligned with the final project.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">How</div>
+        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin:0;">
+          Use a <strong>connection URL</strong> and a <strong>client</strong> or SQL; evolve the <strong>schema</strong> with migrations. Next: <strong>Supabase</strong> = hosted Postgres + auth + RLS.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">26 / 33</div>
+  </section>
+
+
+  <!-- ============================================================
+     SLIDE 27 — Supabase Persistence
+  -->
+  <section class="slide" id="s27">
+    <div class="overline">Phase C</div>
+    <h2>Supabase &mdash; Persistence</h2>
+    <div class="accent-line"></div>
+
+    <div class="card" style="margin-bottom: clamp(0.45rem, 1.2vh, 0.75rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); margin:0;">
+        <strong style="color: var(--gold);">PostgreSQL via Supabase:</strong> the code below uses the same relational model as the previous slides. Supabase adds hosted Postgres, auth, and row-level security.
+      </p>
+    </div>
+
+    <pre><code>supabase = create_client(url, key)
+
+<span style="color: var(--gold);"># Read all bookmarks</span>
+result = supabase.table("bookmarks").select("*").execute()
+
+<span style="color: var(--gold);"># Insert a new bookmark</span>
+supabase.table("bookmarks").insert({
+    "url": "https://api.open-meteo.com",
+    "title": "Open-Meteo API Endpoint",
+}).execute()
+
+<span style="color: var(--gold);"># Read again — one more row</span>
+result = supabase.table("bookmarks").select("*").execute()</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">The key demo:</strong> Kill the terminal. Count to three. Reopen. Data is still there. That is persistence &mdash; the gap between Streamlit and a production web application.
+      </p>
+    </div>
+
+    <div class="slide-num">27 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — Section Divider: Security
+  -->
+  <section class="slide title-slide" id="s28">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Security Architecture</h1>
+    <div class="subtitle">Three rules for Weeks 5&ndash;10</div>
+    <div class="slide-num">28 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — Three Security Rules
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">Whiteboard Rules</div>
+    <h2>Security Rules</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>No hardcoded secrets &mdash; ever</strong>
+        <span>Use <span class="inline-code">os.environ["KEY"]</span> with square brackets. Crash on startup if missing &mdash; intentional.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>.env in .gitignore &mdash; always</strong>
+        <span>Bots scan every public commit for API keys. If exposed: rotate the key before anything else.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Error messages do not leak internals</strong>
+        <span>Log <span class="inline-code">str(e)</span> server-side. Return a generic message to the client.</span>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <div class="card">
+        <div class="col-label bad">Wrong</div>
+        <pre style="margin:0;"><code>API_KEY = "sk-proj-abc123xyz789"
+requests.get(url,
+  params={"api_key": API_KEY})</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label good">Right</div>
+        <pre style="margin:0;"><code>api_key = os.environ["OPENAI_API_KEY"]
+requests.get(url,
+  headers={"Authorization":
+    f"Bearer {api_key}"})</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>JWT Anatomy:</strong> <span class="inline-code">header.payload.signature</span><br>
+      The header says which algorithm, the payload carries user data (like user ID and email), and the signature proves it hasn't been tampered with. <strong>Supabase creates and verifies JWTs automatically</strong> — you never build them by hand.
+    </div>
+
+    <div class="slide-num">29 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 30 — Find the Vulnerability
+  -->
+  <section class="slide" id="s30">
+    <div class="overline">Active Learning</div>
+    <h2>Find the Vulnerability</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.2vh, 0.8rem); color: var(--fg-dim);">
+      Three snippets. Each has a different security bug. 30&ndash;35 seconds per snippet.
+    </p>
+
+    <div class="card">
+      <div class="col-label bad">Snippet A &mdash; Warm-up</div>
+      <pre style="margin:0;"><code>API_KEY = "sk-proj-abc123xyz789def456"
+
+response = requests.get(
+    "https://api.openai.com/v1/models",
+    params={"api_key": API_KEY}
+)</code></pre>
+      <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">
+        Hardcoded key + key in URL params (appears in server logs)
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="col-label bad">Snippet B &mdash; Moderate</div>
+      <pre style="margin:0;"><code>except Exception as e:
+    return jsonify({"error": str(e)}), 500</code></pre>
+      <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">
+        <span class="inline-code">str(e)</span> leaks database hostname, project URL, and connection params to the client
+      </p>
+    </div>
+
+    <div class="slide-num">30 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 31 — Snippet C: The Trap
+  -->
+  <section class="slide" id="s31">
+    <div class="overline">The Trap</div>
+    <h2>Snippet C: <span class="inline-code">NEXT_PUBLIC_</span></h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--red-soft);">'use client'</span>                   <span style="color: var(--fg-dim);">// ← runs in the browser</span>
+
+export default function Dashboard() {
+  const fetchData = async () => {
+    const res = await fetch(
+      `https://api.example.com/data?key=<span style="color: var(--red-soft);">${process.env.NEXT_PUBLIC_SECRET_KEY}</span>`
+    );
+    return res.json();
+  };
+}</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--red-soft);">NEXT_PUBLIC_</strong> means "compile into the client JavaScript bundle." Anyone can open DevTools &rarr; Sources and find it in 30 seconds.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">The rule:</strong> If the variable is a secret, it lives in a Server Component, API Route, or Server Action. It <strong>never</strong> gets a <span class="inline-code">NEXT_PUBLIC_</span> prefix.
+      </p>
+    </div>
+
+    <div class="slide-num">31 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 32 — Scaffolding with AI
+  -->
+  <section class="slide" id="s32">
+    <div class="overline">The 40/20/40 in Action</div>
+    <h2>AI Did Well vs. Human Judgment</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">AI Did Well</div>
+        <ul>
+          <li>Project scaffolding</li>
+          <li>File structure creation</li>
+          <li>Tailwind CSS styling</li>
+          <li>Boilerplate API routes</li>
+          <li>Type annotations</li>
+          <li>Import statements</li>
+          <li>Repetitive CRUD code</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Human Judgment Required</div>
+        <ul>
+          <li>Server vs. Client Component</li>
+          <li>Which routes need auth</li>
+          <li>Row Level Security design</li>
+          <li>Error message content</li>
+          <li><span class="inline-code">.env</span> variable naming</li>
+          <li>When to use Supabase vs. API Route</li>
+          <li>Data model &amp; schema design</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">If you skip the spec, the AI populates the right column with guesses.</strong> Some will be correct. Some will create security vulnerabilities.
+      </p>
+    </div>
+
+    <div class="slide-num">32 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 33 — Closing: The Spec Is the Architecture
+  -->
+  <section class="slide title-slide" id="s33">
+    <div class="overline">The Takeaway</div>
+    <div class="accent-line"></div>
+    <h1>The Spec Is<br>the Architecture</h1>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p>"A structural engineer does not pick the paint color. An interior designer does not specify the load-bearing wall dimensions. Claude Code is the structural engineer. Cursor is the interior designer. You are the architect."</p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.85rem, 1.5vw, 1.1rem); color: var(--fg-dim); max-width: 50ch;">
+      Write the spec before touching any AI tool. The 40% planning determines whether the 20% coding produces the right thing.
+    </p>
+
+    <div class="slide-num">33 / 33</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

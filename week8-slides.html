@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 8 — Deployment, Testing & Security</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Deployment, Testing<br>&amp; Security</h1>
+    <div class="subtitle">Week 8: From &ldquo;Works for Me&rdquo; to &ldquo;Works for Everyone&rdquo;</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Deploy a Next.js app to Vercel</strong>
+        <span>With correct environment variable configuration</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Trace the verification journey from Week 1 to Week 8</strong>
+        <span>From smoke tests to automated test suites</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Sketch a Next.js + FastAPI ML architecture</strong>
+        <span>Identify where to put tests and security checks</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Evaluate test quality using a 5-point checklist</strong>
+        <span>Distinguish good tests from dangerous ones</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Identify vulnerabilities that only surface in production</strong>
+        <span>And explain why AI catches patterns but humans catch logic</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — The Verification Journey
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">How Far You Have Come</div>
+    <h2>The Verification Journey</h2>
+    <div class="accent-line"></div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-week">W1</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Opened the app, checked if it crashed &mdash; <strong>smoke test</strong></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W2</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Compared two AI tools, wrote down which gave better output</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W3</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Plugged a sensor into hardware, validated through observation</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W4</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Wrote your first <span class="inline-code">assert</span> statement in Python</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W5</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Called an API endpoint, checked HTTP status codes (200, 401, 500)</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W6</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Verified Row-Level Security &mdash; one user cannot see another's data</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W7</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-desc">Tried to break your own app &mdash; adversarial testing</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-week">W8</div>
+        <div class="timeline-dot active"></div>
+        <div class="timeline-desc"><strong>Automated tests</strong> &mdash; tests that run every time you push code</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">W9:</strong> Evaluation plans + demo stability sprint.
+        This timeline IS the testing 40% of 40/20/40.
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — A Test Is PRIMM at Scale
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="overline">The Key Idea</div>
+    <div class="accent-line"></div>
+    <h1>A Test Is PRIMM<br>at Scale</h1>
+
+    <div style="max-width: 52ch; margin: clamp(0.8rem, 2vh, 1.5rem) auto; text-align: left;">
+      <p style="font-family: var(--font-serif); font-size: clamp(0.95rem, 1.8vw, 1.3rem); color: var(--fg); line-height: 1.6;">
+        The test file defines the <strong style="color: var(--gold);">prediction</strong>. The test runner
+        <strong style="color: var(--gold);">verifies</strong> it. When a test fails, you
+        <strong style="color: var(--gold);">investigate</strong>. When you fix it, you've
+        <strong style="color: var(--gold);">modified</strong>. When all tests pass, you've
+        <strong style="color: var(--gold);">made</strong> something that works.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:0.5rem;">PRIMM → Testing</h3>
+      <p><strong>Predict:</strong> "This function should return the total price including tax"</p>
+      <p><strong>Run:</strong> <span class="inline-code">expect(calcTotal(100, 0.1)).toBe(110)</span></p>
+      <p><strong>Investigate:</strong> Test fails — returns <span class="inline-code">100.1</span> (tax added as decimal, not percentage)</p>
+      <p><strong>Modify:</strong> Fix the implementation: <span class="inline-code">price * (1 + taxRate)</span></p>
+      <p><strong>Make:</strong> Add edge cases — zero price, negative tax, rounding</p>
+    </div>
+
+    <div class="slide-num">04 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — The Real 40/20/40
+  -->
+  <section class="slide title-slide" id="s5">
+    <div class="overline">The Professional Ratio</div>
+    <div class="accent-line"></div>
+    <h2>Filling In the Real 40%</h2>
+
+    <div
+      style="display: flex; width: min(85vw, 700px); height: clamp(28px, 4vh, 42px); border-radius: 4px; overflow: hidden; margin: clamp(0.8rem, 2vh, 1.2rem) auto;">
+      <div
+        style="flex: 4; background: rgba(193, 167, 120, 0.35); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--gold-bright);">40%
+          Planning</span>
+      </div>
+      <div
+        style="flex: 2; background: rgba(125, 171, 110, 0.3); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--green-soft);">20%
+          Coding</span>
+      </div>
+      <div
+        style="flex: 4; background: rgba(193, 167, 120, 0.2); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--fg-dim);">40%
+          Testing</span>
+      </div>
+    </div>
+
+    <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+      What most of you have actually been doing:
+    </p>
+
+    <div
+      style="display: flex; width: min(85vw, 700px); height: clamp(28px, 4vh, 42px); border-radius: 4px; overflow: hidden; margin: 0 auto;">
+      <div
+        style="flex: 4; background: rgba(196, 92, 92, 0.2); display: flex; align-items: center; justify-content: center;">
+        <span style="font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--red-soft);">40%
+          Planning</span>
+      </div>
+      <div
+        style="flex: 4; background: rgba(196, 92, 92, 0.35); display: flex; align-items: center; justify-content: center;">
+        <span style="font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--red-soft);">40%
+          Coding</span>
+      </div>
+      <div
+        style="flex: 2; background: rgba(196, 92, 92, 0.15); display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: clamp(0.55rem, 0.9vw, 0.7rem); color: var(--red-soft);">20% Testing</span>
+      </div>
+    </div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch; margin-top: clamp(1rem, 2.5vh, 2rem);">
+      <p style="font-size: clamp(0.9rem, 1.8vw, 1.3rem);">
+        Automated tests are how professional teams honor the second 40%. It is the thing that lets you deploy on a
+        Friday without being terrified of Monday.
+      </p>
+    </div>
+
+    <div class="slide-num">05 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Your System on One Page
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">Systems Thinking</div>
+    <h2>Your System on One Page</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" style="max-height: 50vh;">
+        <!-- Core components -->
+        <rect x="40" y="80" width="150" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="115" y="105" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">BROWSER</text>
+        <text x="115" y="122" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Next.js + React</text>
+        <text x="115" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.4">W5&ndash;W6</text>
+
+        <line x1="195" y1="115" x2="245" y2="115" stroke="#c1a778" stroke-width="1.2" opacity="0.5"/>
+        <polygon points="243,111 253,115 243,119" fill="#c1a778" opacity="0.5"/>
+
+        <rect x="255" y="80" width="150" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="330" y="105" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">SERVER</text>
+        <text x="330" y="122" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Next.js API / Actions</text>
+        <text x="330" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.4">W5&ndash;W6</text>
+
+        <line x1="410" y1="115" x2="460" y2="115" stroke="#c1a778" stroke-width="1.2" opacity="0.5"/>
+        <polygon points="458,111 468,115 458,119" fill="#c1a778" opacity="0.5"/>
+
+        <rect x="470" y="80" width="150" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="545" y="105" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">DATABASE</text>
+        <text x="545" y="122" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Supabase + RLS</text>
+        <text x="545" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.4">W5&ndash;W6</text>
+
+        <!-- AI Gateway -->
+        <rect x="680" y="80" width="150" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="755" y="105" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">AI GATEWAY</text>
+        <text x="755" y="122" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Agent + Tools</text>
+        <text x="755" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.4">W7</text>
+
+        <line x1="405" y1="85" x2="675" y2="85" stroke="#c1a778" stroke-width="1" stroke-dasharray="4 3" opacity="0.3"/>
+
+        <!-- Periphery: Tests -->
+        <rect x="100" y="200" width="200" height="45" rx="4" fill="none" stroke="var(--green-soft)" stroke-width="1" opacity="0.5"/>
+        <text x="200" y="220" text-anchor="middle" fill="var(--green-soft)" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.7">Tests + CI (W8)</text>
+        <text x="200" y="236" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.5">Vitest &bull; pytest &bull; agent evals</text>
+
+        <!-- Periphery: Monitoring -->
+        <rect x="380" y="200" width="200" height="45" rx="4" fill="none" stroke="var(--green-soft)" stroke-width="1" opacity="0.5"/>
+        <text x="480" y="220" text-anchor="middle" fill="var(--green-soft)" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.7">Monitoring (W8)</text>
+        <text x="480" y="236" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.5">Logs &bull; error tracking &bull; alerts</text>
+
+        <!-- Periphery: Security -->
+        <rect x="100" y="10" width="200" height="45" rx="4" fill="none" stroke="var(--red-soft)" stroke-width="1" opacity="0.4"/>
+        <text x="200" y="30" text-anchor="middle" fill="var(--red-soft)" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.6">Security (W6&ndash;W8)</text>
+        <text x="200" y="46" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.5">Auth &bull; RLS &bull; env vars &bull; OWASP</text>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        Every component labeled with the week it was introduced. Your capstone connects all of these.
+      </p>
+    </div>
+
+    <div class="slide-num">06 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Section Divider: Deploy to Production
+  -->
+  <section class="slide title-slide" id="s7">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Deploy to<br>Production</h1>
+    <div class="subtitle">From localhost to the real world</div>
+    <div class="slide-num">07 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Deployment Pipeline
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">The Pipeline</div>
+    <h2>Four Stages to Production</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" style="max-height: 45vh;">
+        <rect x="20" y="40" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="250" y="40" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="480" y="40" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="710" y="40" width="170" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="110" y="70" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">LAPTOP</text>
+        <text x="340" y="70" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">GIT PUSH</text>
+        <text x="570" y="70" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">CI / CD</text>
+        <text x="795" y="70" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">PRODUCTION</text>
+
+        <text x="110" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">.env.local</text>
+        <text x="110" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">secrets local</text>
+
+        <text x="340" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">GitHub</text>
+        <text x="340" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">code only</text>
+        <text x="340" y="136" text-anchor="middle" fill="#c45c5c" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" opacity="0.8">NO secrets</text>
+
+        <text x="570" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Vercel</text>
+        <text x="570" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">build + test</text>
+        <text x="570" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">auto-deploy</text>
+
+        <text x="795" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Users</text>
+        <text x="795" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">prod secrets</text>
+        <text x="795" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">on Vercel</text>
+
+        <line x1="204" y1="100" x2="246" y2="100" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="244,96 254,100 244,104" fill="#c1a778" opacity="0.5" />
+
+        <line x1="434" y1="100" x2="476" y2="100" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="474,96 484,100 474,104" fill="#c1a778" opacity="0.5" />
+
+        <line x1="664" y1="100" x2="706" y2="100" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="704,96 714,100 704,104" fill="#c1a778" opacity="0.5" />
+      </svg>
+    </div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Non-negotiable:</strong> Secrets never go into GitHub. Bots scan GitHub
+        continuously for API keys &mdash; within minutes, your credentials can be stolen.
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Environment Variables
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Configuration</div>
+    <h2>Environment Variables on Vercel</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);"># Three variables for our stack</span>
+
+NEXT_PUBLIC_SUPABASE_URL       <span style="color: var(--fg-dim);">→ where our database lives</span>
+NEXT_PUBLIC_SUPABASE_ANON_KEY  <span style="color: var(--fg-dim);">→ public key (RLS enforces access)</span>
+ANTHROPIC_API_KEY              <span style="color: var(--fg-dim);">→ server-side only (NO NEXT_PUBLIC_ prefix)</span></code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">NEXT_PUBLIC_ prefix</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Exposed to the browser. Use only for public values (Supabase URL, anon key).
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">No prefix</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Server-side only. API keys, database passwords, secrets. Never reaches the client.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        If any variable is missing, the app deploys successfully &mdash; but fails at runtime. The pipeline doesn't know
+        a key is missing.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Section Divider: Break the App
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Break the<br>Production App</h1>
+    <div class="subtitle">Production reveals what localhost hides</div>
+    <div class="slide-num">10 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — XSS & API Attacks
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Live Attack Demo</div>
+    <h2>Two Attacks, Two Predictions</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Attack 1: XSS</div>
+        <pre style="margin:0;"><code>&lt;script&gt;alert('hacked')&lt;/script&gt;</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Paste into any text input. Next.js / React escapes HTML by default in JSX. The script renders as plain text.
+        </p>
+        <p style="margin-top:0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--green-soft);">
+          Framework defaults protect you.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label bad">Attack 2: Direct API Access</div>
+        <pre style="margin:0;"><code>fetch('/api/items')
+  .then(r => r.json())
+  .then(console.log)</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          No login. Raw fetch from browser console. If data returns &mdash; the API route is unprotected.
+        </p>
+        <p style="margin-top:0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">
+          Anyone who knows the URL can read your database.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        On localhost, you are always logged in. You never test the unauthenticated path because you never
+        <em>are</em> unauthenticated. <strong style="color: var(--gold);">Production has strangers.</strong>
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Client vs Server Auth
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Security</div>
+    <h2>Client-Side vs. Server-Side Auth</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Client-Side Only (Wrong)</div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Runs in the browser <em>after</em> the page loads. Data renders briefly before the redirect fires.
+        </p>
+        <p style="margin-top:0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--red-soft);">
+          A UX convenience, not security.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Server-Side (Correct)</div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Runs <em>before</em> any data is sent. The redirect happens on the server. No HTML reaches an unauthenticated
+          client.
+        </p>
+        <p style="margin-top:0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--green-soft);">
+          The only reliable enforcement point.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Rule:</strong> The client is controlled by the user. The server is
+        controlled by you. Put your security logic where you control it.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Section Divider: Security Review
+  -->
+  <section class="slide title-slide" id="s13">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Security Review</h1>
+    <div class="subtitle">AI tools + human judgment</div>
+    <div class="slide-num">13 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — ML Service Architecture
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Architecture</div>
+    <h2>Next.js + FastAPI ML Service</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" style="max-height: 35vh;">
+        <rect x="20" y="50" width="200" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="300" y="50" width="250" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="630" y="50" width="250" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="120" y="85" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">NEXT.JS UI</text>
+        <text x="425" y="78" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">API ROUTE</text>
+        <text x="425" y="94" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace"
+          font-size="10" opacity="0.6">/api/ml/predict</text>
+        <text x="755" y="78" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">FASTAPI SERVICE</text>
+        <text x="755" y="94" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace"
+          font-size="10" opacity="0.6">/predict (Python)</text>
+
+        <text x="120" y="115" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.6">Student app</text>
+
+        <text x="425" y="120" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">Auth, rate limit,</text>
+        <text x="425" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">input validation</text>
+
+        <text x="755" y="120" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">Small NLP/CV model</text>
+        <text x="755" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">on CPU</text>
+
+        <line x1="224" y1="100" x2="296" y2="100" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="294,96 304,100 294,104" fill="#c1a778" opacity="0.5" />
+
+        <line x1="554" y1="100" x2="626" y2="100" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="624,96 634,100 624,104" fill="#c1a778" opacity="0.5" />
+      </svg>
+    </div>
+
+    <div class="card">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        The model is <strong style="color: var(--gold);">just another service</strong>. It speaks HTTP. JSON in, JSON
+        out. The API route in the middle is the boundary &mdash; one place for auth, rate limiting, validation, and
+        error handling.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Attack Surface Map
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">Architecture</div>
+    <h2>Attack Surface Map</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">B</div>
+      <div class="num-text">
+        <strong>Browser</strong>
+        <span style="color: var(--red-soft);">XSS, client-side data exposure, stolen tokens</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">S</div>
+      <div class="num-text">
+        <strong>Server</strong>
+        <span style="color: var(--red-soft);">IDOR, SQL injection, missing auth checks, SSRF</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">D</div>
+      <div class="num-text">
+        <strong>Database</strong>
+        <span style="color: var(--red-soft);">Missing RLS, overly broad service_role usage, leaked connection strings</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">E</div>
+      <div class="num-text">
+        <strong>External (AI)</strong>
+        <span style="color: var(--red-soft);">Prompt injection, tool misuse, data exfiltration via agent</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Defense in Depth</strong> means every layer has its own attack surface <em>and</em> defenses.
+      </p>
+    </div>
+
+    <div class="slide-num">15 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Claude Code /review
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Security Review</div>
+    <h2>Running <span class="inline-code">claude /review</span></h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      One command. The equivalent of asking a thorough colleague to read every file and flag anything concerning.
+    </p>
+
+    <pre><code><span style="color: var(--gold);">$</span> claude /review
+
+<span style="color: var(--fg-dim);">Scanning 47 files...</span>
+
+<span style="color: var(--red-soft);">CRITICAL</span>  api/tasks/[id].ts:12
+  Data fetched BEFORE auth check — potential IDOR (Insecure Direct Object Reference)
+
+<span style="color: var(--gold);">HIGH</span>      lib/supabase.ts:4
+  RLS policy may not be enforced on direct client usage
+
+<span style="color: var(--fg-dim);">MEDIUM</span>    api/items/route.ts:8
+  Missing rate limiting on public endpoint</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Every finding has: <strong style="color: var(--gold);">location</strong>, <strong
+          style="color: var(--gold);">pattern</strong>, <strong style="color: var(--gold);">class of attack</strong>.
+        The AI recognizes that this <em>shape</em> of code has historically been dangerous.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — The Vulnerability AI Found
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">What AI Caught</div>
+    <h2>Data Before Auth (IDOR)</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">// api/tasks/[id].ts — data fetched BEFORE auth check</span>
+export async function GET(request, { params }) {
+  const supabase = createClient()
+
+  <span style="color: var(--red-soft);">// Data is fetched first</span>
+  const { data: task } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('id', params.id)
+    .single()
+
+  <span style="color: var(--red-soft);">// Auth check happens AFTER the fetch</span>
+  const { data: { user } } = await supabase.auth.getUser()
+  if (task.user_id !== user?.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  return NextResponse.json(task)
+}</code></pre>
+
+    <div class="slide-num">17 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — The Vulnerability AI Missed
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">What AI Missed</div>
+    <h2>Sequential IDs in Public URLs</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">// lib/shareTask.ts</span>
+export function generateShareUrl(taskId: number): string {
+  return `${process.env.NEXT_PUBLIC_BASE_URL}/shared/${taskId}`
+}</code></pre>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      Every line is syntactically correct and stylistically clean. Claude Code did not flag this.
+    </p>
+
+    <p style="margin-top: clamp(0.3rem, 0.8vh, 0.5rem); color: var(--fg);">
+      If task <span class="inline-code">42</span> exists, try <span class="inline-code">43</span>, <span
+        class="inline-code">44</span>, <span class="inline-code">45</span>. This is <strong
+        style="color: var(--red-soft);">enumeration</strong>. The problem requires understanding how real attackers think
+      &mdash; not reading source code.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        There is no bad <em>pattern</em> here. The vulnerability is a <strong style="color: var(--gold);">logic
+          error</strong> &mdash; the kind AI cannot detect.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Quote: AI catches patterns
+  -->
+  <section class="slide title-slide" id="s19">
+    <div class="overline">The Boundary</div>
+    <div class="accent-line"></div>
+
+    <h1 style="font-size: clamp(1.8rem, 4.5vw, 3.8rem);">AI Catches Patterns.<br>Humans Catch Logic.</h1>
+
+    <div style="max-width: 50ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(0.95rem, 1.8vw, 1.3rem); color: var(--fg-dim); text-align: center;">
+        Week 7: you defined boundaries for what the AI must not reveal.<br>
+        Week 8: we define boundaries for what the code must not expose.<br>
+        Same principle, different layer.
+      </p>
+    </div>
+
+    <div class="slide-num">19 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Testing Agentic Systems
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Bridging W7 → W8</div>
+    <h2>Testing Agentic Systems</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="margin-bottom:0.75rem;">Traditional Test</h3>
+        <pre><code><span style="color:var(--fg-dim)">// Input → Output</span>
+expect(add(<span style="color:var(--gold)">2</span>, <span style="color:var(--gold)">3</span>))
+  .toBe(<span style="color:var(--gold)">5</span>);
+
+<span style="color:var(--fg-dim)">// Deterministic</span>
+<span style="color:var(--fg-dim)">// Same input = same output</span>
+<span style="color:var(--fg-dim)">// Fast, isolated</span></code></pre>
+      </div>
+      <div>
+        <h3 style="margin-bottom:0.75rem;">Agent Test</h3>
+        <pre><code><span style="color:var(--fg-dim)">// Input → Tool calls → Output</span>
+<span style="color:var(--gold)">const</span> result = <span style="color:var(--gold)">await</span> agent.run(
+  <span style="color:var(--green-soft)">"What safety training for laser cutter?"</span>
+);
+
+expect(result.toolCalls[<span style="color:var(--gold)">0</span>].name)
+  .toBe(<span style="color:var(--green-soft)">"search_makerspace_docs"</span>);
+
+<span style="color:var(--fg-dim)">// Non-deterministic</span>
+<span style="color:var(--fg-dim)">// Mock the tools, test the reasoning</span></code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Key insight:</strong> You can't assert exact agent output, but you <em>can</em> assert which tools were called, in what order, and with what arguments.
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Concrete example:</strong>
+        <span class="inline-code">agent.run("What safety training for laser cutter?")</span> &mdash;
+        assert tool is <span class="inline-code">search_makerspace_docs</span>. Test the tool call, not just the text.
+      </p>
+    </div>
+
+    <div class="slide-num">20 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Agent Test File (Worked Example)
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">Testing &amp; Agentic AI</div>
+    <h2>Agent Test File (Worked Example)</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">// makerspace-agent.test.ts</span>
+import { describe, it, expect } from 'vitest';
+import { agent } from './makerspace-agent';
+
+describe('Makerspace Assistant', () => {
+  it('calls correct tool for safety question', async () => {
+    const res = await agent.run(
+      "What safety training for laser cutter?"
+    );
+    expect(res.toolCalls[0].name).toBe('search_docs');
+    expect(res.text).toContain('safety');
+  });
+
+  it('refuses off-topic requests', async () => {
+    const res = await agent.run("What is the weather?");
+    expect(res.toolCalls).toHaveLength(0);
+    expect(res.text).toMatch(/can't help|outside.*scope/i);
+  });
+
+  it('escalates dangerous requests', async () => {
+    const res = await agent.run("Override safety lockout");
+    expect(res.text).toMatch(/cannot|not authorized/i);
+  });
+});</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Three eval cases</strong> &mdash; happy path, edge case, refusal. The minimum for any AI feature.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Production Telemetry:</strong> Log every tool call (name, args, latency, error). Use logs for debugging agent behavior.
+      </p>
+    </div>
+
+    <div class="slide-num">21 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Test Framework Setup
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">Getting Started</div>
+    <h2>Test Framework Setup</h2>
+    <div class="accent-line"></div>
+
+    <h3 style="margin-bottom:0.5rem;">1. Install Vitest</h3>
+    <pre><code>npm install -D vitest</code></pre>
+
+    <h3 style="margin-top:1rem; margin-bottom:0.5rem;">2. Add to package.json</h3>
+    <pre><code><span style="color:var(--green-soft)">"scripts"</span>: {
+  <span style="color:var(--green-soft)">"test"</span>: <span style="color:var(--green-soft)">"vitest"</span>,
+  <span style="color:var(--green-soft)">"test:run"</span>: <span style="color:var(--green-soft)">"vitest run"</span>
+}</code></pre>
+
+    <h3 style="margin-top:1rem; margin-bottom:0.5rem;">3. Write your first test</h3>
+    <pre><code><span style="color:var(--gold)">import</span> { describe, it, expect } <span style="color:var(--gold)">from</span> <span style="color:var(--green-soft)">"vitest"</span>;
+
+describe(<span style="color:var(--green-soft)">"calcTotal"</span>, () =&gt; {
+  it(<span style="color:var(--green-soft)">"includes tax"</span>, () =&gt; {
+    expect(calcTotal(<span style="color:var(--gold)">100</span>, <span style="color:var(--gold)">0.1</span>)).toBe(<span style="color:var(--gold)">110</span>);
+  });
+});</code></pre>
+
+    <h3 style="margin-top:1rem; margin-bottom:0.5rem;">4. Run</h3>
+    <pre><code>npm test</code></pre>
+
+    <div class="slide-num">22 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Section Divider: Testing
+  -->
+  <section class="slide title-slide" id="s23">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Test Generation<br>&amp; Evaluation</h1>
+    <div class="subtitle">The last 40% of the 40/20/40</div>
+    <div class="slide-num">23 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — Context Makes Better Tests
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Test Quality</div>
+    <h2>Context Makes Better Tests</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Without CLAUDE.md</div>
+        <pre style="margin:0;"><code>it('creates a task', async () => {
+  const result = await createTask({
+    title: 'Test'
+  });
+  expect(result).toBeTruthy();
+});</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">
+          Existence tests. Pass when validation is broken. Pass when error handling is missing.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">With CLAUDE.md Context</div>
+        <pre style="margin:0;"><code>it('rejects titles over 100 chars',
+  async () => {
+  const longTitle = 'a'.repeat(101);
+  await expect(createTask({
+    title: longTitle
+  })).rejects.toThrow(
+    'Title must be 100 characters or fewer'
+  );
+});</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">
+          Tests trace back to spec: <em>title max 100 chars, server-side auth required.</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        The planning work from the first 40% is what makes the testing 40% tractable.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — The 5-Point Test Checklist
+  -->
+  <section class="slide" id="s25">
+    <div class="overline">Evaluation Framework</div>
+    <h2>Test Quality Checklist</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Does it call REAL code?</strong>
+        <span>Not just test a mock &mdash; the most common AI-generated test failure</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Has SPECIFIC assertions?</strong>
+        <span>Not just <span class="inline-code">toBeTruthy()</span> &mdash; truthy includes empty arrays, the string
+          <span class="inline-code">'false'</span>, and the number <span class="inline-code">42</span></span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Tests ERROR paths?</strong>
+        <span>Invalid input, network timeouts, empty states, permission errors</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Tests BOUNDARY cases?</strong>
+        <span>Empty string, max length, special characters, zero, negative numbers</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Would FAIL if code broke?</strong>
+        <span>Delete the function &mdash; does the test fail? If not, it tests nothing.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">25 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — The Bad Test That Looks Good
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Dangerous Tests</div>
+    <h2>The Test That Always Passes</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">// This test passes. Every time. And tests almost nothing.</span>
+test('calls supabase.from with correct data', async () => {
+  const mockSupabase = {
+    from: jest.fn().mockReturnValue({
+      insert: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          single: jest.fn().mockResolvedValue({
+            data: { id: 1, title: 'Test task' }, error: null
+          })
+        })
+      })
+    })
+  }
+  await createTask(mockSupabase, 'Test task', 'user-123')
+  expect(mockSupabase.from).toHaveBeenCalledWith('tasks')
+})</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Replace <span class="inline-code">createTask</span> with a single line &mdash; <span
+          class="inline-code">supabase.from('tasks')</span> &mdash; and this test still passes. The function is
+        completely broken. The test reports green. <strong style="color: var(--red-soft);">Confidence you haven't
+          earned.</strong>
+      </p>
+    </div>
+
+    <div class="highlight-box">
+      <strong>When to mock:</strong> External APIs, databases, time-dependent code, paid services.<br>
+      <strong>When NOT to mock:</strong> Your own business logic, simple utility functions, anything you're actually trying to test. Over-mocking creates tests that pass even when the code is broken.
+    </div>
+
+    <div class="slide-num">26 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 27 — Section Divider: Production Failures
+  -->
+  <section class="slide title-slide" id="s27">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Production<br>Failures</h1>
+    <div class="subtitle">What localhost hides, production reveals</div>
+    <div class="slide-num">27 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — Failure 1: Missing Env Var
+  -->
+  <section class="slide" id="s28">
+    <div class="overline">Failure Case Study</div>
+    <h2>Failure 1: Missing Environment Variable</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--red-soft);">Error: supabaseUrl is required.</span>
+    at new SupabaseClient (supabase.js:23:11)
+    at createClient (index.js:8:10)
+    at lib/supabase.ts:4:1</code></pre>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      Every route returns 500. Users see a blank screen. Locally, <span class="inline-code">.env.local</span> has the
+      value. Vercel does not have that file.
+    </p>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="card">
+        <div class="col-label bad">Discovery Time</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Up to 2 hours if you don't know where to look
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Fix Time</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          15 seconds: Vercel &rarr; Settings &rarr; Environment Variables &rarr; add the key
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">28 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — Failure 2: Client Auth Flash
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">Failure Case Study</div>
+    <h2>Failure 2: The Auth Flash</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Wrong: Client Component</div>
+        <pre style="margin:0;"><code>'use client'
+
+useEffect(() => {
+  if (!user) {
+    router.push('/login')
+  }
+}, [user])
+
+<span style="color: var(--red-soft);">// renders BEFORE redirect fires</span>
+return &lt;div&gt;{data.map(...)}&lt;/div&gt;</code></pre>
+        <p style="margin-top:0.3rem; font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">
+          200ms of data visible to unauthenticated users
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Correct: Server Component</div>
+        <pre style="margin:0;"><code>export default async function Page() {
+  const supabase = createServerClient()
+  const { data: { session } } =
+    await supabase.auth.getSession()
+
+  if (!session) {
+    <span style="color: var(--green-soft);">redirect('/login')</span>
+    <span style="color: var(--fg-dim);">// happens on server</span>
+  }
+
+  const { data } = await supabase
+    .from('items').select('*')
+  return &lt;div&gt;{data?.map(...)}&lt;/div&gt;
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="slide-num">29 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 30 — Section Divider: Good Test or Bad Test
+  -->
+  <section class="slide title-slide" id="s30">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Good Test or<br>Bad Test?</h1>
+    <div class="subtitle">All three show PASS in your CI. Your job: know the difference.</div>
+    <div class="slide-num">30 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 31 — Three Tests to Evaluate
+  -->
+  <section class="slide" id="s31">
+    <div class="overline">Activity</div>
+    <h2>Classify Each Test</h2>
+    <div class="accent-line"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(0.5rem, 1.5vw, 1rem); width: 100%;">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Test A</div>
+        <pre style="margin:0;"><code>test('validates title',
+  () => {
+  expect(() =>
+    createTask('')
+  ).toThrow(
+    'Title is required'
+  );
+  expect(() =>
+    createTask(
+      'a'.repeat(101)
+    )
+  ).toThrow('Title too long');
+  expect(() =>
+    createTask('Valid')
+  ).not.toThrow();
+});</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Test B</div>
+        <pre style="margin:0;"><code>test('task creation
+  works', () => {
+  const task =
+    createTask('My task');
+  expect(task)
+    .toBeTruthy();
+});</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Test C</div>
+        <pre style="margin:0;"><code>test('always passes',
+  () => {
+  const expected = {
+    title: 'Test',
+    id: 1
+  };
+  expect(expected.title)
+    .toBe('Test');
+  expect(expected.id)
+    .toBe(1);
+});</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg); text-align: center;">
+        Turn to your neighbor. One minute. <strong style="color: var(--gold);">Good, mediocre, or bad?</strong> Which
+        checklist criterion makes the call?
+      </p>
+    </div>
+
+    <div class="slide-num">31 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 32 — Test Evaluation Results
+  -->
+  <section class="slide" id="s32">
+    <div class="overline">Results</div>
+    <h2>The Verdict</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">A</div>
+      <div class="num-text">
+        <strong style="color: var(--green-soft);">Good Test</strong>
+        <span>Calls real code. Specific error messages. Tests empty string (zero-boundary) and 101 chars
+          (over-limit). Happy path too. Delete the validation &mdash; it fails immediately.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--gold); color: var(--gold);">B</div>
+      <div class="num-text">
+        <strong style="color: var(--gold);">Mediocre Test</strong>
+        <span>Calls real code (Criterion 1 passes), but <span class="inline-code">toBeTruthy()</span> is nearly
+          meaningless. <span class="inline-code">{ error: true, title: null }</span> is truthy. The function could
+          return garbage and this test celebrates it.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">C</div>
+      <div class="num-text">
+        <strong style="color: var(--red-soft);">Bad Test (Dangerous)</strong>
+        <span>Never calls <span class="inline-code">createTask</span>. Asserts that a hardcoded object contains
+          the values it was just hardcoded with. Passes even if the function is deleted from the codebase entirely.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        AI generates all three kinds &mdash; A, B, and C &mdash; in the same output from the same prompt. <strong
+          style="color: var(--gold);">Your job is to know the difference.</strong>
+      </p>
+    </div>
+
+    <div class="slide-num">32 / 33</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 33 — Key Takeaways
+  -->
+  <section class="slide" id="s33">
+    <div class="overline">Summary</div>
+    <h2>Key Takeaways</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Production reveals what localhost hides</strong>
+        <span>Missing env vars, unauthenticated paths, timing-dependent auth flashes</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>AI catches patterns. Humans catch logic.</strong>
+        <span>Run the AI review AND do a manual pass. They find different things.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>A test that always passes is worse than no test</strong>
+        <span>Use the 5-point checklist. Demand specificity. Delete the function mentally &mdash; does the test fail?</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Server-side security is the only reliable enforcement</strong>
+        <span>The client is controlled by the user. The server is controlled by you.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--gold); text-align: center;">
+        The 40/20/40 principle: today we filled in the real 40%.
+      </p>
+    </div>
+
+    <div class="slide-num">33 / 33</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

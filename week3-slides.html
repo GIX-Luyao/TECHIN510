@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 3 — From Sensor to Dashboard</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+  <style>
+    .flicker-dashboard {
+      margin-top: clamp(0.5rem, 1.5vh, 1rem);
+      border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+      border-radius: 0.7rem;
+      padding: clamp(0.7rem, 1.4vw, 1rem);
+      background:
+        linear-gradient(160deg, rgba(193, 167, 120, 0.08), rgba(10, 15, 10, 0.72)),
+        rgba(11, 18, 11, 0.88);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(193, 167, 120, 0.08);
+      transition: filter 140ms ease, opacity 140ms ease;
+    }
+
+    .flicker-dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+      gap: 0.6rem;
+      font-size: clamp(0.68rem, 1vw, 0.82rem);
+      color: var(--fg-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .flicker-dot {
+      width: 0.48rem;
+      height: 0.48rem;
+      border-radius: 999px;
+      background: #63d397;
+      box-shadow: 0 0 10px rgba(99, 211, 151, 0.45);
+      flex-shrink: 0;
+    }
+
+    .flicker-metric {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: 0.45rem;
+      line-height: 1;
+    }
+
+    .flicker-value {
+      font-family: var(--font-serif);
+      font-size: clamp(1.85rem, 4vw, 2.45rem);
+      color: var(--gold);
+      min-width: 5.8ch;
+      text-shadow: 0 0 14px rgba(193, 167, 120, 0.18);
+    }
+
+    .flicker-delta {
+      font-size: clamp(0.7rem, 1vw, 0.82rem);
+      color: var(--fg-dim);
+    }
+
+    .flicker-sparkline {
+      position: relative;
+      height: 2.9rem;
+      padding: 0.3rem 0.1rem 0.1rem;
+      border-top: 1px solid rgba(193, 167, 120, 0.2);
+      overflow: hidden;
+    }
+
+    .flicker-line-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .flicker-line {
+      fill: none;
+      stroke: rgba(193, 167, 120, 0.95);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 4px rgba(193, 167, 120, 0.25));
+      transition: d 240ms ease;
+    }
+
+    .flicker-line-fill {
+      fill: rgba(193, 167, 120, 0.18);
+      transition: d 240ms ease;
+    }
+
+    .flicker-dashboard.is-flickering {
+      opacity: 0.93;
+      filter: brightness(0.9) saturate(0.94);
+    }
+
+    .flicker-dashboard.is-flickering .flicker-value,
+    .flicker-dashboard.is-flickering .flicker-dot {
+      animation: subtlePulse 0.18s linear 2;
+    }
+
+    @keyframes subtlePulse {
+      0% {
+        opacity: 1;
+      }
+
+      45% {
+        opacity: 0.72;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flicker-dashboard,
+      .flicker-line,
+      .flicker-line-fill,
+      .flicker-dashboard.is-flickering .flicker-value,
+      .flicker-dashboard.is-flickering .flicker-dot {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>From Sensor to Dashboard</h1>
+    <div class="subtitle">Week 3: Sensor Data Visualization</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1-4
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Specify system requirements</strong>
+        <span>Define accuracy, freshness, and availability targets for a sensor dashboard before writing code</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Name the Pipes and Filters pattern</strong>
+        <span>Identify the canonical architecture pattern in the sensor-to-dashboard pipeline</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Write a format contract</strong>
+        <span>Specify field names, types, ranges, and update rate between subsystems</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Trace error propagation</strong>
+        <span>Follow sensor accuracy &rarr; quantization &rarr; system-level guarantee through the pipeline</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 5-8
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Apply PRIMM to AI-generated firmware and serial parser code</strong>
+        <span>Predict behavior before running; investigate after</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Distinguish structural from domain validation</strong>
+        <span>Implement range checks at system boundaries where data enters</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Separate I/O from logic</strong>
+        <span>Create testable code without hardware dependencies by isolating pure functions</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">8</div>
+      <div class="num-text">
+        <strong>Add observability to a live dashboard</strong>
+        <span>Freshness indicator, failure counting, staleness detection</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
+        Today: Discussion + demo then hands-on lab
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.9rem);">
+      <div class="col-label" style="color: var(--gold); margin-bottom: 0.35rem;">PRIMM for firmware + parser code</div>
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin: 0;">
+        <strong style="color: var(--fg);">Predict</strong> what the next serial line should look like before you run it.
+        <strong style="color: var(--fg);">Run</strong> Serial Monitor or the script.
+        <strong style="color: var(--fg);">Investigate</strong> mismatches at the stage boundary (wrong columns? wrong
+        type?).
+        <strong style="color: var(--fg);">Modify</strong> one filter at a time, re-run.
+        <strong style="color: var(--fg);">Make</strong> a one-line contract change if the hardware reality changed.
+        (Full lab walkthrough uses the same loop.)
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Guiding Question
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="overline">The Guiding Question</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 48ch;">
+      <p>"Should I go study in the GIX lounge right now? Temperature too high? Humidity uncomfortable? Is someone
+        already there?"</p>
+    </div>
+
+    <div style="max-width: 48ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        A $2 sensor and Python code can answer that question. Functionally, it is identical to what a building
+        management system asks 10,000 times per hour.
+      </p>
+    </div>
+
+    <div class="slide-num">04 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — NEW B1: System Requirements
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">Before We Build</div>
+    <h2>What Does the System Need to Do?</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      Before jumping to code, define three measurable requirements for the GIX lounge monitor:
+    </p>
+
+    <div class="num-feature">
+      <div class="num-circle">A</div>
+      <div class="num-text">
+        <strong>Accuracy</strong>
+        <span>Temperature within <strong style="color: var(--gold);">&plusmn;2&deg;C</strong> of ground truth. Why
+          2&deg;C? That is the threshold where humans notice comfort changes.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">F</div>
+      <div class="num-text">
+        <strong>Freshness</strong>
+        <span>Data on the dashboard no older than <strong style="color: var(--gold);">10 seconds</strong>. A
+          &ldquo;live&rdquo; dashboard showing 5-minute-old data is lying.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">R</div>
+      <div class="num-text">
+        <strong>Availability</strong>
+        <span>System recovers without restart after <strong style="color: var(--gold);">3 consecutive sensor
+            errors</strong>. The DHT22 fails ~20% of reads &mdash; the system must tolerate this.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        These three numbers drive every architectural decision in the rest of this lecture. This is the <strong
+          style="color: var(--gold);">40% planning</strong> in the 40/20/40 principle.
+      </p>
+    </div>
+
+    <div class="slide-num">05 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Divider: The Data Pipeline
+  -->
+  <section class="slide title-slide" id="s6">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>The Data Pipeline</h1>
+    <div class="subtitle">9 stages from physical world to browser pixels</div>
+    <div class="slide-num">06 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — 9-Stage Pipeline Overview (SVG)
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Pipeline Architecture</div>
+    <h2>The 9-Stage Data Pipeline</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" style="max-height: 55vh;">
+        <rect x="20" y="20" width="260" height="340" rx="6" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.2"
+          stroke-dasharray="4 3" />
+        <text x="150" y="48" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="2">PHYSICAL WORLD</text>
+
+        <rect x="40" y="65" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="150" y="85" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">1. SENSOR</text>
+        <text x="150" y="103" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Physical &rarr; Signal</text>
+
+        <line x1="150" y1="115" x2="150" y2="135" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="146,133 150,141 154,133" fill="#c1a778" opacity="0.4" />
+
+        <rect x="40" y="145" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="150" y="165" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">2. MICROCONTROLLER</text>
+        <text x="150" y="183" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Signal &rarr; Float</text>
+
+        <line x1="150" y1="195" x2="150" y2="215" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="146,213 150,221 154,213" fill="#c1a778" opacity="0.4" />
+
+        <rect x="40" y="225" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="150" y="245" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">3. FORMATTER</text>
+        <text x="150" y="263" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Float &rarr; CSV String</text>
+
+        <rect x="320" y="20" width="260" height="340" rx="6" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.2"
+          stroke-dasharray="4 3" />
+        <text x="450" y="48" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="2">HOST COMPUTER</text>
+
+        <rect x="340" y="65" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="85" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">4. TRANSPORT</text>
+        <text x="450" y="103" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">String &rarr; Bytes (USB)</text>
+
+        <line x1="450" y1="115" x2="450" y2="135" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="446,133 450,141 454,133" fill="#c1a778" opacity="0.4" />
+
+        <rect x="340" y="145" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="165" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">5. PARSE (decode)</text>
+        <text x="450" y="183" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Bytes &rarr; text + fields</text>
+
+        <line x1="450" y1="195" x2="450" y2="215" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="446,213 450,221 454,213" fill="#c1a778" opacity="0.4" />
+
+        <rect x="340" y="225" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="245" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">6. VALIDATE + STRUCTURE</text>
+        <text x="450" y="263" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Fields &rarr; typed DataFrame</text>
+
+        <rect x="620" y="20" width="260" height="340" rx="6" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.2"
+          stroke-dasharray="4 3" />
+        <text x="750" y="48" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="2">BROWSER</text>
+
+        <rect x="640" y="65" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="750" y="85" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">7. VISUALIZE</text>
+        <text x="750" y="103" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">DataFrame &rarr; Figure</text>
+
+        <line x1="750" y1="115" x2="750" y2="135" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="746,133 750,141 754,133" fill="#c1a778" opacity="0.4" />
+
+        <rect x="640" y="145" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="750" y="165" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">8. RENDER</text>
+        <text x="750" y="183" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Figure &rarr; HTML/JS</text>
+
+        <line x1="750" y1="195" x2="750" y2="215" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="746,213 750,221 754,213" fill="#c1a778" opacity="0.4" />
+
+        <rect x="640" y="225" width="220" height="50" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="750" y="245" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600">9. DELIVERY</text>
+        <text x="750" y="263" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">HTTP &rarr; Pixels</text>
+
+        <line x1="280" y1="170" x2="320" y2="170" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="318,166 326,170 318,174" fill="#c1a778" opacity="0.5" />
+
+        <line x1="580" y1="170" x2="620" y2="170" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="618,166 626,170 618,174" fill="#c1a778" opacity="0.5" />
+
+        <text x="150" y="310" text-anchor="middle" fill="#7dab6e" font-family="JetBrains Mono, monospace" font-size="9"
+          opacity="0.7">22.5&deg;C (float)</text>
+        <text x="450" y="310" text-anchor="middle" fill="#7dab6e" font-family="JetBrains Mono, monospace" font-size="9"
+          opacity="0.7">b"2.1,22.4,45.1\n"</text>
+        <text x="750" y="310" text-anchor="middle" fill="#7dab6e" font-family="JetBrains Mono, monospace" font-size="9"
+          opacity="0.7">SVG + JSON &rarr; pixels</text>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.65rem);">
+      <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Same stages, two vocabularies:</strong> elsewhere we say
+        &ldquo;parse &amp; validate&rdquo; &mdash; that work spans <strong>Stage 5</strong> (decode bytes, split CSV
+        fields) and <strong>Stage 6</strong> (check ranges/types, build a DataFrame). When debugging, ask which of those
+        two filters broke the contract.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — NEW B2: Pipes and Filters Pattern
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Architecture Pattern</div>
+    <h2>The Pattern Has a Name: Pipe-and-Filter Architecture</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      This 9-stage pipeline is a typical <strong style="color: var(--gold);">pipe-and-filter architecture</strong>:
+      independent processing steps connected by explicit data contracts.
+    </p>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Filters do one job each</strong>
+        <span>A filter is a small stage with a single responsibility: read one input format, apply one transformation,
+          emit one output format. Example: sensor read &rarr; float, formatter &rarr; CSV, decoder &rarr; dict.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Pipes carry data between filters</strong>
+        <span>A pipe is the handoff channel plus contract: USB serial bytes, function return values, queues, or HTTP
+          payloads. Medium changes; interface discipline stays the same.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Why teams use it: modularity + reuse</strong>
+        <span>You can replace one filter without rewriting the system, reuse filters across projects, and compose new
+          workflows by rearranging stages.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Tradeoffs to manage</strong>
+        <span>Every handoff adds overhead and potential latency. Good observability and error handling are required so
+          one bad stage does not silently corrupt downstream output.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>You already use this pattern</strong>
+        <span>Unix pipelines (<span class="inline-code">cat data.csv | grep "22" | awk -F, '{print $2}'</span>),
+          Express middleware chains, and ETL flows all follow the same idea.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Debug mindset:</strong> Trace stage-by-stage. In our course pipeline:
+        sensor &rarr; formatter &rarr; <strong>Stage 5 parse</strong> &rarr; <strong>Stage 6 validate</strong> &rarr;
+        chart. Ask <em>&ldquo;which filter broke the contract?&rdquo;</em>, not just &ldquo;why is the chart wrong?&rdquo;
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — NEW B4: Signal Noise + Error Budget
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Physics of Imperfection</div>
+    <h2>Why Does 22.5&deg;C Keep Flickering?</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      Even successful readings fluctuate: thermal noise, ADC quantization, acoustic interference. This embedded
+      dashboard is intentionally &ldquo;alive&rdquo; to show that micro-variation is normal.
+    </p>
+
+    <div class="flicker-dashboard" id="flicker-dashboard">
+      <div class="flicker-dashboard-header">
+        <span style="display:flex; align-items:center; gap:0.35rem;">
+          <span class="flicker-dot"></span>
+          Live Room Monitor
+        </span>
+        <span id="flicker-updated">updated 2.0s ago</span>
+      </div>
+      <div class="flicker-metric">
+        <span class="flicker-value" id="flicker-temp">22.5&deg;C</span>
+        <span class="flicker-delta" id="flicker-delta">+0.1&deg;C vs avg</span>
+      </div>
+      <div class="flicker-sparkline" id="flicker-sparkline" aria-label="Temperature trend over last samples">
+        <svg class="flicker-line-svg" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+          <path class="flicker-line-fill" id="flicker-line-fill" d="M0,31 L0,17 L100,17 L100,31 Z"></path>
+          <path class="flicker-line" id="flicker-line" d="M0,17 L100,17"></path>
+        </svg>
+      </div>
+    </div>
+
+    <p style="margin: clamp(0.3rem, 1vh, 0.6rem) 0; color: var(--fg-dim); font-size: clamp(0.75rem, 1.2vw, 0.9rem);">
+      This is not a bug. This is physics. Software response:
+    </p>
+
+    <pre><code>df[<span style="color: var(--gold);">'temp_smoothed'</span>] = df[<span style="color: var(--gold);">'temperature_c'</span>].rolling(window=5).mean()</code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Error Budget</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          &plusmn;0.5&deg;C (sensor) + &plusmn;0.05&deg;C (quantization) = dashboard cannot claim better than <strong
+            style="color: var(--gold);">&plusmn;0.6&deg;C</strong>
+        </p>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          &ldquo;22.5&deg;C&rdquo; really means <strong>[21.9, 23.1]</strong>
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Design Decision</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <span class="inline-code">window=5</span> at 2s intervals = 10-second smoothing. Is that too slow for a sudden
+          spike? You decide.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">09 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Three Key Boundaries (SVG)
+  -->
+  <section class="slide" id="s10">
+    <div class="overline">Critical Boundaries</div>
+    <h2>Three Key Boundaries</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" style="max-height: 45vh;">
+        <rect x="20" y="20" width="260" height="80" rx="4" fill="rgba(193, 167, 120, 0.08)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.7" />
+        <text x="150" y="48" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1">PHYSICAL-TO-DIGITAL</text>
+        <text x="150" y="68" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Between World and Stage 1</text>
+        <text x="150" y="86" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          font-style="italic" opacity="0.8">"The world becomes data"</text>
+
+        <rect x="320" y="20" width="260" height="80" rx="4" fill="rgba(193, 167, 120, 0.08)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.7" />
+        <text x="450" y="48" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1">DEVICE-TO-HOST</text>
+        <text x="450" y="68" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Between Stage 4 and Stage 5</text>
+        <text x="450" y="86" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          font-style="italic" opacity="0.8">"Bytes cross the cable"</text>
+
+        <rect x="620" y="20" width="260" height="80" rx="4" fill="rgba(193, 167, 120, 0.08)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.7" />
+        <text x="750" y="48" text-anchor="middle" fill="#d4be8e" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1">DATA-TO-PIXEL</text>
+        <text x="750" y="68" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.7">Between Stage 7 and Stage 8</text>
+        <text x="750" y="86" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          font-style="italic" opacity="0.8">"Numbers become visuals"</text>
+
+        <line x1="280" y1="60" x2="320" y2="60" stroke="#c1a778" stroke-width="1.2" opacity="0.35"
+          stroke-dasharray="4 3" />
+        <line x1="580" y1="60" x2="620" y2="60" stroke="#c1a778" stroke-width="1.2" opacity="0.35"
+          stroke-dasharray="4 3" />
+
+        <text x="150" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">The only place physics</text>
+        <text x="150" y="155" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">enters the system</text>
+
+        <text x="450" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">Format contract must match</text>
+        <text x="450" y="155" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">on both sides</text>
+
+        <text x="750" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">Last chance to catch unit</text>
+        <text x="750" y="155" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">errors before the user sees it</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">10 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — NEW B3: Writing a Format Contract
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Systems Engineering</div>
+    <h2>Writing a Format Contract</h2>
+    <div class="accent-line"></div>
+
+    <p
+      style="margin-bottom: clamp(0.3rem, 1vh, 0.6rem); color: var(--fg-dim); font-size: clamp(0.75rem, 1.2vw, 0.9rem);">
+      The CSV &ldquo;format contract&rdquo; deserves a written specification, not a passing mention:
+    </p>
+
+    <pre><code><span style="color: var(--gold);">Field 1:</span> timestamp   &mdash; float, seconds since boot, [0, &infin;), monotonic
+<span style="color: var(--gold);">Field 2:</span> temp_c      &mdash; float, &deg;C, [-40, 80], resolution 0.1
+<span style="color: var(--gold);">Field 3:</span> humid_pct   &mdash; float, %, [0, 100], resolution 0.1
+<span style="color: var(--gold);">Field 4:</span> dist_cm     &mdash; float, cm, [2, 400], -1.0 = sensor error
+
+<span style="color: var(--gold);">Delimiter:</span> comma  |  <span style="color: var(--gold);">Terminator:</span> \n  |  <span style="color: var(--gold);">Encoding:</span> UTF-8
+<span style="color: var(--gold);">Rate:</span> 1 line / 2s &plusmn;100ms</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">This contract is the primary artifact.</strong>
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Interface Contract:</strong> This CSV spec is the first of many contracts:
+        DataFrame asserts (W4), Zod schemas (W6), tool <span class="inline-code">input_schema</span> (W7).
+        Same idea: define what crosses a boundary, verify it.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Three Verification Points
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Verification Points</div>
+    <h2>Three Verification Points</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>After Stage 1 &mdash; Sensor vs. Reality</strong>
+        <span>Tool: thermometer, weather app, Serial Monitor. Question: "Does the number the sensor reports match the
+          physical world?"</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>After Stage 3 &mdash; Raw CSV String</strong>
+        <span>Tool: Serial Monitor. Question: "Right number of columns? Right delimiter? Reasonable values?"</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>After Stage 6 &mdash; DataFrame Statistics</strong>
+        <span>Tool: <span class="inline-code">df.describe()</span>, <span class="inline-code">df.head()</span>.
+          Question: "Temperature mean near room temp? Distance values never negative?"</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        A chart that passes all three verification points is a chart you can <strong
+          style="color: var(--gold);">trust</strong>. A chart that skips them is a chart that <em>looks</em>
+        trustworthy.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Quote: Chart renders vs correct data
+  -->
+  <section class="slide title-slide" id="s13">
+    <div class="overline">The Dangerous Assumption</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 48ch;">
+      <p>"A chart that renders without error is NOT the same as a chart that shows correct data. This is a typical
+        dangerous assumption beginners make."</p>
+    </div>
+
+    <div style="max-width: 48ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        The pipeline model is your defense against this.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — Divider: Live Dashboard
+  -->
+  <section class="slide title-slide" id="s14">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Live Dashboard</h1>
+    <div class="subtitle">Streamlit + Plotly &mdash; Stages 7 through 9</div>
+    <div class="slide-num">14 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Static Dashboard
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">Phase A</div>
+    <h2>Static Dashboard</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.35rem, 1vh, 0.6rem); color: var(--fg-dim); font-size: clamp(0.75rem, 1.2vw, 0.9rem);">
+      <strong style="color: var(--gold);">I/O vs. logic:</strong> serial reads belong in <span
+        class="inline-code">get_readings()</span>; parsing one CSV line is a <strong>pure function</strong> you can test
+      without hardware.
+    </p>
+
+    <pre><code><span style="color: var(--gold);">def</span> parse_csv_line(line: <span style="color: var(--fg-dim);">str</span>) -> <span style="color: var(--fg-dim);">dict</span>:
+    ts, t, h, d = line.strip().split(<span style="color: #ce9178;">","</span>)
+    <span style="color: var(--gold);">return</span> {
+        <span style="color: #ce9178;">"timestamp"</span>: <span style="color: var(--gold);">float</span>(ts),
+        <span style="color: #ce9178;">"temperature_c"</span>: <span style="color: var(--gold);">float</span>(t),
+        <span style="color: #ce9178;">"humidity_pct"</span>: <span style="color: var(--gold);">float</span>(h),
+        <span style="color: #ce9178;">"distance_cm"</span>: <span style="color: var(--gold);">float</span>(d),
+    }</code></pre>
+
+    <pre><code><span style="color: var(--gold);">import</span> streamlit <span style="color: var(--gold);">as</span> st
+<span style="color: var(--gold);">import</span> pandas <span style="color: var(--gold);">as</span> pd
+
+st.title("GIX Study Space Monitor")
+st.caption("Is the lounge comfortable right now?")
+
+df = get_readings(n=10)
+latest = df.iloc[-1]
+
+col1, col2, col3 = st.columns(3)
+col1.metric(
+    label="Temperature",
+    value=f"{latest['temperature_c']:.1f}&deg;C",
+    delta=f"{latest['temperature_c'] - df['temperature_c'].mean():.1f}&deg;C vs avg"
+)
+col2.metric(label="Humidity", value=f"{latest['humidity_pct']:.1f}%")
+col3.metric(label="Proximity", value=f"{latest['distance_cm']:.1f} cm")
+
+st.subheader("Temperature Trend")
+st.line_chart(df.set_index('timestamp')['temperature_c'])</code></pre>
+
+    <div class="slide-num">15 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Live Dashboard with st.empty()
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Phase B</div>
+    <h2>Live Dashboard with <span class="inline-code">st.empty()</span></h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">import</span> streamlit <span style="color: var(--gold);">as</span> st
+<span style="color: var(--gold);">import</span> time, collections, pandas <span style="color: var(--gold);">as</span> pd
+
+st.title("GIX Study Space Monitor &mdash; LIVE")
+
+placeholder = st.empty()                <span style="color: var(--fg-dim);"># Reserve a UI slot</span>
+readings_buffer = collections.deque(maxlen=20)  <span style="color: var(--fg-dim);"># Rolling buffer</span>
+
+<span style="color: var(--gold);">while</span> True:
+    reading = get_latest_reading()
+    <span style="color: var(--gold);">if</span> reading:
+        readings_buffer.append(reading)
+        df = pd.DataFrame(readings_buffer)
+        <span style="color: var(--gold);">with</span> placeholder.container():
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Temperature", f"{reading['temperature_c']:.1f}&deg;C")
+            col2.metric("Humidity", f"{reading['humidity_pct']:.1f}%")
+            col3.metric("Proximity", f"{reading['distance_cm']:.1f} cm")
+            <span style="color: var(--gold);">if</span> len(df) > 1:
+                st.line_chart(df.set_index('timestamp')['temperature_c'])
+    time.sleep(2)</code></pre>
+
+    <div class="slide-num">16 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Normal Streamlit vs st.empty()
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">The Key Difference</div>
+    <h2>Normal Streamlit vs. <span class="inline-code">st.empty()</span></h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Normal Streamlit</div>
+        <p>Script re-runs <strong>top to bottom</strong> on every interaction.</p>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Great for forms and filters. Not designed for a sensor that emits data every 2 seconds on its own. Everything
+          flickers and resets.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">With st.empty()</div>
+        <p>Script runs <strong>once</strong>. The placeholder slot gets <strong>replaced</strong> each iteration.</p>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Rest of UI stays stable. Only the changed region repaints. No flicker. Memory-safe with <span
+            class="inline-code">deque(maxlen=20)</span>.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Five deliberate decisions:</strong> <span
+          class="inline-code">st.empty()</span> once, <span class="inline-code">placeholder.container()</span> replaces,
+        <span class="inline-code">while True</span> drives, <span class="inline-code">deque(maxlen=20)</span> bounds
+        memory, <span class="inline-code">sleep(2)</span> matches sensor rate.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — NEW B8: Staleness + Observability + Failure Handling
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">Observability</div>
+    <h2>Is the Pipeline Still Running?</h2>
+    <div class="accent-line"></div>
+
+    <p
+      style="margin-bottom: clamp(0.3rem, 1vh, 0.6rem); color: var(--fg-dim); font-size: clamp(0.75rem, 1.2vw, 0.9rem);">
+      The hardest failure: system <em>looks</em> healthy but shows stale data.
+    </p>
+
+    <pre><code><span style="color: var(--fg-dim);"># Freshness: set once before the loop; refresh only on successful reads</span>
+last_updated = time.time()
+<span style="color: var(--gold);">while</span> True:
+    reading = get_latest_reading()
+    <span style="color: var(--gold);">if</span> reading:
+        last_updated = time.time()
+        <span style="color: var(--fg-dim);"># ... render metrics ...</span>
+    age = time.time() - last_updated
+    color = <span style="color: var(--gold);">"green"</span> <span style="color: var(--gold);">if</span> age < 10 <span style="color: var(--gold);">else</span> <span style="color: var(--gold);">"red"</span>
+    st.markdown(f":{color}[Last update: {age:.0f}s ago]")</code></pre>
+
+    <div class="num-feature" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Heartbeat</strong>
+        <span>Is data arriving? The freshness indicator answers this. Meets the <strong
+            style="color: var(--gold);">10-second requirement</strong> from Slide 5.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Range check</strong>
+        <span>Is the data physically plausible? Use a domain check such as <span
+            class="inline-code">is_physically_plausible()</span> at the parse/validate boundary.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Throughput count</strong>
+        <span>How many readings per minute? <span class="inline-code">deque(maxlen=20)</span> is a <strong
+            style="color: var(--gold);">data retention decision</strong> &mdash; old readings are gone forever, not just
+          hidden.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Three failure strategies in 6 lines:</strong> silent (<span
+          class="inline-code">pass</span>), logged (<span class="inline-code">logging.warning</span>), counted with
+        threshold. Choose the most observable strategy your system can support.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Divider: Physical Validation
+  -->
+  <section class="slide title-slide" id="s19">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Physical Validation</h1>
+    <div class="subtitle">The move from Understand to Evaluate on Bloom's Taxonomy</div>
+    <div class="slide-num">19 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Hardware Dashboard Verification Checklist
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Verification</div>
+    <h2>Hardware Dashboard Verification Checklist</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>Does the chart render?</strong>
+        <span>Smoke test. Necessary but not sufficient.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>Do the numbers match physical reality?</strong>
+        <span>Compare to a second source: weather app, ruler, multimeter.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>Are the units correct?</strong>
+        <span>&deg;C not &deg;F. cm not inches. Check firmware AND parsing code.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>Does the chart update when the physical world changes?</strong>
+        <span>Wave your hand near the sensor. See a spike? Good.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>Can you trace ONE data point end-to-end?</strong>
+        <span>Serial Monitor &rarr; terminal output &rarr; chart value. If those three match, the pipeline has
+          integrity.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">20 / 21</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Fault Localization (Think-Pair-Share)
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">Think-Pair-Share</div>
+    <h2>Fault Localization</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box" style="margin-bottom: clamp(0.8rem, 2vh, 1.2rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 1.8vw, 1.3rem); color: #f5f0e8; font-style: italic;">
+        The temperature sensor reads &minus;10&deg;C. The room is clearly not &minus;10&deg;C. Which pipeline stage
+        failed?
+      </p>
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Stage 1&ndash;2: Loose wire</strong>
+        <span>Physical hardware failure. The sensor never got a valid reading from the physical world.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Stage 3: Firmware bug</strong>
+        <span>The sensor read correctly but the code formatted the wrong register value in the CSV string.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Stage 5&ndash;6: Parsing error</strong>
+        <span>Firmware was fine. The laptop dropped a character and produced gibberish that cast to &minus;10.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        Three different failure modes. One identical symptom on the dashboard. This is why you <strong
+          style="color: var(--gold);">trace the pipeline</strong>, not just the chart. Pre-wired backup boards are
+        available at the front if hardware isn&rsquo;t cooperating &mdash; same learning outcome.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <strong>Scenario:</strong> Your dashboard shows temperature readings, but every 10th value displays as <span
+        class="inline-code">0.0&deg;C</span> even though the sensor log shows valid data. The pipeline has 9 stages
+      &mdash; where would you start investigating? Narrow it down with your partner.
+    </div>
+    <details style="margin-top: 0.75rem; color: var(--fg-dim);">
+      <summary style="cursor:pointer; color: var(--gold);">Reveal: Likely fault location</summary>
+      <p style="margin-top: 0.5rem;">Stages 5&ndash;6 (parse line &rarr; validate &rarr; DataFrame) &mdash; the parser
+        may be treating a delimiter edge case as a zero value. Check the raw serial output against the parsed
+        DataFrame.</p>
+    </details>
+
+    <div class="slide-num">21 / 21</div>
+  </section>
+
+
+  <script>
+    (function () {
+      const dashboard = document.getElementById('flicker-dashboard');
+      const tempNode = document.getElementById('flicker-temp');
+      const deltaNode = document.getElementById('flicker-delta');
+      const updatedNode = document.getElementById('flicker-updated');
+      const lineNode = document.getElementById('flicker-line');
+      const fillNode = document.getElementById('flicker-line-fill');
+
+      if (!dashboard || !tempNode || !deltaNode || !updatedNode || !lineNode || !fillNode) {
+        return;
+      }
+
+      let history = [22.4, 22.5, 22.4, 22.5, 22.5, 22.4, 22.6, 22.5, 22.6, 22.5, 22.6, 22.5, 22.6, 22.5, 22.5, 22.4];
+      let ticks = 0;
+
+      function jitter() {
+        const base = history[history.length - 1] ?? 22.5;
+        const noise = (Math.random() - 0.5) * 0.18;
+        const drift = Math.sin(Date.now() / 2500) * 0.02;
+        const next = Math.max(22.2, Math.min(22.8, base + noise + drift));
+        return Number(next.toFixed(1));
+      }
+
+      function render() {
+        const value = jitter();
+        history = history.slice(1).concat(value);
+
+        const avg = history.reduce((sum, item) => sum + item, 0) / history.length;
+        const delta = (value - avg).toFixed(1);
+        tempNode.innerHTML = `${value.toFixed(1)}&deg;C`;
+        deltaNode.innerHTML = `${delta >= 0 ? '+' : ''}${delta}&deg;C vs avg`;
+
+        const min = Math.min(...history);
+        const max = Math.max(...history);
+        const range = Math.max(max - min, 0.2);
+        const width = 100;
+        const height = 32;
+        const usableHeight = 24;
+        const baseline = 30;
+        const step = width / (history.length - 1);
+        const points = history.map((item, index) => {
+          const normalized = (item - min) / range;
+          const y = baseline - (normalized * usableHeight);
+          const x = index * step;
+          return `${x.toFixed(2)},${y.toFixed(2)}`;
+        });
+
+        lineNode.setAttribute('d', `M${points.join(' L')}`);
+        fillNode.setAttribute('d', `M0,${baseline} L${points.join(' L')} L${width},${baseline} Z`);
+
+        ticks += 1;
+        updatedNode.textContent = `updated ${(ticks * 2).toFixed(1)}s ago`;
+        if (Math.random() < 0.18) {
+          dashboard.classList.add('is-flickering');
+          window.setTimeout(() => {
+            dashboard.classList.remove('is-flickering');
+          }, 260);
+        }
+      }
+
+      render();
+      window.setInterval(render, 2000);
+    })();
+  </script>
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 4 — Working with Data</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+  <style>
+    .w4-slide20-shot {
+      max-height: 38vh;
+      width: 100%;
+      object-fit: contain;
+      object-position: top center;
+      border-radius: 6px;
+      border: 1px solid rgba(193, 167, 120, 0.28);
+    }
+
+    .w4-slide20-caption {
+      font-size: clamp(0.65rem, 1.05vw, 0.8rem);
+      color: var(--fg-dim);
+      margin-top: clamp(0.35rem, 0.8vh, 0.5rem);
+      line-height: 1.35;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Working with Data</h1>
+    <div class="subtitle">Week 4: Pandas, Visualization &amp; AI-Assisted Analysis</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Conduct a structured stakeholder interview</strong>
+        <span>Extract decision-making needs from real users</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Write a JTBD statement</strong>
+        <span>"When [person] is [situation], they want [motivation] so they can [outcome]"</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Build a Streamlit dashboard</strong>
+        <span>KPI cards, columns, and expanders for a decision-maker audience</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Create interactive filters</strong>
+        <span><span class="inline-code">st.selectbox</span>, <span class="inline-code">st.slider</span>, and <span
+            class="inline-code">st.date_input</span></span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Write assert statements using PRIMM</strong>
+        <span>Verify dashboard logic with assertion-based testing</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Arrange visualizations into a story-first layout</strong>
+        <span>Situation &rarr; Data &rarr; Insight &rarr; Action</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--gold); margin-bottom: 0.4rem;">
+        <strong>Capstone Objectives</strong>
+      </p>
+      <div class="num-feature">
+        <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
+        <div class="num-text">
+          <strong>Design a story-first dashboard layout</strong>
+          <span>Map JTBD elements to specific dashboard components</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">D</div>
+        <div class="num-text">
+          <strong>Write 2+ assert statements</strong>
+          <span>Verify data transformation correctness and explain why each matters</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-num">03 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Divider: The Data Pipeline
+  -->
+  <section class="slide title-slide" id="s4">
+    <div class="overline">Part 1</div>
+    <div class="accent-line"></div>
+    <h1>The Data Pipeline</h1>
+    <div class="subtitle">From physical to digital</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="slide-num">04 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Pipeline Diagram
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">Week 4 Pipeline</div>
+    <h2>The Data Pipeline</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" style="max-height: 40vh;">
+        <rect x="15" y="30" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="245" y="30" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="475" y="30" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="705" y="30" width="180" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="105" y="62" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">RAW DATA</text>
+        <text x="335" y="62" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">TRANSFORMED</text>
+        <text x="565" y="62" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">VISUALIZATION</text>
+        <text x="795" y="62" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">DECISION</text>
+
+        <text x="105" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">CSV, JSON,</text>
+        <text x="105" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">API response</text>
+
+        <text x="335" y="85" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">pandas groupby,</text>
+        <text x="335" y="103" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">filtering, joins,</text>
+        <text x="335" y="121" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">aggregation</text>
+
+        <text x="565" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Plotly chart,</text>
+        <text x="565" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">map, histogram</text>
+
+        <text x="795" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Action</text>
+        <text x="795" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">taken</text>
+
+        <line x1="200" y1="90" x2="240" y2="90" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="240,86 250,90 240,94" fill="#c1a778" opacity="0.5" />
+
+        <line x1="430" y1="90" x2="470" y2="90" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="470,86 480,90 470,94" fill="#c1a778" opacity="0.5" />
+
+        <line x1="660" y1="90" x2="700" y2="90" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="700,86 710,90 700,94" fill="#c1a778" opacity="0.5" />
+
+        <text x="450" y="200" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" letter-spacing="1.5" opacity="0.5">WEEK 4 DATA PIPELINE</text>
+        <text x="450" y="220" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.4">Nine stages (Week 3) collapsed to four &mdash; complexity shifted, not removed</text>
+      </svg>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      The hard problems shifted from physical (noise, voltage, timing) to semantic (column meaning, NaN values,
+      aggregation correctness).
+    </p>
+
+    <div class="slide-num">05 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Quote: Semantic Shift
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">The Shift</div>
+    <h2>From Physical to Semantic</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>Semantic problem: What does this column
+        actually mean? Why are there 847 NaN values in a dataset that&rsquo;s supposed to be complete?</p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Key question:</strong> Did the AI write that aggregation correctly, or did
+        it silently drop the rows it couldn&rsquo;t handle?
+      </p>
+    </div>
+
+    <div class="slide-num">06 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — JTBD Drives the Pipeline
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Jobs-to-be-Done</div>
+    <h2>JTBD Drives the Pipeline</h2>
+    <div class="accent-line"></div>
+
+    <div class="card">
+      <p style="font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--gold); font-style: italic; line-height: 1.6;">
+        &ldquo;When the GIX Facilities Coordinator is fielding twenty onboarding questions per new cohort, they want
+        automated answers so they can reclaim three hours every quarter.&rdquo;
+      </p>
+    </div>
+
+    <div style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);">
+      <div class="num-feature">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>The decision at the end of the pipeline</strong>
+          <span>Everything &mdash; CSV, pandas code, chart &mdash; exists to serve that decision</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>If you don&rsquo;t know the decision first&hellip;</strong>
+          <span>You don&rsquo;t know what data you need, and you can&rsquo;t judge if the AI gave you the right
+            aggregation</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>JTBD contains your spec</strong>
+          <span>&ldquo;Allocating inspectors by neighborhood&rdquo; tells you the unit is count, not dollar value</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-num">07 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Divider: Prompt Engineering for Data
+  -->
+  <section class="slide title-slide" id="s8">
+    <div class="overline">Part 2</div>
+    <div class="accent-line"></div>
+    <h1>Prompt Engineering for Data</h1>
+    <div class="subtitle">From vague to precise</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="slide-num">08 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Bad Prompt vs Good Prompt
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Prompt Comparison</div>
+    <h2>Bad Prompt vs. Good Prompt</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Vague Prompt</div>
+        <pre><code>make a bar chart of the
+building permits data</code></pre>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.5rem;">
+          AI guesses column names, aggregation method, axis labels, and chart type. Every guess is a silent failure
+          point.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">CTOC-Specified Prompt</div>
+        <pre><code>Using the Seattle building permits
+DataFrame with columns [permit_type,
+neighborhood, application_date,
+issue_date, value, contractor],
+create a bar chart showing the count
+of permits by neighborhood.
+Group by 'neighborhood', count rows
+(not sum of value). Sort descending,
+show top 15. Use Plotly Express.</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1vh, 0.8rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">The difference:</strong> The AI no longer guesses. Every ambiguous decision
+        is now specified.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — AI Failure Modes
+  -->
+  <section class="slide" id="s10">
+    <div class="overline">When AI Breaks Quietly</div>
+    <h2>AI Failure Modes</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">1</div>
+      <div class="num-text">
+        <strong>Hallucinated column name</strong>
+        <span><span class="inline-code">df['permit_category']</span> &rarr; KeyError (or silently wrong if column exists
+          with different data)</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">2</div>
+      <div class="num-text">
+        <strong>Wrong aggregation</strong>
+        <span><span class="inline-code">.sum()</span> on &lsquo;value&rsquo; instead of <span
+            class="inline-code">.count()</span> on rows &mdash; chart looks fine, scale is completely wrong</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">3</div>
+      <div class="num-text">
+        <strong>Silent NaN drop</strong>
+        <span><span class="inline-code">df.dropna()</span> called before grouping &mdash; neighborhoods with incomplete
+          records vanish, totals no longer match</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.8rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--red-soft);">The worst kind of bug:</strong> the one that doesn&rsquo;t crash. The
+        code runs, the chart renders, and the numbers are wrong.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Agent analog:</strong> Hallucinated column = agent calls wrong tool.
+        Wrong aggregation = agent chains tools in wrong order.
+        Silent NaN drop = agent swallows tool errors. Same failure modes, different context.
+      </p>
+    </div>
+
+    <div class="slide-num">10 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — The CTOC Template
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Prompt Spec</div>
+    <h2>The CTOC Template</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
+      <div class="num-text">
+        <strong>Context</strong>
+        <span>Dataset name + actual column names (prevents hallucination)</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">T</div>
+      <div class="num-text">
+        <strong>Task</strong>
+        <span>Specific transformation &mdash; group by X, count/sum/mean Y</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">O</div>
+      <div class="num-text">
+        <strong>Output</strong>
+        <span>Chart type, axis labels, sort order, title</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
+      <div class="num-text">
+        <strong>Constraints</strong>
+        <span>Handle NaN by dropping/filling, top N only, date range X to Y</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Four fields. That&rsquo;s it. The 40% planning phase applied directly to data work.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">CTOC: A Chart-Level Functional Spec.</strong>
+        Same structure returns in Week&nbsp;7: Context, Task, Output, Constraints &mdash;
+        CTOC is a mini system prompt for each visualization.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Filled CTOC Example
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Code Example</div>
+    <h2>CTOC: Seattle Building Permits</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);">Context:</span> Seattle building permits DataFrame.
+         Columns: permit_type, neighborhood,
+         application_date, issue_date, value, contractor
+
+<span style="color: var(--gold);">Task:</span>    Group by neighborhood. Count the number of
+         rows (permits) per neighborhood.
+         Do NOT sum the value column.
+
+<span style="color: var(--gold);">Output:</span>  Plotly Express bar chart.
+         Title: "Building Permits by Neighborhood"
+         X-axis: "Neighborhood", Y-axis: "Permit Count"
+         Sort descending by count. Show top 15 only.
+         Rotate x-axis labels 45 degrees.
+
+<span style="color: var(--gold);">Constraints:</span> Drop rows where neighborhood is NaN
+             before grouping. Log how many rows
+             were dropped.</code></pre>
+
+    <div class="slide-num">12 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — JTBD → Spec → Prompt → Verification
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">The Full Flow</div>
+    <h2>JTBD &rarr; Spec &rarr; Prompt &rarr; Verify</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <rect x="30" y="30" width="190" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="270" y="30" width="190" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="510" y="30" width="150" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="710" y="30" width="160" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="125" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">JTBD</text>
+        <text x="365" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">SPEC (40%)</text>
+        <text x="585" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">PROMPT (20%)</text>
+        <text x="790" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">VERIFY (40%)</text>
+
+        <text x="125" y="80" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">"When a city planner</text>
+        <text x="125" y="95" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">reviews permits..."</text>
+        <text x="125" y="115" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">→ defines aggregation</text>
+
+        <text x="365" y="78" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">column names</text>
+        <text x="365" y="93" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">+ aggregation</text>
+        <text x="365" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">+ chart type + NaN</text>
+
+        <text x="585" y="83" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">fills CTOC →</text>
+        <text x="585" y="98" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">AI generates code</text>
+
+        <text x="790" y="78" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">assert len ≤ 15</text>
+        <text x="790" y="93" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">assert monotonic</text>
+        <text x="790" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.7">assert dropped ≥ 0</text>
+
+        <line x1="225" y1="80" x2="265" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="265,76 275,80 265,84" fill="#c1a778" opacity="0.5" />
+
+        <line x1="465" y1="80" x2="505" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="505,76 515,80 505,84" fill="#c1a778" opacity="0.5" />
+
+        <line x1="665" y1="80" x2="705" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="705,76 715,80 705,84" fill="#c1a778" opacity="0.5" />
+
+        <rect x="100" y="180" width="280" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
+          opacity="0.3" />
+        <rect x="380" y="180" width="140" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
+          opacity="0.3" />
+        <rect x="520" y="180" width="280" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
+          opacity="0.3" />
+
+        <text x="240" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" opacity="0.6">40% PLANNING</text>
+        <text x="450" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" opacity="0.6">20% CODE</text>
+        <text x="660" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" opacity="0.6">40% VERIFICATION</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">13 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — Quote: Context Engineering
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Big Idea</div>
+    <h2>Context Engineering</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;You are not just writing a better prompt. You are engineering the context the model operates in so that
+        its failure modes are structurally eliminated.&rdquo;</p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        If you give the model the <strong style="color: var(--gold);">real column names</strong>, it cannot hallucinate
+        fake ones. The spec constrains the AI&rsquo;s generation space.
+      </p>
+      <p style="font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--fg-dim); margin-top: 0.5rem;">
+        This same principle applies in Week 7 when you write system prompts for the Anthropic API.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Divider: Visualization Landscape
+  -->
+  <section class="slide title-slide" id="s15">
+    <div class="overline">Part 3</div>
+    <div class="accent-line"></div>
+    <h1>Visualization Landscape</h1>
+    <div class="subtitle">Choosing the right library for the job</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="slide-num">15 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Library Comparison
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Library Landscape</div>
+    <h2>Four Libraries, Four Jobs</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">M</div>
+      <div class="num-text">
+        <strong>Matplotlib</strong>
+        <span>Static charts, publication figures. <span class="inline-code">import matplotlib.pyplot as plt</span>
+          &mdash; No interactivity.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">P</div>
+      <div class="num-text">
+        <strong>Plotly Express <span style="font-size: 0.8em; color: var(--green-soft);">(this course)</span></strong>
+        <span>Web dashboards, production. <span class="inline-code">import plotly.express as px</span> &mdash; Full
+          hover, zoom, pan.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">A</div>
+      <div class="num-text">
+        <strong>Altair</strong>
+        <span>Declarative, grammar of graphics. <span class="inline-code">import altair as alt</span> &mdash; Good
+          interactivity.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">S</div>
+      <div class="num-text">
+        <strong>Streamlit native</strong>
+        <span>Quick prototypes. <span class="inline-code">st.line_chart()</span>, <span
+            class="inline-code">st.bar_chart()</span> &mdash; Minimal, fast to write.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Rule of thumb:</strong> Start with Streamlit native to explore, switch to
+        Plotly before you show anyone.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Divider: Story-First Dashboard
+  -->
+  <section class="slide title-slide" id="s17">
+    <div class="overline">Part 4</div>
+    <div class="accent-line"></div>
+    <h1>Story-First Dashboard</h1>
+    <div class="subtitle">Situation &rarr; Evidence &rarr; Action</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="slide-num">17 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Page Config + Cache
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">App Skeleton</div>
+    <h2>Page Config + @st.cache_data</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>st.set_page_config(
+    page_title=<span style="color: var(--green-soft);">"Decision-Maker Dashboard"</span>,
+    page_icon=<span style="color: var(--green-soft);">"📊"</span>,
+    layout=<span style="color: var(--green-soft);">"wide"</span>,
+    initial_sidebar_state=<span style="color: var(--green-soft);">"expanded"</span>
+)</code></pre>
+
+    <pre><code><span style="color: var(--gold);">@st.cache_data</span>
+<span style="color: var(--gold);">def</span> load_data(uploaded_file):
+    df = pd.read_csv(uploaded_file)
+    <span style="color: var(--gold);">return</span> df</code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1vh, 0.8rem);">
+      <div class="card">
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong style="color: var(--gold);">layout="wide"</strong> is non-negotiable for dashboards. The default
+          narrow column is wrong for chart-heavy layouts.
+        </p>
+      </div>
+      <div class="card">
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong style="color: var(--gold);">@st.cache_data</strong> caches the return value. Without it, every slider
+          move re-reads the CSV from disk.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">18 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — KPI Cards
+  -->
+  <section class="slide" id="s19">
+    <div class="overline">Dashboard Components</div>
+    <h2>KPI Cards &mdash; st.columns + st.metric</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>col1, col2, col3 = st.columns(3)
+col1.metric(<span style="color: var(--green-soft);">"Total Leads"</span>, 1247, delta=<span style="color: var(--green-soft);">"+12%"</span>)
+col2.metric(<span style="color: var(--green-soft);">"Cost per Lead"</span>, <span style="color: var(--green-soft);">"$23.50"</span>,
+            delta=<span style="color: var(--green-soft);">"-8%"</span>, delta_color=<span style="color: var(--green-soft);">"inverse"</span>)
+col3.metric(<span style="color: var(--green-soft);">"Conversion Rate"</span>, <span style="color: var(--green-soft);">"3.2%"</span>, delta=<span style="color: var(--green-soft);">"+0.5%"</span>)</code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1vh, 0.8rem);">
+      <div class="card">
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong style="color: var(--gold);">st.columns(3)</strong> splits horizontal space into equal-width
+          containers. Three columns, three KPI cards.
+        </p>
+      </div>
+      <div class="card">
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          <strong style="color: var(--gold);">delta_color="inverse"</strong> &mdash; a decrease in cost is good news.
+          Business logic in one keyword argument.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">19 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Story-First vs. Unclear (Streamlit screenshots)
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Layout Pattern</div>
+    <h2>Story-First vs. Unclear Layout</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col" style="align-items: start;">
+      <div class="card" style="padding: clamp(0.65rem, 1.2vw, 0.9rem);">
+        <div class="col-label good">Story-first</div>
+        <img class="w4-slide20-shot" src="images/week4-slide20-story-first.png"
+          alt="Streamlit dashboard with headline asking whether Q3 qualified leads are on track, KPI row, bar chart by channel, and a recommended next step in an info callout." />
+        <p class="w4-slide20-caption">
+          Same synthetic data: headline and caption state the decision, KPIs answer &ldquo;what happened?,&rdquo; chart
+          supports &ldquo;why?,&rdquo; and an <strong style="color: var(--gold);">action</strong> closes the loop.
+        </p>
+      </div>
+      <div class="card" style="padding: clamp(0.65rem, 1.2vw, 0.9rem);">
+        <div class="col-label bad">Unclear story</div>
+        <img class="w4-slide20-shot" src="images/week4-slide20-unclear.png"
+          alt="Streamlit dashboard with generic title Dashboard, sidebar widgets first, bar chart before KPI metrics and extra filters, no recommendation or decision question." />
+        <p class="w4-slide20-caption">
+          Same data: widgets and chart come first; the viewer never sees <strong style="color: var(--gold);">what
+            decision</strong> this supports or <strong style="color: var(--gold);">what to do next</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        A dashboard without an action layer is a report. A dashboard <em>with</em> one is a <strong
+          style="color: var(--gold);">decision tool</strong>.
+      </p>
+    </div>
+
+    <div class="slide-num">20 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Divider: Trust But Verify
+  -->
+  <section class="slide title-slide" id="s21">
+    <div class="overline">Part 5</div>
+    <div class="accent-line"></div>
+    <h1>Trust But Verify</h1>
+    <div class="subtitle">Assertion-Based Verification</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="slide-num">21 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Verification Ladder
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">Growing Rigor</div>
+    <h2>The Verification Ladder</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Week 1: Smoke test</strong>
+        <span>&ldquo;Does the app run?&rdquo;</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Week 3: Physical test</strong>
+        <span>&ldquo;Does the number match reality?&rdquo; (thermometer check)</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">4</div>
+      <div class="num-text">
+        <strong style="color: var(--green-soft);">Week 4: Assert &larr; You are here</strong>
+        <span>&ldquo;Does the data meet expectations?&rdquo; (code checks code)</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">8</div>
+      <div class="num-text">
+        <strong>Week 8: Automated test</strong>
+        <span>&ldquo;Does the code pass every time?&rdquo; (Vitest / pytest)</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        AI wrote the KPI in 3 lines. It takes a larger block of asserts to know whether to trust it. <strong
+          style="color: var(--gold);">That ratio doesn&rsquo;t change.</strong>
+      </p>
+    </div>
+
+    <div class="slide-num">22 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Four Assert Categories
+  -->
+  <section class="slide" id="s23">
+    <div class="overline">Assert Framework</div>
+    <h2>Four Assert Categories</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">1. Shape &amp; Existence</div>
+        <pre><code>assert len(df) > 0
+assert 'leads' in df.columns</code></pre>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">Does the data
+          exist? Right columns?</p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">2. Type</div>
+        <pre><code>assert df['leads'].dtype in
+  ['int64', 'float64']
+assert df['date'].dtype ==
+  'datetime64[ns]'</code></pre>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">Date-as-string
+          bugs live here.</p>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.3rem, 0.8vh, 0.5rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">3. Range</div>
+        <pre><code>assert df['leads'].min() >= 0
+assert df['spend'].max() < 1_000_000</code></pre>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">Catches NaN bugs
+          and data errors.</p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">4. Relational</div>
+        <pre><code>assert grouped['leads'].sum().sum()
+  == df['leads'].sum()
+assert len(filtered) <= len(df)</code></pre>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">Do the parts add
+          up to the whole?</p>
+      </div>
+    </div>
+
+    <div class="slide-num">23 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — The NaN Bug Live Demo
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Live Demo</div>
+    <h2>The NaN Bug</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">1</div>
+      <div class="num-text">
+        <strong>AI generates a KPI calculation</strong>
+        <span><span class="inline-code">total_leads = df['leads'].sum()</span> &mdash; looks perfect, runs clean</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">2</div>
+      <div class="num-text">
+        <strong>Output looks plausible</strong>
+        <span>Total leads: 842.0 &mdash; Cost per lead: $47.51 &mdash; no errors</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">3</div>
+      <div class="num-text">
+        <strong>Plant a NaN: <span class="inline-code">df.loc[5, 'leads'] = float('nan')</span></strong>
+        <span>Simulates a missing value from the data source</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">4</div>
+      <div class="num-text">
+        <strong>Assert catches it: <span class="inline-code">assert df['leads'].min() >= 0</span></strong>
+        <span>NaN makes <span class="inline-code">min()</span> return NaN &mdash; NaN &ge; 0 is False &mdash; assert
+          fires</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">5</div>
+      <div class="num-text">
+        <strong>Fix the transformation, not the assert</strong>
+        <span><span class="inline-code">df = df.dropna(subset=['leads'])</span> &mdash; then assert passes
+          cleanly</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--red-soft);">Never delete an assert because it&rsquo;s inconvenient.</strong>
+        That&rsquo;s like unplugging a smoke detector because it keeps going off.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 25</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — Decision Quality & Fairness
+  -->
+  <section class="slide" id="s25">
+    <div class="overline">Testing &amp; Full-Stack Practice</div>
+    <h2>Decision Quality &amp; Fairness</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">E2E Consistency Check</div>
+        <pre style="margin:0;"><code><span style="color: var(--gold);"># Does the KPI match the chart?</span>
+assert kpi_total == chart_df['leads'].sum()
+<span style="color: var(--gold);"># Does the filter actually filter?</span>
+assert filtered_df['region'].unique() == ['West']</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--red-soft);">Who Disappears?</div>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Every <span class="inline-code">dropna()</span> is a design decision. Which rows vanish?
+          Are they random, or do they correlate with a demographic?
+        </p>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          <em>Check: does your cleaning step disproportionately remove data from one group?</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Verification ladder rung 3 (assert).</strong> Next: security checks in Week&nbsp;6.
+      </p>
+    </div>
+
+    <div class="slide-num">25 / 25</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

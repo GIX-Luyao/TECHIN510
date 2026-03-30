@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 1 — Prompts Are the New Code</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Prompts Are the New Code</h1>
+    <div class="subtitle">Week 1: Dev Environment, Agentic Coding &amp; Your First App</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Set up a professional dev environment</strong>
+        <span>Git, Python 3.11+, and Cursor</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Conduct a structured user interview</strong>
+        <span>Synthesize findings into a one-sentence problem statement</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Use agentic coding (Cursor Composer)</strong>
+        <span>Build a working Streamlit web app from a natural language prompt</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Read and modify AI-generated code</strong>
+        <span>Identify what a function does and make a deliberate hand edit</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Articulate the difference between generating and understanding code</strong>
+        <span>The core skill gap this course addresses</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Sketch an Input-Process-Output architecture diagram</strong>
+        <span>With a feedback loop arrow for your app</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Smoke-test the app</strong>
+        <span>Document 3 features with action, expected result, actual result, and pass/fail</span>
+      </div>
+    </div>
+
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
+        Smoke test: A quick, surface-level check that your app launches without crashing. Not a deep test; just
+        "does it turn on?"
+      </p>
+    </div>
+
+    <div class="slide-num">03 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Testing Ladder Starts Here
+  -->
+  <section class="slide" id="s4">
+    <div class="overline">Verification Journey</div>
+    <h2>Testing Ladder Starts Here</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="background: var(--gold); color: var(--bg);">1</div>
+      <div class="num-text">
+        <strong>Smoke Test</strong>
+        <span>Week 1 &mdash; Does it launch? Does the button work? Document 3 features pass/fail.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Physical Verification</strong>
+        <span>Week 3 &mdash; Does the sensor reading match reality? Plausibility checks on live data.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Assert &amp; Validate</strong>
+        <span>Week 4 &mdash; DataFrame asserts, KPI consistency checks, data pipeline contracts.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Security Checks</strong>
+        <span>Week 6 &mdash; Auth, RLS policies, cross-user isolation, environment variables.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Automated Tests</strong>
+        <span>Week 8 &mdash; Vitest, pytest, CI pipelines, agent evaluation sets.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--gold);">
+        Never skip testing and validation when you build a solution.
+      </p>
+    </div>
+
+    <div class="slide-num">04 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Cursor Setup
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">Development Environment</div>
+    <h2>Cursor Setup</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">Plan Mode</div>
+        <p>In Composer, press <span class="kbd">Shift+Tab</span> to show Plan Mode.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          The agent produces a plan (steps, file references) before coding. You can edit the plan and run it, or skip
+          and prompt directly.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Usage Flow</div>
+        <p>Open Composer <span class="kbd">Cmd+I</span>, then:</p>
+        <ul style="margin-top:0.4rem;">
+          <li>Type a short prompt</li>
+          <li>Review the proposed edit</li>
+          <li><strong>Accept</strong> or <strong>Reject</strong></li>
+          <li>Verify in the file</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide-num">05 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Three Modes of Cursor
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">Cursor Workflow</div>
+    <h2>Three Modes of Cursor</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
+      <div class="num-text">
+        <strong>Composer / Agent &nbsp;<span class="kbd">Cmd+I</span></strong>
+        <span>Generate and change code across files. The primary mode for building.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">L</div>
+      <div class="num-text">
+        <strong>Chat &nbsp;<span class="kbd">Cmd+L</span></strong>
+        <span>Ask questions about code. The agent explains but does not edit files.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">K</div>
+      <div class="num-text">
+        <strong>Inline Edit &nbsp;<span class="kbd">Cmd+K</span></strong>
+        <span>Select a few lines, type a change instruction. Edits only your selection.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Rule of thumb:</strong> Use Composer for building features, Chat for
+        understanding code, Inline Edit for surgical changes.
+      </p>
+    </div>
+
+    <div class="slide-num">06 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Models & MCP
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Under the Hood</div>
+    <h2>Models &amp; MCP</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Model Selector</div>
+        <p>Cursor connects to different language models. You can switch based on your needs.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Open the dropdown at the top of Composer. For this course, the default is fine for most cases.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">MCP (Model Context Protocol)</div>
+        <p>MCP lets the agent use <strong>tools</strong> &mdash; fetch URLs, browse the web, query databases.</p>
+        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Try: The agent fetches a webpage and summarizes it. You see the tool call in the panel.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Takeaway:</strong> The agent isn't just auto-completing. It can reach
+        out to the world through tools.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Rules, Skills, Subagents
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Configuring the Agent</div>
+    <h2>Rules, Skills, Subagents</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">R</div>
+      <div class="num-text">
+        <strong>Rules</strong>
+        <span>Persistent instructions the agent reads every time. Scope: project (<span
+            class="inline-code">.cursor/rules/</span>), user, or team.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">S</div>
+      <div class="num-text">
+        <strong>Skills</strong>
+        <span>On-demand, portable procedures. The agent decides when to use them, or you invoke with <span
+            class="inline-code">/skill-name</span>.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">A</div>
+      <div class="num-text">
+        <strong>Subagents</strong>
+        <span>Separate agents for subtasks, running in parallel. The main agent delegates. More in Week 7.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Think of Rules as a standing brief, Skills as a reference manual, and Subagents as specialist assistants.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Plane&nbsp;1:</strong> Everything here is Plane&nbsp;1 &mdash; agents
+        helping <em>you</em> code.
+        The same mechanisms power Plane&nbsp;2 (Week&nbsp;7+): agents inside your <em>product</em>.
+        We lean on subagents only once we can test and constrain them.
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — .cursor/rules Example (Code Slide)
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Code Example</div>
+    <h2>.cursor/rules</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);"># Week 1 .cursor/rules</span>
+
+<span style="color: var(--gold);">## Stack</span>
+- Python 3.11+
+- Streamlit for all UI components
+- Keep all code in app.py (single file only)
+
+<span style="color: var(--gold);">## Code Style</span>
+- Add a comment above every function explaining what it does
+- Use type annotations on all function signatures
+- Print clear error messages if any API calls fail
+
+<span style="color: var(--gold);">## Behavior</span>
+- If I ask for a new feature, add it without removing existing features
+- Prefer simple, readable code over clever, compact code
+- Ask before making large structural changes</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        This file is your <strong style="color: var(--gold);">first system prompt</strong> &mdash; the same idea powers
+        in-app agents (Week&nbsp;7).
+        Better context = better output. This is <em>context engineering</em>.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Quote: "It adds context, not knowledge"
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="overline">The Contractor Analogy</div>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 48ch;">
+      <p>"It knows them in general. The .cursor/rules file tells it about YOUR project specifically. It's the difference
+        between a contractor who knows how to build houses in general, and a contractor who has read your specific
+        brief."</p>
+    </div>
+
+    <div style="max-width: 48ch; margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--gold); text-align: left;">
+        The file doesn't add knowledge &mdash; it adds context and constraints.
+      </p>
+    </div>
+
+    <div class="slide-num">10 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — Section Divider: Why Prompts Are the New Code
+  -->
+  <section class="slide title-slide" id="s11">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Why Prompts Are<br>the New Code</h1>
+    <div class="subtitle">From vague instructions to precise specifications</div>
+    <div class="slide-num">11 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Bad Prompt vs. Good Prompt
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Prompt Engineering</div>
+    <h2>Bad Prompt vs. Good Prompt</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Vague</div>
+        <pre style="margin:0;"><code>Build a web app</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          <li>No framework, no data source, no features, no design. The AI guesses everything.</li>
+          <li>Most agents nowadays are equipped with skills to force you to be more specific.</li>
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Specific</div>
+        <pre style="margin:0;"><code>Build a Streamlit web app that
+shows current weather for Seattle
+using the Open-Meteo API (no API
+key required). Display temperature
+in Fahrenheit, humidity percentage,
+and wind speed in mph. Add a
+Refresh button. Make it
+mobile-friendly.</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Specificity is a design decision. Every detail you include prevents a bad guess.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — The 40/20/40 Principle
+  -->
+  <section class="slide title-slide" id="s13">
+    <div class="overline">The Professional Ratio</div>
+    <div class="accent-line"></div>
+    <h1>40 / 20 / 40</h1>
+    <div class="subtitle">Planning, Coding, Testing</div>
+
+    <div
+      style="display: flex; width: min(85vw, 700px); height: clamp(32px, 5vh, 50px); border-radius: 4px; overflow: hidden; margin: clamp(1rem, 2.5vh, 2rem) auto;">
+      <div
+        style="flex: 4; background: rgba(193, 167, 120, 0.35); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.65rem, 1.1vw, 0.85rem); color: var(--gold-bright);">40%
+          Planning</span>
+      </div>
+      <div
+        style="flex: 2; background: rgba(125, 171, 110, 0.3); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.65rem, 1.1vw, 0.85rem); color: var(--green-soft);">20%
+          Coding</span>
+      </div>
+      <div
+        style="flex: 4; background: rgba(193, 167, 120, 0.2); display: flex; align-items: center; justify-content: center;">
+        <span
+          style="font-family: var(--font-sans); font-weight: 600; font-size: clamp(0.65rem, 1.1vw, 0.85rem); color: var(--fg-dim);">40%
+          Testing</span>
+      </div>
+    </div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p style="font-size: clamp(0.9rem, 1.8vw, 1.3rem);">
+        "Professional developers spend 40% of their time planning what to build. Writing the spec. Talking to users.
+        Drawing the architecture. 20% is the actual generation. 40% is testing and verification."
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — The Vibe Coding Hangover
+  -->
+  <section class="slide title-slide" id="s14">
+    <div class="overline">The Anti-Pattern</div>
+    <div class="accent-line"></div>
+    <h2>The Vibe Coding Hangover</h2>
+
+    <div
+      style="display: flex; width: min(85vw, 700px); height: clamp(28px, 4vh, 42px); border-radius: 4px; overflow: hidden; margin: clamp(0.8rem, 2vh, 1.5rem) auto;">
+      <div
+        style="flex: 0.5; background: rgba(196, 92, 92, 0.15); display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: clamp(0.55rem, 0.9vw, 0.7rem); color: var(--red-soft);">0%</span>
+      </div>
+      <div
+        style="flex: 8; background: rgba(196, 92, 92, 0.35); display: flex; align-items: center; justify-content: center;">
+        <span style="font-weight: 600; font-size: clamp(0.6rem, 1vw, 0.8rem); color: var(--red-soft);">80% Prompting
+          &amp; Iterating</span>
+      </div>
+      <div
+        style="flex: 2; background: rgba(196, 92, 92, 0.15); display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: clamp(0.55rem, 0.9vw, 0.7rem); color: var(--red-soft);">20%</span>
+      </div>
+    </div>
+
+    <div class="quote-block" style="text-align: left; max-width: 52ch;">
+      <p style="font-size: clamp(0.9rem, 1.8vw, 1.3rem);">
+        "The feeling of inheriting a codebase full of AI-generated code you don't understand and cannot fix. It looks
+        like it works. Then something breaks at 2am before a deadline. And you have no idea where to look."
+      </p>
+    </div>
+
+    <p
+      style="margin-top: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      Every lab is designed to force this ratio. Keep this ratio in mind when you are working on the lab.
+    </p>
+
+    <div class="slide-num">14 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Section Divider: Live Demo
+  -->
+  <section class="slide title-slide" id="s15">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Live Demo</h1>
+    <div class="subtitle">Build a Streamlit App</div>
+    <div style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <pre style="margin:0;"><code>Build a Streamlit web app that
+shows current weather for Seattle
+using the Open-Meteo API (no API
+key required). Display temperature
+in Fahrenheit, humidity percentage,
+and wind speed in mph. Add a
+Refresh button. Make it
+mobile-friendly.</code></pre>
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.4rem); color: var(--fg-dim); font-style: italic;">
+        "Watch what I do, not what the AI does. The AI is just the keyboard. I'm the architect."
+      </p>
+    </div>
+    <div class="slide-num">15 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — The Architect's Three Jobs
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Your Role</div>
+    <h2>The Architect's Three Jobs</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Describe with precision</strong>
+        <span>Framework, data source, specific metrics, design decisions, code conventions</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Review before accepting</strong>
+        <span>Check imports, function signatures, UI structure. Does the structure match your intent?</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Verify it works</strong>
+        <span>Run the app, test each feature, document pass/fail for every interaction</span>
+      </div>
+    </div>
+    <div class="slide-num">16 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — I-P-O Architecture Diagram
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Architecture</div>
+    <h2>Input &mdash; Process &mdash; Output</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-height: 50vh;">
+        <rect x="30" y="40" width="220" height="140" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="340" y="40" width="220" height="140" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="650" y="40" width="220" height="140" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="140" y="75" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">INPUT</text>
+        <text x="450" y="75" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">PROCESS</text>
+        <text x="760" y="75" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">OUTPUT</text>
+
+        <text x="140" y="110" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">User clicks</text>
+        <text x="140" y="130" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Refresh button</text>
+
+        <text x="450" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Python calls</text>
+        <text x="450" y="120" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Open-Meteo API</text>
+        <text x="450" y="140" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Parses JSON</text>
+        <text x="450" y="160" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Formats data</text>
+
+        <text x="760" y="105" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">Streamlit renders</text>
+        <text x="760" y="125" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">temperature, humidity,</text>
+        <text x="760" y="145" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="13"
+          opacity="0.7">wind speed</text>
+
+        <line x1="255" y1="110" x2="335" y2="110" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="335,106 345,110 335,114" fill="#c1a778" opacity="0.5" />
+
+        <line x1="565" y1="110" x2="645" y2="110" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="645,106 655,110 645,114" fill="#c1a778" opacity="0.5" />
+
+        <path d="M 760 185 L 760 260 Q 760 280 740 280 L 160 280 Q 140 280 140 260 L 140 185" fill="none"
+          stroke="#c1a778" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.35" />
+        <polygon points="136,190 140,180 144,190" fill="#c1a778" opacity="0.35" />
+
+        <text x="450" y="298" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" letter-spacing="1.5" opacity="0.5">FEEDBACK LOOP</text>
+      </svg>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      I-P-O: Your First Architecture View
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Separation of Concerns:</strong> Input (UI) vs. Process (logic + API) vs.
+        Output (rendering).
+        This three-part split reappears as 3-tier architecture in Week&nbsp;5.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Code Review Walkthrough
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">Reading AI Code</div>
+    <h2>Code Review Walkthrough</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Imports</strong>
+        <span><span class="inline-code">import streamlit as st</span> (UI framework) + <span class="inline-code">import
+            requests</span> (network calls)</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Function signatures</strong>
+        <span><span class="inline-code">function def</span> &mdash; takes parameters, returns some data</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>UI structure</strong>
+        <span><span class="inline-code">st.metric</span> calls for number cards, <span
+            class="inline-code">st.button('Refresh')</span> for interaction</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Overall pattern</strong>
+        <span>Fetch data &rarr; render data. Matches the I-P-O diagram.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        Check structure and intent now. Save edge cases and math verification for the testing checklist.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Predict Before Running
+  -->
+  <section class="slide title-slide" id="s19">
+    <div class="overline">Before You Click Run</div>
+    <div class="accent-line"></div>
+    <h2>Predict Before Running</h2>
+
+    <div style="max-width: 50ch; margin: clamp(0.5rem, 2vh, 1.5rem) auto; text-align: left;">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(0.95rem, 1.8vw, 1.3rem); font-style: italic; color: var(--fg); line-height: 1.6;">
+        Before running the code, I want your prediction.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="max-width: 50ch; margin: 0 auto;">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg); text-align: center;">
+        <strong style="color: var(--gold);">Why predict?</strong> Prediction forces you to form a mental model of the
+        code <em>before</em> seeing the output. This is how understanding develops.
+      </p>
+    </div>
+
+    <div class="highlight-box">
+      <strong>This is PRIMM in action</strong> — Predict, Run, Investigate, Modify, Make. We'll formalize this framework
+      in Week&nbsp;3.
+    </div>
+
+    <div class="slide-num">19 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Adding a Feature
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Iterative Development</div>
+    <h2>Adding a Feature</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      The app works. Now we add wind direction &mdash; an incremental prompt:
+    </p>
+
+    <pre><code>Add a wind direction indicator (N, NE, E, SE, S, SW, W, NW)
+based on the wind_direction_10m field from the Open-Meteo API.
+Show it next to the wind speed metric with a compass emoji.</code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What Changed</div>
+        <ul>
+          <li>New API field: <span class="inline-code">wind_direction_10m</span></li>
+          <li>Degree-to-compass conversion function</li>
+          <li>Updated <span class="inline-code">st.metric</span> display</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What Didn't Change</div>
+        <ul>
+          <li>Existing features remain intact</li>
+          <li>Same I-P-O structure</li>
+          <li>The <span class="inline-code">.cursor/rules</span> enforced this</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide-num">20 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Section Divider: Think-Pair-Share
+  -->
+  <section class="slide title-slide" id="s21">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Think-Pair-Share</h1>
+    <div class="subtitle">Explain AI Code</div>
+
+    <p
+      style="margin-top: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.85rem, 1.5vw, 1.1rem); color: var(--fg-dim); max-width: 45ch;">
+      Turn to the person next to you. Explain the code in plain English. No jargon.
+    </p>
+
+    <div class="slide-num">21 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — The Exercise
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">Activity</div>
+    <h2>The Exercise</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      8 lines of code from our demo app. Explain what each section does to your neighbor &mdash; as if they have never
+      written code. Your code might be different than what you see on screen.
+    </p>
+
+    <pre><code><span style="color: var(--gold);"># Fetch weather data from API</span>
+def get_weather(city: str) -> dict:
+    url = f"https://api.open-meteo.com/v1/forecast?latitude=47.6&longitude=-122.3"
+    response = requests.get(url)
+    return response.json()
+
+<span style="color: var(--gold);"># Display results</span>
+data = get_weather("Seattle")
+st.metric("Temperature", f"{data['current']['temperature_2m']}F")</code></pre>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">The word "function" is allowed.</strong> Everything else &mdash; translate
+        it.
+      </p>
+    </div>
+
+    <div class="slide-num">22 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Section Divider: The Interview
+  -->
+  <section class="slide title-slide" id="s23">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>The Interview</h1>
+    <div class="subtitle">Why Talking to Users Matters</div>
+
+    <p
+      style="margin-top: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.85rem, 1.5vw, 1.1rem); color: var(--fg-dim); max-width: 48ch;">
+      The app we just built is technically functional.
+    </p>
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">But does anyone actually need a Seattle weather app?</strong>
+      </p>
+    </div>
+    <div class="slide-num">23 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — From Technical to Useful
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">User Research</div>
+    <h2>From Technical to Useful</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+      The same technical components can solve completely different problems when pointed at the right need:
+    </p>
+
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--fg-dim); color: var(--fg-dim);">?</div>
+      <div class="num-text">
+        <strong>The GIX facilities coordinator</strong>
+        <span>Needs to know if it's safe to set up the outdoor event space before 6am</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--fg-dim); color: var(--fg-dim);">?</div>
+      <div class="num-text">
+        <strong>The biking commuter</strong>
+        <span>Needs the 6am wind forecast specifically for their route</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--fg-dim); color: var(--fg-dim);">?</div>
+      <div class="num-text">
+        <strong>The field researcher</strong>
+        <span>Needs micro-weather for a specific zip code during data collection</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        The first thing you do in lab today is not open a computer. It's a conversation with a GIX staff member.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — Problem Statement Template
+  -->
+  <section class="slide title-slide" id="s25">
+    <div class="overline">Your Deliverable</div>
+    <div class="accent-line"></div>
+    <h2>Problem Statement Template</h2>
+
+    <div class="highlight-box" style="max-width: 56ch; margin: clamp(0.8rem, 2vh, 1.5rem) auto; text-align: left;">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1.1rem, 2.2vw, 1.7rem); color: #f5f0e8; line-height: 1.5;">
+        "When <span style="color: var(--gold); border-bottom: 1px dashed var(--gold-dim);">[person]</span> needs to
+        <span style="color: var(--gold); border-bottom: 1px dashed var(--gold-dim);">[task]</span>, they currently <span
+          style="color: var(--gold); border-bottom: 1px dashed var(--gold-dim);">[workaround]</span>, which causes <span
+          style="color: var(--gold); border-bottom: 1px dashed var(--gold-dim);">[pain]</span>."
+      </p>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); max-width: 50ch; text-align: center; margin: 0 auto;">
+      This sentence emerges from the interview. Walk in curious &mdash; not with an app idea already in your head.
+    </p>
+
+    <div class="slide-num">25 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — Preview: Dorothy's Challenge
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Up Next in Lab</div>
+    <h2>Preview: Dorothy's Challenge</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+      In today's lab, you'll meet Dorothy, who needs a system for purchase requests. There's a catch:
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Does data need to be persistent?
+          If your answer is yes, how can we record and retrieve information robustly? How do you structure the
+          data?</strong>
+      </p>
+    </div>
+
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem); color: var(--fg-dim);">
+      Keep this constraint in mind as you conduct your interview and draft your problem statement.
+    </p>
+
+    <div class="slide-num">26 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 27 — The Agent Loop
+  -->
+  <section class="slide" id="s27">
+    <div class="overline">Architecture</div>
+    <h2>The Agent Loop</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <rect x="20" y="60" width="140" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="210" y="60" width="140" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="400" y="60" width="140" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="590" y="60" width="140" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <rect x="780" y="60" width="100" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+
+        <text x="90" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">YOU</text>
+        <text x="280" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">AGENT</text>
+        <text x="470" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">AGENT</text>
+        <text x="660" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">AGENT</text>
+        <text x="830" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="600" letter-spacing="1.5">YOU</text>
+
+        <text x="90" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">Clear</text>
+        <text x="90" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">prompt</text>
+
+        <text x="280" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">Plans</text>
+        <text x="280" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">steps</text>
+
+        <text x="470" y="92" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">Uses tools:</text>
+        <text x="470" y="110" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">terminal,</text>
+        <text x="470" y="126" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">file read/write,</text>
+        <text x="470" y="142" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">internet</text>
+
+        <text x="660" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">Proposes</text>
+        <text x="660" y="118" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">code</text>
+
+        <text x="830" y="95" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">Review +</text>
+        <text x="830" y="113" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">accept /</text>
+        <text x="830" y="131" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">reject</text>
+
+        <line x1="164" y1="110" x2="206" y2="110" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="204,106 214,110 204,114" fill="#c1a778" opacity="0.5" />
+
+        <line x1="354" y1="110" x2="396" y2="110" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="394,106 404,110 394,114" fill="#c1a778" opacity="0.5" />
+
+        <line x1="544" y1="110" x2="586" y2="110" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="584,106 594,110 584,114" fill="#c1a778" opacity="0.5" />
+
+        <line x1="734" y1="110" x2="776" y2="110" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="774,106 784,110 774,114" fill="#c1a778" opacity="0.5" />
+
+        <path d="M 830 165 L 830 240 Q 830 260 810 260 L 110 260 Q 90 260 90 240 L 90 165" fill="none" stroke="#c1a778"
+          stroke-width="1.2" stroke-dasharray="6 4" opacity="0.3" />
+        <polygon points="86,170 90,160 94,170" fill="#c1a778" opacity="0.3" />
+
+        <text x="460" y="278" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" letter-spacing="1.5" opacity="0.45">ITERATE UNTIL DONE</text>
+      </svg>
+    </div>
+
+    <p
+      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      You are always at both ends of this loop. The agent is the middle. You start it, and you judge the result.
+    </p>
+
+    <div class="slide-num">27 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — Final Project Matchmaking
+  -->
+  <section class="slide" id="s28">
+    <div class="overline">Next Steps</div>
+    <h2>Project Matchmaking</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Share Your Ideas</strong>
+        <span>Post your project ideas on the course GitHub marketplace as issues.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Hire Developers</strong>
+        <span>Start discussing project ideas and form your teams by hiring developers.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Move Forward</strong>
+        <span>Once paired up, proceed to fee negotiation, spec drafting, and initial architecture.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">28 / 29</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — Preparation for Next Week
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">Preparation</div>
+    <h2>Before Next Class</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+      Next week, we will start writing code using terminal-based agents.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg); text-align: left;">
+        <strong style="color: var(--gold);">Action Item:</strong> Please get either <strong>Claude Code</strong> or <strong>Open Code</strong> ready before next week's class.
+      </p>
+    </div>
+
+    <div class="slide-num">29 / 29</div>
+  </section>
+
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

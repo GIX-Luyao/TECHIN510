@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 2 — Anatomy of Coding Agents</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Anatomy of Coding Agents</h1>
+    <div class="subtitle">Week 2: Claude Code, MCP, Context Engineering, Superpowers &amp; Evaluation</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives 1/2
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Name the four components of an agentic coding system</strong>
+        <span>LLM, context window, tool calls, and agentic loop &mdash; and how they interact</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Apply the 40/20/40 principle</strong>
+        <span>Allocate time to planning, coding, and testing in the correct proportion</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Use Claude Code&rsquo;s Plan Mode</strong>
+        <span>Review and approve an agent&rsquo;s step-by-step plan before any code is written</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Write/generate a CLAUDE.md file</strong>
+        <span>Project-specific context that measurably improves agent output quality</span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Learning Objectives 2/2
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives (continued)</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Read a git diff from an autonomous agent</strong>
+        <span>Explain every changed line to a teammate</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">6</div>
+      <div class="num-text">
+        <strong>Explain MCP (Model Context Protocol)</strong>
+        <span>Give one concrete example of how it extends an agent beyond the local file system</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">7</div>
+      <div class="num-text">
+        <strong>Apply the AI-generated code evaluation checklist</strong>
+        <span>Verify that agent output matches intent before shipping</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">8</div>
+      <div class="num-text">
+        <strong>Explain how Claude Code&rsquo;s extension ecosystem works</strong>
+        <span>Skills, agents, and rules that enforce professional workflow standards</span>
+      </div>
+    </div>
+
+    <div class="slide-num">03 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Artifact Bridge: Week 1 to Week 2
+  -->
+  <section class="slide" id="s4">
+    <div class="overline">Systems Thinking</div>
+    <h2>Artifact Bridge: Week 1 &rarr; Week 2</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Week 1 Artifacts</div>
+        <ul>
+          <li><span class="inline-code">.cursor/rules</span> &mdash; first system prompt</li>
+          <li>I-P-O diagram &mdash; first architecture view</li>
+          <li>Smoke test &mdash; 3 pass/fail checks</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Week 2 Evolutions</div>
+        <ul>
+          <li><span class="inline-code">CLAUDE.md</span> &mdash; richer context file</li>
+          <li>Agentic loop &mdash; Plan &rarr; Act &rarr; Observe</li>
+          <li>TDD &amp; eval checklist &mdash; structured verification</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Nothing resets between weeks. Each artifact evolves into a more capable version.
+      </p>
+    </div>
+
+    <div class="slide-num">04 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Section Divider: Anatomy of Coding Agents
+  -->
+  <section class="slide title-slide" id="s5">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Anatomy of<br>Coding Agents</h1>
+    <div class="subtitle">How agentic coding systems actually work</div>
+    <div class="slide-num">05 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Four Components
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">Agentic System Architecture</div>
+    <h2>Four Components</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>LLM</strong>
+        <span>The language model &mdash; generates plans, writes code, reasons about problems</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Context Window</strong>
+        <span>Everything the agent can &ldquo;see&rdquo; right now: your prompt, files, tool outputs, conversation
+          history</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Tool Calls</strong>
+        <span>Structured actions the LLM can request: read a file, run a command, search the web, write code</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Agentic Loop</strong>
+        <span>The cycle that keeps running until the task is done: plan &rarr; act &rarr; observe &rarr; repeat</span>
+      </div>
+    </div>
+
+    <div class="slide-num">06 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Agentic Loop Diagram
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">The Core Cycle</div>
+    <h2>The Agentic Loop</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" style="max-height: 52vh;">
+        <text x="450" y="32" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2.5">AGENTIC LOOP</text>
+        <line x1="340" y1="40" x2="560" y2="40" stroke="#c1a778" stroke-width="0.5" opacity="0.3" />
+
+        <rect x="60" y="70" width="200" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="160" y="100" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">PLAN</text>
+        <text x="160" y="130" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">&ldquo;What should</text>
+        <text x="160" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">I do next?&rdquo;</text>
+
+        <rect x="350" y="70" width="200" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="100" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">ACT</text>
+        <text x="450" y="125" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Tool Calls:</text>
+        <text x="450" y="145" text-anchor="middle" fill="#c8d6c0" font-family="JetBrains Mono, monospace" font-size="11"
+          opacity="0.7">read() write()</text>
+        <text x="450" y="163" text-anchor="middle" fill="#c8d6c0" font-family="JetBrains Mono, monospace" font-size="11"
+          opacity="0.7">run() search()</text>
+
+        <rect x="640" y="70" width="200" height="120" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="740" y="100" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">OBSERVE</text>
+        <text x="740" y="130" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Tool output</text>
+        <text x="740" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">returned</text>
+
+        <line x1="265" y1="130" x2="345" y2="130" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="345,126 355,130 345,134" fill="#c1a778" opacity="0.5" />
+
+        <line x1="555" y1="130" x2="635" y2="130" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="635,126 645,130 635,134" fill="#c1a778" opacity="0.5" />
+
+        <rect x="310" y="260" width="280" height="80" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.6" />
+        <text x="450" y="290" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">REPEAT</text>
+        <text x="450" y="315" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.7">Done? Yes &rarr; stop &ensp;|&ensp; No &rarr; plan again</text>
+
+        <path d="M 740 195 L 740 300 L 595 300" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <polygon points="598,296 590,300 598,304" fill="#c1a778" opacity="0.4" />
+
+        <path d="M 310 300 L 160 300 L 160 195" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <polygon points="156,198 160,188 164,198" fill="#c1a778" opacity="0.4" />
+      </svg>
+    </div>
+
+    <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      The agent never writes your entire app in one shot. It reads, decides, writes, runs, observes &mdash; and loops.
+    </p>
+
+    <div class="slide-num">07 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — 40/20/40 and Vibe Coding Hangover
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Agentic Engineering Workflow</div>
+    <h2>The 40 / 20 / 40 Principle</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;If you just type &lsquo;build me an app&rsquo; and hit enter, the agent skips planning. The code might
+        run &mdash; but you won&rsquo;t understand it. That&rsquo;s the vibe coding hangover.&rdquo;</p>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="card" style="text-align:center;">
+        <p style="font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight:700; color: var(--gold); margin-bottom:0.3rem;">40%
+        </p>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">Planning &amp; Research</p>
+      </div>
+      <div style="display:flex; gap: clamp(0.5rem, 1vw, 1rem);">
+        <div class="card" style="text-align:center; flex:1;">
+          <p
+            style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight:700; color: var(--fg-dim); margin-bottom:0.3rem;">
+            20%</p>
+          <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-muted);">Coding</p>
+        </div>
+        <div class="card" style="text-align:center; flex:1;">
+          <p style="font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight:700; color: var(--gold); margin-bottom:0.3rem;">
+            40%</p>
+          <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">Testing &amp; Verification</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        The 40% planning phase is your insurance policy against the hangover.
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Research → Plan → Implement → Test
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Human-Agent Engineering Workflow</div>
+    <h2>Research &rarr; Plan &rarr; Implement &rarr; Test</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Your Job</th>
+          <th>Agent&rsquo;s Job</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Research (40%)</td>
+          <td>Define the problem, gather context</td>
+          <td>Read docs, search, analyze</td>
+        </tr>
+        <tr>
+          <td>Plan</td>
+          <td>Review and approve the plan</td>
+          <td>Propose step-by-step approach</td>
+        </tr>
+        <tr>
+          <td>Implement (20%)</td>
+          <td>Watch, redirect, review</td>
+          <td>Write and run code</td>
+        </tr>
+        <tr>
+          <td>Test (40%)</td>
+          <td>Define acceptance criteria</td>
+          <td>Run tests, fix failures</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        You are the supervisor. The agent is the junior engineer. Set direction, review output, catch mistakes.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Section Divider: Claude Code Deep Dive
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Claude Code<br>Deep Dive</h1>
+    <div class="subtitle">A terminal-native agentic coding tool</div>
+    <div class="slide-num">10 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — "Not a Chatbot"
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Philosophy</div>
+    <h2>Not a Chatbot</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;Claude Code is not a chatbot that happens to write code. Think of it as a junior engineer who lives in
+        your terminal, has read every file in your project, and never gets tired.&rdquo;</p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 2vh, 1.2rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem);">
+        The key word is <strong style="color: var(--gold);">junior</strong> &mdash; it does exactly what you ask. Your
+        job is to be the <strong style="color: var(--gold);">supervisor</strong>: set direction, review
+        output, catch mistakes.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        When Claude Code starts, it reads the current directory and looks for a <span
+          class="inline-code">CLAUDE.md</span> file &mdash; the onboarding document you&rsquo;d hand a new hire on day
+        one.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — Plan Mode
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Claude Code Feature</div>
+    <h2>Plan Mode</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">What It Does</div>
+        <p>The agent proposes a complete step-by-step plan and <strong>stops</strong> &mdash; it waits for your approval
+          before writing a single line of code.</p>
+        <pre style="margin-top:0.6rem;"><code>/plan
+<span style="color: var(--fg-dim);"># or at startup:</span>
+claude --plan</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label good">When to Use It</div>
+        <ul style="margin-top: 0.3rem;">
+          <li>Task touches more than one file</li>
+          <li>Involves user data or security</li>
+          <li>You&rsquo;re not sure what the right approach is</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Plan Mode is the most important feature for avoiding the vibe coding hangover.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Input Validation Demo Prompt
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">Live Demo Prompt</div>
+    <h2>Input Validation Task</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>Add input validation to all user-facing fields
+in this weather app.
+
+Validate that the city name field is non-empty
+and contains only letters and spaces.
+
+Show a clear error message inline if validation
+fails.</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Notice how this prompt is <strong style="color: var(--gold);">specific</strong>: it names the field, defines the
+        rule, and specifies how errors should appear. Compare this to &ldquo;add validation&rdquo; &mdash; the agent
+        would have to guess everything.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — Claude Code vs. Cursor
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Tool Comparison</div>
+    <h2>Claude Code vs. Cursor</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">CLAUDE CODE</div>
+        <ul>
+          <li>Terminal-native agent (also has a desktop app)</li>
+          <li>Whole-project awareness</li>
+          <li>Autonomous multi-step execution</li>
+          <li>Plan Mode for complex tasks</li>
+          <li>Best for: large changes, refactoring, multi-file work</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">CURSOR</div>
+        <ul>
+          <li>IDE with AI built in (also has a CLI version)</li>
+          <li>Inline editing &amp; autocomplete with whole-project awareness</li>
+          <li>Fast file-level feedback</li>
+          <li>Visual diff review</li>
+          <li>Come with more model options</li>
+          <li>Best for: focused edits, learning code, quick fixes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        They&rsquo;re different tools for different jobs. Professionals use both. You&rsquo;ll graduate from this course
+        having used both.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Section Divider: Live Demo
+  -->
+  <section class="slide title-slide" id="s15">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Live Demo</h1>
+    <div class="subtitle">Plan Mode &rarr; Autonomous Execution</div>
+    <div class="slide-num">15 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — The Task: 5-Day Forecast
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">Demo Task</div>
+    <h2>The Prompt</h2>
+    <div class="accent-line"></div>
+
+    <pre><code>Add a 5-day forecast section to this weather app.
+Use the Open-Meteo API's daily forecast endpoint.</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        Claude Code will enter Plan Mode, propose its approach, and wait. We read the plan before approving anything.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Reviewing the Plan
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Plan Review</div>
+    <h2>Three Things to Check</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Does it understand what I asked?</strong>
+        <span>Five-day forecast, daily endpoint &mdash; correct?</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Will it break what already works?</strong>
+        <span>Adding below existing section, not touching current weather call?</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Any red flags?</strong>
+        <span>Files you didn&rsquo;t expect? API keys that shouldn&rsquo;t be needed? (Open-Meteo is free.)</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Approve by typing <span class="kbd">yes</span> or pressing the approval key.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Autonomous Execution + Review the Diff
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">After Approval</div>
+    <h2>Autonomous Execution</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Stand back</strong>
+        <span>Let Claude Code run. Watch the terminal output. Don&rsquo;t touch the keyboard.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Run the app</strong>
+        <span><span class="inline-code">streamlit run app.py</span> &mdash; verify the 5-day forecast renders</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Review the diff</strong>
+        <span><span class="inline-code">git diff app.py</span> &mdash; your audit trail. Know exactly what
+          changed.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">18 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Git Diff: Reading Changes
+  -->
+  <section class="slide" id="s19">
+    <div class="overline">Version Control</div>
+    <h2>Git Diff: Reading Changes</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="margin-bottom:0.75rem;">The Diff</h3>
+        <pre><code><span style="color: var(--fg-dim)">@@ -3,4 +3,5 @@ def greet(name):</span>
+<span style="color: var(--fg-dim)"> def greet(name):</span>
+<span style="color: var(--red-soft)">-    return "Hello " + name</span>
+<span style="color: var(--green-soft)">+    if not name:</span>
+<span style="color: var(--green-soft)">+        return "Hello, stranger!"</span>
+<span style="color: var(--green-soft)">+    return f"Hello, {name}!"</span></code></pre>
+      </div>
+      <div>
+        <h3 style="margin-bottom:0.75rem;">Reading It</h3>
+        <div class="card">
+          <p><span style="color: var(--red-soft); font-weight:600;">&minus; Red lines</span> = removed code</p>
+          <p><span style="color: var(--green-soft); font-weight:600;">+ Green lines</span> = added code</p>
+          <p><span style="color: var(--fg-dim);">Gray lines</span> = unchanged context</p>
+          <p style="margin-top:0.75rem;"><strong>This diff adds input validation</strong> &mdash; the agent handled an
+            edge case you might have missed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-num">19 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Common Pitfalls
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Watch Out</div>
+    <h2>Two Rules</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Don&rsquo;t approve a plan you didn&rsquo;t read</strong>
+        <span>Plan Mode exists so you can catch mistakes <em>before</em> they happen. Skimming and hitting approve
+          because it &ldquo;looked long enough&rdquo; is not engineering.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Don&rsquo;t run the result before you review the diff</strong>
+        <span>The diff is your audit trail. It&rsquo;s what saves you at 11pm before a demo, because you&rsquo;ll know
+          exactly what changed.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">20 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Section Divider: Context Engineering
+  -->
+  <section class="slide title-slide" id="s21">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Context<br>Engineering</h1>
+    <div class="subtitle">CLAUDE.md, commands, hooks, and the context stack</div>
+    <div class="slide-num">21 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Context Quality = Output Quality
+  -->
+  <section class="slide" id="s22">
+    <div class="overline">The Key Insight</div>
+    <h2>Context Quality = Output Quality</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;The single most important variable in the quality of your output is not which model you pick, or how
+        fast your laptop is. It&rsquo;s context quality.&rdquo;</p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 2vh, 1.2rem);">
+      <p
+        style="font-size: clamp(0.9rem, 1.6vw, 1.2rem); color: var(--gold); text-align: center; font-family: var(--font-mono);">
+        Better Context &rarr; Better Output; Garbage In &rarr; Garbage Out
+      </p>
+    </div>
+
+    <div class="slide-num">22 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — CLAUDE.md: Bad vs. Good
+  -->
+  <section class="slide" id="s23">
+    <div class="overline">Context Engineering</div>
+    <h2>CLAUDE.md &mdash; Bad vs. Good</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Bad CLAUDE.md</div>
+        <pre style="margin:0;"><code># My App
+
+Write good code. Use Python.
+Make it work.
+Don't break things.</code></pre>
+        <p style="margin-top:0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Vague. No project info. Wastes a dedicated memory slot the agent reads every session.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Good CLAUDE.md</div>
+        <pre style="margin:0;"><code># Project: GIX Staff Portal
+
+## Stack
+- Python 3.11, Streamlit, SQLite
+
+## Coding Standards
+- PEP 8, 4-space indent
+- Type annotations on all functions
+
+## Constraints
+- No external APIs (offline-first)
+- User-friendly error messages</code></pre>
+      </div>
+    </div>
+
+    <div class="slide-num">23 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — The CLAUDE.md Decision Rule
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">Decision Framework &middot; REFERENCE</div>
+    <h2>The CLAUDE.md Rule</h2>
+    <div class="accent-line"></div>
+
+    <div class="card" style="text-align: center; padding: clamp(1.5rem, 3vw, 2.5rem);">
+      <p
+        style="font-family: var(--font-serif); font-size: clamp(1rem, 2vw, 1.5rem); font-style: italic; color: #f5f0e8; line-height: 1.6;">
+        &ldquo;Would a competent senior engineer need to know this to work on <em style="color: var(--gold);">my project
+          specifically</em>?&rdquo;
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="card" style="text-align: center;">
+        <p
+          style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 700; color: var(--green-soft); margin-bottom: 0.3rem;">
+          YES</p>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">Put it in CLAUDE.md</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <p
+          style="font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 700; color: var(--red-soft); margin-bottom: 0.3rem;">
+          NO</p>
+        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">Don&rsquo;t bother</p>
+      </div>
+    </div>
+
+    <div class="slide-num">24 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 25 — Slash Commands
+  -->
+  <section class="slide" id="s25">
+    <div class="overline">Custom Workflows &middot; REFERENCE</div>
+    <h2>Slash Commands</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.8rem, 1.3vw, 1rem);">
+      CLAUDE.md handles persistent context. Slash commands handle <strong style="color: var(--gold);">repeatable
+        workflows</strong>.
+    </p>
+
+    <pre><code><span style="color: var(--fg-dim);"># .claude/commands/spec.md</span>
+
+# /spec &mdash; Write a specification before any code
+
+When this command is invoked:
+1. Ask the user what feature they want to build
+2. Write a plain-English specification covering:
+   - What the feature does (user-facing behavior)
+   - What it does NOT do (explicit scope limits)
+   - Edge cases to handle
+   - Data inputs and outputs
+3. Ask the user to confirm or revise the spec
+4. Only begin implementation after explicit approval</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        The spec command lives in the repo &mdash; everyone on the team gets the same workflow.
+      </p>
+    </div>
+
+    <div class="slide-num">25 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — Hooks
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Automated Quality Gates &middot; REFERENCE</div>
+    <h2>Hooks</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem); font-size: clamp(0.8rem, 1.3vw, 1rem);">
+      Hooks handle <strong style="color: var(--gold);">automated consequences</strong> &mdash; things that happen
+      automatically after the agent edits a file.
+    </p>
+
+    <pre><code>Hook: PostToolUse (after any .py file is edited)
+&boxur;&boxh;&boxh; black app.py          &rarr; auto-format code style
+&boxur;&boxh;&boxh; ruff check app.py     &rarr; lint for common mistakes
+&boxur;&boxh;&boxh; mypy app.py           &rarr; run type checking</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        The agent edits a file &rarr; it&rsquo;s automatically formatted, linted, and type-checked. If there&rsquo;s an
+        error, the agent sees it and fixes it in the same turn.
+      </p>
+    </div>
+
+    <div class="slide-num">26 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 27 — Context Compaction Diagram
+  -->
+  <section class="slide" id="s27">
+    <div class="overline">Context Window &middot; REFERENCE</div>
+    <h2>Context Compaction</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" style="max-height: 42vh;">
+        <text x="200" y="30" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">EARLY IN SESSION</text>
+
+        <rect x="70" y="50" width="260" height="220" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.4" />
+
+        <rect x="80" y="60" width="240" height="40" rx="3" fill="rgba(193, 167, 120, 0.08)" stroke="none" />
+        <text x="200" y="85" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">&ldquo;Use SQLite&rdquo;</text>
+
+        <rect x="80" y="108" width="240" height="40" rx="3" fill="rgba(193, 167, 120, 0.08)" stroke="none" />
+        <text x="200" y="133" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">&ldquo;PEP 8 please&rdquo;</text>
+
+        <rect x="80" y="156" width="240" height="40" rx="3" fill="rgba(193, 167, 120, 0.08)" stroke="none" />
+        <text x="200" y="181" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12"
+          opacity="0.8">&ldquo;Offline-first&rdquo;</text>
+
+        <rect x="80" y="204" width="240" height="55" rx="3" fill="rgba(125, 171, 110, 0.1)"
+          stroke="rgba(125, 171, 110, 0.2)" stroke-width="1" />
+        <text x="200" y="236" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="12">[recent
+          messages]</text>
+
+        <text x="450" y="170" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="24"
+          opacity="0.5">&rarr;</text>
+
+        <text x="700" y="30" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="2">LATE IN SESSION</text>
+
+        <rect x="570" y="50" width="260" height="220" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
+          opacity="0.4" />
+
+        <rect x="580" y="60" width="240" height="70" rx="3" fill="rgba(196, 92, 92, 0.08)"
+          stroke="rgba(196, 92, 92, 0.15)" stroke-width="1" />
+        <text x="700" y="92" text-anchor="middle" fill="#c45c5c" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.8">[compressed summary]</text>
+        <text x="700" y="112" text-anchor="middle" fill="#c45c5c" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">may lose detail</text>
+
+        <rect x="580" y="140" width="240" height="120" rx="3" fill="rgba(125, 171, 110, 0.1)"
+          stroke="rgba(125, 171, 110, 0.2)" stroke-width="1" />
+        <text x="700" y="200" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="12">[recent
+          messages]</text>
+        <text x="700" y="220" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.6">still sharp</text>
+      </svg>
+    </div>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Anything that must <em>always</em> apply goes in <span class="inline-code">CLAUDE.md</span>, not in an early
+        chat message. CLAUDE.md is read fresh every session.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        <strong style="color: var(--red-soft);">Compaction failure mode:</strong> Safety instructions can be dropped
+        when context is compressed.
+        Design &ldquo;sticky&rdquo; rules that survive compaction &mdash; put critical constraints in <span
+          class="inline-code">CLAUDE.md</span>,
+        not just in chat history.
+      </p>
+    </div>
+
+    <div class="slide-num">27 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 28 — Section Divider: Extending Claude Code
+  -->
+  <section class="slide title-slide" id="s28">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Extending<br>Claude Code</h1>
+    <div class="subtitle">Skills, agents, rules &amp; the superpowers ecosystem</div>
+    <div class="slide-num">28 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 29 — What Are Superpowers?
+  -->
+  <section class="slide" id="s29">
+    <div class="overline">From Building Blocks to Systems</div>
+    <h2>What Are Superpowers?</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">VANILLA CLAUDE CODE</div>
+        <ul>
+          <li>You write your own CLAUDE.md</li>
+          <li>You create commands one at a time</li>
+          <li>You configure hooks manually</li>
+          <li>Your setup stays in one project</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">WITH SUPERPOWERS / ECC</div>
+        <ul>
+          <li>156 pre-built skills auto-loaded</li>
+          <li>13 specialized agents ready to invoke</li>
+          <li>Hierarchical rules across all projects</li>
+          <li>10+ hooks enforcing quality silently</li>
+          <li>33+ slash-command workflows</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Context Engineering gives you the building blocks. Superpowers is what happens when someone packages hundreds
+        of them into a curated, opinionated system.
+      </p>
+    </div>
+
+    <div class="slide-num">29 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 30 — How Skills Work
+  -->
+  <section class="slide" id="s30">
+    <div class="overline">Skills</div>
+    <h2>How Skills Work</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.4rem, 1vh, 0.7rem); font-size: clamp(0.8rem, 1.3vw, 1rem);">
+      A skill is a markdown file with YAML frontmatter. It lives in <span class="inline-code">~/.claude/skills/</span>
+      and is injected into the agent&rsquo;s context when its trigger matches.
+    </p>
+
+    <div class="two-col">
+      <div>
+        <pre><code><span style="color: var(--fg-dim);">---</span>
+<span style="color: var(--gold);">name:</span> brainstorming
+<span style="color: var(--gold);">trigger:</span> auto
+<span style="color: var(--gold);">description:</span> Design-first workflow
+<span style="color: var(--fg-dim);">---</span>
+
+When the user asks to build a feature:
+1. STOP. Do not write any code.
+2. Ask clarifying questions.
+3. Propose 2&ndash;3 design approaches.
+4. Wait for explicit approval.
+5. Only then begin implementation.
+
+<span style="color: var(--fg-dim);"># Hard Gate</span>
+If the user says &ldquo;just build it,&rdquo;
+remind them of the 40/20/40 principle
+and refuse to proceed without a design.</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">KEY CONCEPTS</div>
+        <ul>
+          <li><span class="inline-code">trigger: auto</span> &mdash; the skill activates without being invoked</li>
+          <li>The <strong>&ldquo;hard gate&rdquo;</strong> &mdash; the skill literally refuses to write code until design
+            is approved</li>
+          <li>Skills can be <strong>domain-specific</strong>: python-patterns, scientific-visualization, metabolomics
+          </li>
+          <li>Or <strong>process-oriented</strong>: brainstorming, TDD enforcement, debugging workflows</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        156 skills means the agent has domain expertise loaded before you type a single word. This is the difference
+        between a junior engineer and a junior engineer who read the company wiki.
+      </p>
+    </div>
+
+    <div class="slide-num">30 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 31 — Agents and Rules
+  -->
+  <section class="slide" id="s31">
+    <div class="overline">Agents &amp; Rules</div>
+    <h2>Specialized Subagents + Persistent Standards</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">AGENTS (13)</div>
+        <ul>
+          <li><strong>Planner</strong> &mdash; enforces design-first, creates implementation plans</li>
+          <li><strong>Code Reviewer</strong> &mdash; reviews diffs for correctness, style, security</li>
+          <li><strong>Security Reviewer</strong> &mdash; focused threat modeling and vulnerability scan</li>
+        </ul>
+        <pre style="margin-top: 0.5rem;"><code><span style="color: var(--fg-dim);">---</span>
+<span style="color: var(--gold);">name:</span> security-reviewer
+<span style="color: var(--gold);">model:</span> claude-sonnet-4
+<span style="color: var(--gold);">tools:</span> [Read, Grep, Bash]
+<span style="color: var(--fg-dim);">---</span>
+You are a security-focused reviewer&hellip;</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">RULES (HIERARCHICAL)</div>
+        <ul>
+          <li><strong>Common</strong> rules apply to every project, every language</li>
+          <li><strong>Language-specific</strong> extensions: typescript/, python/, golang/</li>
+          <li>Example: &ldquo;Always use type annotations&rdquo; in python/ rules</li>
+          <li>Example: &ldquo;Prefer interfaces over types&rdquo; in typescript/ rules</li>
+        </ul>
+        <pre style="margin-top: 0.5rem;"><code>~/.claude/rules/
+&boxvr;&boxh;&boxh; common/          <span style="color: var(--fg-dim);"># Always active</span>
+&boxvr;&boxh;&boxh; python/
+&boxv;   &boxur;&boxh;&boxh; standards.md <span style="color: var(--fg-dim);"># Active in .py</span>
+&boxur;&boxh;&boxh; typescript/
+    &boxur;&boxh;&boxh; standards.md <span style="color: var(--fg-dim);"># Active in .ts</span></code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        Agents give the system specialized personas. Rules give it persistent standards. Together: every coding session
+        starts with expertise and discipline baked in.
+      </p>
+    </div>
+
+    <div class="slide-num">31 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 32 — Live Demo: The Brainstorming Gate
+  -->
+  <section class="slide" id="s32">
+    <div class="overline">Live Demo</div>
+    <h2>The Brainstorming Gate</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.4rem, 1vh, 0.7rem); font-size: clamp(0.8rem, 1.3vw, 1rem);">
+      Watch what happens when the Superpowers brainstorming skill is active and we ask Claude Code to build a feature.
+    </p>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Prompt: &ldquo;Add a dark mode toggle to this app&rdquo;</strong>
+        <span>A normal feature request. Without the skill, Claude would start coding immediately.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Skill activates &mdash; hard gate triggers</strong>
+        <span>Claude STOPS. Asks clarifying questions. Proposes 2&ndash;3 design approaches. Refuses to write code until
+          you approve a design.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>User reviews and approves design</strong>
+        <span>Only after explicit approval does implementation begin. The 40% planning phase is enforced by the system,
+          not just by willpower.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Compare: disable the skill, run the same prompt</strong>
+        <span>Without the skill, Claude immediately writes CSS and JS. No design. No clarifying questions. Classic vibe
+          coding.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        This is 40/20/40 enforced by architecture, not discipline.
+      </p>
+    </div>
+
+    <div class="slide-num">32 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 33 — Why This Matters
+  -->
+  <section class="slide" id="s33">
+    <div class="overline">Professional Development</div>
+    <h2>Why This Matters</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Vanilla tools are just the starting point</strong>
+        <span>Every professional team customizes their tooling. Superpowers is one example of how senior engineers build
+          leverage &mdash; not just features.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Architecture enforces process</strong>
+        <span>Instead of relying on memory or discipline, you encode your team&rsquo;s standards into the system. Design
+          review happens because the tool demands it.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Your course workflow uses this</strong>
+        <span>The brainstorming skill, TDD enforcement hooks, and /plan command are active in your lab environments. Now
+          you know what&rsquo;s running under the hood.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        By the end of this course, you will have configured your own skills, hooks, and commands.
+      </p>
+    </div>
+
+    <div class="slide-num">33 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 34 — Section Divider: Model Context Protocol (MCP)
+  -->
+  <section class="slide title-slide" id="s34">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Model Context Protocol<br>(MCP)</h1>
+    <div class="subtitle">Connecting agents to the world</div>
+    <div class="slide-num">34 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 35 — MCP Architecture Diagram
+  -->
+  <section class="slide" id="s35">
+    <div class="overline">Model Context Protocol &middot; REFERENCE</div>
+    <h2>MCP Architecture</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <rect x="250" y="20" width="400" height="70" rx="4" fill="rgba(193, 167, 120, 0.1)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.7" />
+        <text x="450" y="50" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="13"
+          font-weight="600" letter-spacing="2">CLAUDE CODE</text>
+        <text x="450" y="72" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.6">(agent, orchestrator)</text>
+
+        <line x1="450" y1="95" x2="450" y2="140" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <text x="450" y="130" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10"
+          font-weight="500" letter-spacing="1.5" opacity="0.6">MCP (STANDARD PROTOCOL)</text>
+
+        <line x1="450" y1="140" x2="120" y2="180" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="450" y1="140" x2="340" y2="180" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="450" y1="140" x2="560" y2="180" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="450" y1="140" x2="780" y2="180" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+
+        <rect x="40" y="180" width="160" height="110" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="120" y="210" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">GITHUB</text>
+        <text x="120" y="232" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">MCP Server</text>
+        <text x="120" y="260" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Issues, PRs,</text>
+        <text x="120" y="275" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">code search</text>
+
+        <rect x="260" y="180" width="160" height="110" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="340" y="210" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">SUPABASE</text>
+        <text x="340" y="232" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">MCP Server</text>
+        <text x="340" y="260" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Schema, queries,</text>
+        <text x="340" y="275" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">migrations</text>
+
+        <rect x="480" y="180" width="160" height="110" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="560" y="210" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">DOCS</text>
+        <text x="560" y="232" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">MCP Server</text>
+        <text x="560" y="260" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">API references,</text>
+        <text x="560" y="275" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">guides</text>
+
+        <rect x="700" y="180" width="160" height="110" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="780" y="210" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">FETCH</text>
+        <text x="780" y="232" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">MCP Server</text>
+        <text x="780" y="260" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Web pages,</text>
+        <text x="780" y="275" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">external APIs</text>
+      </svg>
+    </div>
+
+    <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      One consistent interface. The agent calls them all the same way.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+        Each MCP server is an <strong>independent service</strong>. The protocol is the boundary.
+        Same pattern returns in Week&nbsp;7 when you build in-app agents with their own tool definitions.
+      </p>
+    </div>
+
+    <div class="slide-num">35 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 36 — MCP Demos
+  -->
+  <section class="slide" id="s36">
+    <div class="overline">Live Demos</div>
+    <h2>MCP in Action</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">Playwright MCP</div>
+        <p>Give the agent a headless browser. It can navigate pages, click buttons, extract content, and test web apps
+          just like a human.</p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Figma MCP</div>
+        <p>Connect your agent to design files. It can read component structures, extract styles, and turn designs into
+          code directly.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        These aren't just APIs—they are standardized tools the agent can discover and use autonomously.
+      </p>
+    </div>
+
+    <div class="slide-num">36 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 37 — Section Divider: Multi-Agent Systems
+  -->
+  <section class="slide title-slide" id="s37">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Multi-Agent<br>Systems</h1>
+    <div class="subtitle">Orchestrating specialized workflows</div>
+    <div class="slide-num">37 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 38 — Multi-Agent Orchestration Diagram
+  -->
+  <section class="slide" id="s38">
+    <div class="overline">Multi-Agent Systems</div>
+    <h2>Orchestrator + Subagents</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <text x="450" y="25" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" letter-spacing="1.5" opacity="0.7">YOUR PROMPT</text>
+        <line x1="450" y1="32" x2="450" y2="52" stroke="#c1a778" stroke-width="1" opacity="0.4" />
+        <polygon points="446,50 450,58 454,50" fill="#c1a778" opacity="0.4" />
+
+        <rect x="275" y="60" width="350" height="70" rx="4" fill="rgba(193, 167, 120, 0.1)" stroke="#c1a778"
+          stroke-width="1.5" opacity="0.7" />
+        <text x="450" y="88" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
+          font-weight="600" letter-spacing="2">ORCHESTRATOR</text>
+        <text x="450" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.5">Plans, routes, holds the big picture</text>
+
+        <line x1="380" y1="135" x2="230" y2="175" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <line x1="520" y1="135" x2="670" y2="175" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+
+        <rect x="120" y="175" width="220" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="230" y="200" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">AGENT A</text>
+        <text x="230" y="222" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.5">Backend</text>
+        <text x="230" y="240" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Supabase tables, API routes</text>
+        <text x="230" y="258" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">Data validation</text>
+
+        <rect x="560" y="175" width="220" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2"
+          opacity="0.5" />
+        <text x="670" y="200" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="600" letter-spacing="1.5">AGENT B</text>
+        <text x="670" y="222" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
+          opacity="0.5">Frontend</text>
+        <text x="670" y="240" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">React components, routing</text>
+        <text x="670" y="258" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
+          opacity="0.4">UI interactions</text>
+
+        <line x1="230" y1="280" x2="380" y2="310" stroke="#c1a778" stroke-width="1" opacity="0.3"
+          stroke-dasharray="4 3" />
+        <line x1="670" y1="280" x2="520" y2="310" stroke="#c1a778" stroke-width="1" opacity="0.3"
+          stroke-dasharray="4 3" />
+
+        <rect x="275" y="305" width="350" height="45" rx="4" fill="rgba(193, 167, 120, 0.06)" stroke="#c1a778"
+          stroke-width="1" opacity="0.4" />
+        <text x="450" y="333" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
+          font-weight="500" letter-spacing="1.5" opacity="0.6">SYNTHESIZE &amp; RESOLVE CONFLICTS</text>
+      </svg>
+    </div>
+
+    <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      Each subagent is independent. The orchestrator carries the shared understanding.
+    </p>
+
+    <div class="slide-num">38 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 39 — When to Spawn Subagents
+  -->
+  <section class="slide" id="s39">
+    <div class="overline">Multi-Agent Decision</div>
+    <h2>When to Spawn Subagents</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>The task is decomposable</strong>
+        <span>There are genuinely independent pieces that can be worked on separately</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>The pieces are large enough</strong>
+        <span>Doing them sequentially would waste significant time</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Coordination cost &lt; parallelism gain</strong>
+        <span>Every agent you add is overhead. If the task is very short, spawning agents just slows you down. Same
+          calculation a manager makes when deciding whether to delegate.</span>
+      </div>
+    </div>
+
+    <div class="slide-num">39 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 40 — Plane Check: Classify These Tasks
+  -->
+  <section class="slide" id="s40">
+    <div class="overline">Agentic AI</div>
+    <h2>Plane Check: Classify These Tasks</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>"Refactor this file to use async/await"</strong>
+        <span style="color: var(--gold);">Plane 1 &mdash; Agent helping you write code</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>"Build a makerspace chatbot that answers safety questions"</strong>
+        <span style="color: var(--gold);">Plane 2 &mdash; Agent inside your product, facing users</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>"Review this PR for security issues"</strong>
+        <span style="color: var(--gold);">Plane 1 &mdash; Agent assisting your development workflow</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        Most projects should stay <strong>single-agent / multi-tool</strong>. Complexity earns its way in.
+      </p>
+    </div>
+
+    <div class="slide-num">40 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 41 — Section Divider: Evaluation & Testing
+  -->
+  <section class="slide title-slide" id="s41">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Evaluation &amp; Testing</h1>
+    <div class="subtitle">Verifying agent work and ensuring quality</div>
+    <div class="slide-num">41 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 42 — Introduction to Test Driven Development
+  -->
+  <section class="slide" id="s42">
+    <div class="overline">Testing Methodology</div>
+    <h2>Intro to Test-Driven Development (TDD)</h2>
+    <div class="accent-line"></div>
+
+    <div class="card" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); font-weight: 500; color: #f5f0e8;">What is TDD?</p>
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); margin-top: 0.3rem;">
+        Test-Driven Development is a software practice where you write failing tests <em>before</em> writing the code
+        that makes them pass.
+      </p>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">Red &rarr; Green &rarr; Refactor</div>
+        <ol style="margin-top: 0.3rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+          <li><strong>Red:</strong> Write a test that fails (no code exists).</li>
+          <li><strong>Green:</strong> Write just enough code to pass.</li>
+          <li><strong>Refactor:</strong> Clean up the code.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="col-label good">Why it works for AI</div>
+        <ul style="margin-top: 0.3rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+          <li>Clearly defines the success condition.</li>
+          <li>Prevents AI from testing only what it built.</li>
+          <li>Forces you to plan before execution.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide-num">42 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 43 — TDD: Write the Test First
+  -->
+  <section class="slide" id="s43">
+    <div class="overline">Test-Driven Development</div>
+    <h2>Write the Test First</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--fg-dim);"># Tell Claude: "make this pass"</span>
+
+def test_forecast_returns_five_days():
+    result = get_forecast("Seattle")
+    assert len(result) == 5
+    assert "high" in result[0]
+    assert "low" in result[0]</code></pre>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
+        When you hand Claude this test and say &ldquo;make this pass,&rdquo; you&rsquo;ve defined the <strong
+          style="color: var(--gold);">contract</strong>. You know exactly what you&rsquo;re checking.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        When Claude generates tests <em>after</em> the fact, it tends to test what it built &mdash; not what you needed.
+      </p>
+    </div>
+
+    <div class="slide-num">43 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 44 — TDD: Green & Refactor
+  -->
+  <section class="slide" id="s44">
+    <div class="overline">Test-Driven Development</div>
+    <h2>Green &amp; Refactor</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good" style="margin-bottom: 0.5rem;">1. Green (Pass the test)</div>
+        <pre><code style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">def get_forecast(city: str):
+    # Hardcoded to pass the assertion
+    # Just enough code to be "green"
+    return [
+        {"high": 70, "low": 50},
+        {"high": 72, "low": 51},
+        {"high": 68, "low": 49},
+        {"high": 65, "low": 48},
+        {"high": 75, "low": 55}
+    ]</code></pre>
+      </div>
+      <div class="card">
+        <div class="col-label good" style="margin-bottom: 0.5rem;">2. Refactor (Make it right)</div>
+        <pre><code style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">def get_forecast(city: str):
+    # Now integrate the real API
+    # The test ensures we don't break the shape
+    data = fetch_weather_api(city)
+    return [
+        {"high": day.max_temp, "low": day.min_temp}
+        for day in data.days[:5]
+    ]</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        With the test in place, the AI can safely refactor from a mock implementation to real API integration without
+        losing the required output structure.
+      </p>
+    </div>
+
+    <div class="slide-num">44 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 45 — Why TDD?
+  -->
+  <section class="slide" id="s45">
+    <div class="overline">Test-Driven Development</div>
+    <h2>Why TDD?</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Catches bugs before they ship</strong>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+          A failing test written first is a bug <em>prevented</em>, not a bug fixed.
+        </p>
+        <pre><code style="font-size: clamp(0.6rem, 0.9vw, 0.7rem);"><span style="color: var(--fg-dim);"># Without TDD — this edge case slips through</span>
+def validate_email(email: str) -> bool:
+    return "@" in email  <span style="color: var(--fg-dim);"># validate_email("") returns False... but what about " "?</span>
+
+<span style="color: var(--fg-dim);"># With TDD — you catch it before writing the function</span>
+def test_rejects_blank_email():
+    assert validate_email("") == False
+    assert validate_email("   ") == False  <span style="color: var(--fg-dim);"># This test forces you to handle whitespace</span></code></pre>
+      </div>
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Acts as living documentation</strong>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+          Tests describe what the code <em>should</em> do. When requirements change, update the test first. The code
+          follows.
+        </p>
+      </div>
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Enables fearless refactoring</strong>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+          With tests in place, you can restructure code knowing immediately if you broke something. Especially important
+          when AI rewrites your code.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      TDD is insurance. The premium is small; the payout when things go wrong is enormous.
+    </div>
+
+    <div class="slide-num">45 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 46 — When to Use TDD
+  -->
+  <section class="slide" id="s46">
+    <div class="overline">Test-Driven Development</div>
+    <h2>When to Use TDD</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">Use TDD When</div>
+        <ul style="margin-top: 0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+          <li>Business logic with defined inputs/outputs<br>
+            <span style="color: var(--fg-dim); font-size: 0.85em;">e.g. <code
+                class="inline-code">calculate_discount(price, tier)</code></span>
+          </li>
+          <li>Data transformations<br>
+            <span style="color: var(--fg-dim); font-size: 0.85em;">Parsing CSV, cleaning API responses</span>
+          </li>
+          <li>Bug fixes &mdash; write a test that reproduces the bug <em>first</em></li>
+          <li>AI-generated code &mdash; define the contract before the agent writes</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label good">Example: Bug Fix with TDD</div>
+        <pre><code style="font-size: clamp(0.6rem, 0.9vw, 0.7rem);"><span style="color: var(--fg-dim);"># Step 1: Write a test that reproduces the bug</span>
+def test_handles_negative_price():
+    result = calculate_discount(-10, "gold")
+    assert result == 0  <span style="color: var(--fg-dim);"># Negative price should return 0</span>
+
+<span style="color: var(--fg-dim);"># Step 2: Run it — it FAILS (bug confirmed!)</span>
+<span style="color: var(--fg-dim);"># Step 3: Fix the function</span>
+def calculate_discount(price: float, tier: str) -> float:
+    if price <= 0:
+        return 0
+    discount = TIER_RATES.get(tier, 0)
+    return round(price * (1 - discount), 2)</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      If you can describe the expected behavior in one sentence, you can write the test first.
+    </div>
+
+    <div class="slide-num">46 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 47 — When TDD Is Not Ideal
+  -->
+  <section class="slide" id="s47">
+    <div class="overline">Test-Driven Development</div>
+    <h2>When TDD Is Not Ideal</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Skip TDD When</div>
+        <ul style="margin-top: 0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+          <li>Exploratory prototyping &mdash; you don&rsquo;t know what you&rsquo;re building yet</li>
+          <li>UI layout and visual design &mdash; hard to assert pixel positions</li>
+          <li>One-off scripts or throwaway code</li>
+          <li>External API integration where the response shape is unknown</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label good">Instead, Do This</div>
+        <ul style="margin-top: 0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
+          <li>Prototype first, then add tests once the design stabilizes</li>
+          <li>Use manual testing or screenshot testing for UI</li>
+          <li>For API integration: write integration tests <em>after</em> you understand the response shape</li>
+          <li>Remember the <strong style="color: var(--gold);">40/20/40</strong> rule &mdash; testing always happens,
+            TDD is just one approach</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.6rem);">
+      TDD is a tool, not a religion. The goal is confidence in your code &mdash; pick the approach that gets you there.
+    </div>
+
+    <div class="slide-num">47 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 48 — AI-Generated Code Evaluation Checklist
+  -->
+  <section class="slide" id="s48">
+    <div class="overline">Verification</div>
+    <h2>AI-Generated Code Checklist</h2>
+    <div class="accent-line"></div>
+
+    <div class="card" style="padding: clamp(1.2rem, 2.5vw, 2rem);">
+      <ul class="checklist">
+        <li>Does it do what I actually asked?</li>
+        <li>Did I read every file it changed?</li>
+        <li>Are there hardcoded values I need to replace?</li>
+        <li>Does it handle edge cases &mdash; empty input, API errors, null values?</li>
+        <li style="color: var(--gold); font-weight: 500;">Could I explain this code to a teammate?</li>
+      </ul>
+    </div>
+
+    <div class="quote-block" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.9rem, 1.8vw, 1.3rem);">&ldquo;If you cannot explain it simply, you do not understand
+        it. And if you do not understand it, you do not own it. &rdquo;</p>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Discussion</strong><br>
+      Turn to your neighbor. Apply this checklist to the TDD demo code from earlier. How many items pass? Which ones
+      fail? Be ready to share one finding.
+    </div>
+
+    <div class="slide-num">48 / 49</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 49 — Test Taxonomy
+  -->
+  <section class="slide" id="s49">
+    <div class="overline">Testing &amp; Validation</div>
+    <h2>Test Taxonomy</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>What It Checks</th>
+          <th>Example from This Week</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Smoke</strong></td>
+          <td>Does it launch without crashing?</td>
+          <td><span class="inline-code">streamlit run app.py</span> &mdash; page loads</td>
+        </tr>
+        <tr>
+          <td><strong>Unit</strong></td>
+          <td>Does one function return the right value?</td>
+          <td><span class="inline-code">parse_date("2026-01-01")</span> returns a date object</td>
+        </tr>
+        <tr>
+          <td><strong>Integration</strong></td>
+          <td>Do two components work together?</td>
+          <td>API call + DataFrame rendering in Streamlit</td>
+        </tr>
+        <tr>
+          <td><strong>E2E</strong></td>
+          <td>Does the full user flow work?</td>
+          <td>Click Refresh &rarr; new data appears &rarr; chart updates</td>
+        </tr>
+        <tr>
+          <td><strong>Agent Eval</strong></td>
+          <td>Does the AI respond correctly?</td>
+          <td>Prompt &rarr; expected tool call &rarr; expected output format</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
+        This week: smoke + manual verification. By Week&nbsp;8: all five types.
+      </p>
+    </div>
+
+    <div class="slide-num">49 / 49</div>
+  </section>
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>
