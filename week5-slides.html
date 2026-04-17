@@ -4,10 +4,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHIN 510 Week 5 — APIs, Databases & the Full-Stack Transition</title>
+  <title>TECHIN 510 Week 5 — Full-Stack Web with Next.js</title>
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/slides.css">
   <link rel="stylesheet" href="css/site-nav.css">
+  <style>
+    /* Slide 10: IDE-like syntax palette scoped to this slide only. */
+    #s10 pre.ide-code {
+      margin: 0;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid rgba(140, 170, 238, 0.18);
+      border-radius: 8px;
+      background: #1e1e2e;
+      box-shadow: inset 0 0 0 1px rgba(30, 30, 46, 0.2);
+    }
+
+    #s10 pre.ide-code code {
+      color: #cdd6f4;
+      font-size: clamp(0.66rem, 1.02vw, 0.8rem);
+      line-height: 1.45;
+    }
+
+    #s10 .tok-kw {
+      color: #cba6f7;
+      font-weight: 600;
+    }
+
+    #s10 .tok-fn {
+      color: #89b4fa;
+    }
+
+    #s10 .tok-str {
+      color: #a6e3a1;
+    }
+
+    #s10 .tok-num {
+      color: #fab387;
+    }
+
+    #s10 .tok-op {
+      color: #f38ba8;
+    }
+  </style>
 </head>
 
 <body>
@@ -41,11 +79,11 @@
   <section class="slide title-slide" id="s1">
     <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
     <div class="accent-line"></div>
-    <h1>APIs, Databases &amp;<br>the Full-Stack Transition</h1>
-    <div class="subtitle">Week 5: From Streamlit to Next.js + Supabase</div>
+    <h1>Full-Stack Development</h1>
+    <div class="subtitle">Week 5: Next.js, APIs, Database </div>
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
-    <div class="slide-num">01 / 33</div>
+    <div class="slide-num">01 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -59,33 +97,40 @@
     <div class="num-feature">
       <div class="num-circle">1</div>
       <div class="num-text">
-        <strong>Explain why we transition from Streamlit to Next.js + Supabase</strong>
-        <span>Name at least three things Streamlit cannot do</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">2</div>
-      <div class="num-text">
         <strong>Justify a tech stack choice based on user requirements</strong>
         <span>Not personal preference or familiarity</span>
       </div>
     </div>
     <div class="num-feature">
-      <div class="num-circle">3</div>
+      <div class="num-circle">2</div>
       <div class="num-text">
         <strong>Read TypeScript by mapping Python equivalents</strong>
         <span><span class="inline-code">def</span> &rarr; <span class="inline-code">function</span>, <span class="inline-code">const</span>/<span class="inline-code">let</span>, unions &amp; optional fields, <span class="inline-code">interface</span> / <span class="inline-code">type</span></span>
       </div>
     </div>
     <div class="num-feature">
-      <div class="num-circle">4</div>
+      <div class="num-circle">3</div>
       <div class="num-text">
         <strong>Diagram the three-tier architecture</strong>
-        <span>Browser &harr; Server &harr; Database &mdash; contrast with single-tier</span>
+        <span>Browser &harr; Next.js (pages + route handlers) &harr; Database &mdash; contrast with single-tier Streamlit</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Map the end-to-end request path in Next.js</strong>
+        <span>UI &rarr; server component or API route &rarr; data layer &rarr; JSON/HTML back to the browser</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">5</div>
+      <div class="num-text">
+        <strong>Use Next.js as the integration surface for full-stack work</strong>
+        <span>File-based routes, Server vs Client Components, async data fetching, and Route Handlers as your &ldquo;backend in the framework&rdquo;</span>
       </div>
     </div>
 
-    <div class="slide-num">02 / 33</div>
+    <div class="slide-num">02 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -97,41 +142,35 @@
     <div class="accent-line"></div>
 
     <div class="num-feature">
-      <div class="num-circle">5</div>
+      <div class="num-circle">6</div>
       <div class="num-text">
         <strong>Call a REST API and parse the JSON response</strong>
         <span>Define an API and when to use it (server vs. client); use <span class="inline-code">curl</span> and Python <span class="inline-code">requests</span>, handle error cases</span>
       </div>
     </div>
     <div class="num-feature">
-      <div class="num-circle">6</div>
+      <div class="num-circle">7</div>
       <div class="num-text">
         <strong>Insert and query data from Supabase</strong>
         <span>Contrast database categories and why relational/Postgres fits this course; explain why data persists after the process terminates</span>
       </div>
     </div>
     <div class="num-feature">
-      <div class="num-circle">7</div>
+      <div class="num-circle">8</div>
       <div class="num-text">
         <strong>Identify security vulnerabilities in code</strong>
         <span>Hardcoded keys, leaking error internals, client-side secrets</span>
       </div>
     </div>
     <div class="num-feature">
-      <div class="num-circle">8</div>
+      <div class="num-circle">9</div>
       <div class="num-text">
         <strong>Use Claude Code in Plan Mode to scaffold a Next.js project</strong>
         <span>Evaluate which scaffold decisions required human judgment</span>
       </div>
     </div>
 
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
-        Today: lecture + demo (55 min) then hands-on lab (105 min)
-      </p>
-    </div>
-
-    <div class="slide-num">03 / 33</div>
+    <div class="slide-num">03 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -142,7 +181,7 @@
     <div class="accent-line"></div>
     <h1>The Transition</h1>
     <div class="subtitle">Why we change tech stacks</div>
-    <div class="slide-num">04 / 33</div>
+    <div class="slide-num">04 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -181,7 +220,7 @@
       </p>
     </div>
 
-    <div class="slide-num">05 / 33</div>
+    <div class="slide-num">05 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -211,7 +250,7 @@
       </div>
     </div>
 
-    <table class="slide-table" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+    <table class="slide-table" style="margin-top: clamp(0.35rem, 1vh, 0.65rem); font-size: clamp(0.62rem, 0.95vw, 0.76rem);">
       <thead>
         <tr><th>Weeks 1&ndash;4 Artifact</th><th>&rarr;</th><th>Weeks 5+ Artifact</th></tr>
       </thead>
@@ -219,10 +258,13 @@
         <tr><td>CSV schema / format contract</td><td>&rarr;</td><td>SQL schema + migrations</td></tr>
         <tr><td>DataFrame assert</td><td>&rarr;</td><td>Row-level security (RLS) policy</td></tr>
         <tr><td><span class="inline-code">st.metric()</span></td><td>&rarr;</td><td>React component</td></tr>
+        <tr><td>Flask / FastAPI route</td><td>&rarr;</td><td>Next.js Route Handler (<span class="inline-code">app/api/.../route.ts</span>)</td></tr>
+        <tr><td>Jinja / string HTML</td><td>&rarr;</td><td>React components (<span class="inline-code">page.tsx</span>, <span class="inline-code">layout.tsx</span>)</td></tr>
+        <tr><td>Pydantic / type hints</td><td>&rarr;</td><td>TypeScript <span class="inline-code">type</span> / <span class="inline-code">interface</span></td></tr>
       </tbody>
     </table>
 
-    <div class="slide-num">06 / 33</div>
+    <div class="slide-num">06 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -232,8 +274,7 @@
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="accent-line"></div>
     <h1>Tech Stack Decision</h1>
-    <div class="subtitle">Active learning: you predict first</div>
-    <div class="slide-num">07 / 33</div>
+    <div class="slide-num">07 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -277,7 +318,7 @@
       </p>
     </div>
 
-    <div class="slide-num">08 / 33</div>
+    <div class="slide-num">08 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -287,8 +328,8 @@
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="accent-line"></div>
     <h1>The TypeScript Bridge</h1>
-    <div class="subtitle">Same concepts, different punctuation</div>
-    <div class="slide-num">09 / 33</div>
+    <div class="subtitle">Same concepts, different punctuation &mdash; learn what you need to read starter kits</div>
+    <div class="slide-num">09 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -302,38 +343,40 @@
     <div class="two-col">
       <div class="card">
         <div class="col-label" style="color: var(--gold);">Python</div>
-        <pre style="margin:0;"><code><span style="color: var(--gold);">def</span> greet(name: str) -> str:
-    <span style="color: var(--gold);">return</span> f"Hello, {name}!"
+        <pre class="ide-code"><code><span class="tok-kw">def</span> <span class="tok-fn">greet</span>(name: str) <span class="tok-op">-></span> str:
+    <span class="tok-kw">return</span> f<span class="tok-str">"Hello, {name}!"</span>
 
-user = {"name": "Alice", "age": 25}
+user = {<span class="tok-str">"name"</span>: <span class="tok-str">"Alice"</span>, <span class="tok-str">"age"</span>: <span class="tok-num">25</span>}
 print(user["name"])
 
-numbers = [1, 2, 3]
-doubled = [n * 2 <span style="color: var(--gold);">for</span> n in numbers]</code></pre>
+numbers = [<span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>]
+doubled = [n * <span class="tok-num">2</span> <span class="tok-kw">for</span> n in numbers]</code></pre>
       </div>
       <div class="card">
         <div class="col-label" style="color: var(--gold);">TypeScript</div>
-        <pre style="margin:0;"><code><span style="color: var(--gold);">function</span> greet(name: string): string {
-  <span style="color: var(--gold);">return</span> `Hello, ${name}!`;
+        <pre class="ide-code"><code><span class="tok-kw">function</span> <span class="tok-fn">greet</span>(name: string): string {
+  <span class="tok-kw">return</span> <span class="tok-str">`Hello, ${name}!`</span>;
 }
-const user = { name: "Alice", age: 25 };
+<span class="tok-kw">const</span> user = { name: <span class="tok-str">"Alice"</span>, age: <span class="tok-num">25</span> };
 console.log(user.name);
 
-const numbers = [1, 2, 3];
-const doubled = numbers.map(n => n * 2);</code></pre>
+<span class="tok-kw">const</span> numbers = [<span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>];
+<span class="tok-kw">const</span> doubled = numbers.map(n <span class="tok-op">=></span> n * <span class="tok-num">2</span>);</code></pre>
       </div>
     </div>
 
     <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
       <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <span class="inline-code">def</span> &rarr; <span class="inline-code">function</span> &bull;
-        Indentation &rarr; curly braces &bull;
-        f-strings &rarr; backtick template literals &bull;
-        List comprehension &rarr; <span class="inline-code">.map()</span>
+        Start by mapping structure, not symbols:
+        <span class="inline-code">def greet(...)</span> and <span class="inline-code">function greet(...)</span> both declare a typed function;
+        Python indentation becomes TypeScript braces;
+        <span class="inline-code">f"Hello, {name}!"</span> maps directly to <span class="inline-code">`Hello, ${name}!`</span>;
+        dictionary key lookup and object dot access both read one field;
+        list comprehension and <span class="inline-code">.map()</span> both transform each element into a new list.
       </p>
     </div>
 
-    <div class="slide-num">10 / 33</div>
+    <div class="slide-num">10 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -366,7 +409,7 @@ const data = <span style="color: var(--gold);">await</span> res.json();</code></
       </p>
     </div>
 
-    <div class="slide-num">11 / 33</div>
+    <div class="slide-num">11 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -411,7 +454,7 @@ greet({ username: "Alice" });
       </p>
     </div>
 
-    <div class="slide-num">12 / 33</div>
+    <div class="slide-num">12 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -438,15 +481,15 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">13 / 33</div>
+    <div class="slide-num">13 / 37</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 14 — TypeScript: Syntax in Starter Kits
+     SLIDE 14 — TypeScript: Syntax
   -->
   <section class="slide" id="s14">
     <div class="overline">TypeScript</div>
-    <h2>Syntax You Will See in Starter Kits</h2>
+    <h2>Syntax You May See</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
@@ -487,7 +530,7 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">14 / 33</div>
+    <div class="slide-num">14 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -524,42 +567,58 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">15 / 33</div>
+    <div class="slide-num">15 / 37</div>
   </section>
 
 
   <!-- ============================================================
-     SLIDE 16 — React Hooks vs. Streamlit
+     SLIDE 16 — React through Next.js (not a separate React course)
   -->
   <section class="slide" id="s16">
-    <div class="overline">Mental Model Shift</div>
-    <h2>Hooks vs. Streamlit Re-Run</h2>
+    <div class="overline">UI Layer</div>
+    <h2>Learn React <em>Inside</em> Next.js</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
       <div class="card">
-        <div class="col-label" style="color: var(--red-soft);">Streamlit</div>
-        <p>Every interaction &rarr; <strong>entire script re-runs</strong> from top to bottom.</p>
-        <p style="margin-top:0.5rem; font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-          Simple, but cannot build real-time interactive UIs.
-        </p>
+        <div class="col-label" style="color: var(--gold);">1. Page = component</div>
+        <pre style="margin:0; font-size: clamp(0.62rem, 0.9vw, 0.74rem);"><code>export default function Page() {
+  return &lt;h1&gt;Hello&lt;/h1&gt;;
+}</code></pre>
       </div>
       <div class="card">
-        <div class="col-label" style="color: var(--green-soft);">React (Hooks)</div>
-        <p>Only the <strong>affected component</strong> re-renders when its state changes.</p>
-        <pre style="margin-top:0.5rem;"><code>const [todos, setTodos] = useState([]);
-<span style="color: var(--fg-dim);">// setTodos(newData) → re-renders
-// ONLY this component</span></code></pre>
+        <div class="col-label" style="color: var(--gold);">2. Props = arguments</div>
+        <pre style="margin:0; font-size: clamp(0.62rem, 0.9vw, 0.74rem);"><code>function Greeting({ name }: { name: string }) {
+  return &lt;p&gt;Hello {name}&lt;/p&gt;;
+}</code></pre>
       </div>
     </div>
 
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.8rem);">
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <span class="inline-code">useState</span> declares reactive state. <span class="inline-code">useEffect</span> runs code after the component appears (like "on_load"). You don't need to master these &mdash; just <strong style="color: var(--gold);">recognize them</strong> in the starter kit.
-      </p>
+    <div class="card" style="margin-top: clamp(0.4rem, 1vh, 0.65rem);">
+      <div class="col-label" style="color: var(--green-soft);">3. Client interactivity (<span class="inline-code">"use client"</span>)</div>
+      <pre style="margin:0; font-size: clamp(0.62rem, 0.9vw, 0.74rem);"><code>"use client";
+import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;button onClick={() => setCount(count + 1)}&gt;{count}&lt;/button&gt;
+  );
+}</code></pre>
     </div>
 
-    <div class="slide-num">16 / 33</div>
+    <div class="two-col" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--red-soft);">Streamlit</div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.84rem); margin:0;">Each interaction re-runs the whole script.</p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--green-soft);">React</div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.84rem); margin:0;">State updates re-render <strong>this</strong> component tree, not the entire app file.</p>
+      </div>
+    </div>
+
+    <div class="slide-num">16 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -600,18 +659,147 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">17 / 33</div>
+    <div class="slide-num">17 / 37</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 18 — Section Divider: Architecture
+     SLIDE 18 — Python → full-stack JS (mental map)
+  -->
+  <section class="slide" id="s18a">
+    <div class="overline">Not Starting From Zero</div>
+    <h2>Translate Python Habits to Next.js</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin: 0 0 clamp(0.45rem, 1.2vh, 0.7rem) 0;">
+      Same systems skills &mdash; new syntax and runtime. TypeScript is Python with different punctuation; async/await is the same idea.
+    </p>
+
+    <table class="compare-table" style="font-size: clamp(0.65rem, 1vw, 0.8rem);">
+      <thead>
+        <tr>
+          <th style="width: 38%;">Python world</th>
+          <th>JavaScript / Next.js</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FastAPI / Flask route</td>
+          <td>Route Handler: <span class="inline-code">app/api/.../route.ts</span> (<span class="inline-code">GET</span>, <span class="inline-code">POST</span>, &hellip;)</td>
+        </tr>
+        <tr>
+          <td>Django / Jinja templates</td>
+          <td>React components: <span class="inline-code">page.tsx</span>, <span class="inline-code">layout.tsx</span></td>
+        </tr>
+        <tr>
+          <td>Pydantic models / type hints</td>
+          <td><span class="inline-code">interface</span> / <span class="inline-code">type</span> for props, API JSON, DB rows</td>
+        </tr>
+        <tr>
+          <td><span class="inline-code">async def</span> + <span class="inline-code">await</span></td>
+          <td><span class="inline-code">async function</span> + <span class="inline-code">await fetch()</span> / DB client</td>
+        </tr>
+        <tr>
+          <td><span class="inline-code">import</span> modules</td>
+          <td>ES modules: <span class="inline-code">import</span> / <span class="inline-code">export</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="slide-num">18 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Next.js core mechanics
+  -->
+  <section class="slide" id="s18c">
+    <div class="overline">Next.js Core</div>
+    <h2>Routing, Data, and Your Backend in One Repo</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">File-based routes (<span class="inline-code">app/</span>)</div>
+        <pre style="margin:0; font-size: clamp(0.58rem, 0.85vw, 0.72rem);"><code>app/page.tsx           → /
+app/blog/page.tsx      → /blog
+app/api/items/route.ts → /api/items</code></pre>
+        <p style="margin-top:0.45rem; font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim);">
+          Folders define URLs. Colocate UI and server endpoints instead of separate repos.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--green-soft);">Server-side data (default)</div>
+        <pre style="margin:0; font-size: clamp(0.58rem, 0.85vw, 0.72rem);"><code>export default async function Page() {
+  const res = await fetch(url, { cache: 'no-store' });
+  const data = await res.json();
+  return &lt;div&gt;{data.name}&lt;/div&gt;;
+}</code></pre>
+        <p style="margin-top:0.45rem; font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim);">
+          Async Server Components: think &ldquo;Python awaited an HTTP client,&rdquo; then returned HTML.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.4rem, 1vh, 0.65rem);">
+      <div class="col-label" style="color: var(--gold);">Route Handler = small API you own</div>
+      <pre style="margin:0; font-size: clamp(0.58rem, 0.85vw, 0.72rem);"><code>// app/api/users/route.ts
+export async function GET() {
+  return Response.json([{ id: 1, name: "Alice" }]);
+}</code></pre>
+      <p style="margin-top:0.4rem; font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim); margin-bottom:0;">
+        Many Flask/FastAPI-style endpoints start here. Hide secrets, validate input, then call Supabase or an ORM (e.g. Prisma) when you outgrow simple queries.
+      </p>
+    </div>
+
+    <div class="slide-num">20 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — End-to-end flow + build ladder
+  -->
+  <section class="slide" id="s18d">
+    <div class="overline">One Thread to Memorize</div>
+    <h2>Full Request Flow &amp; Build Order</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box" style="margin-bottom: clamp(0.45rem, 1.2vh, 0.7rem);">
+      <p style="font-size: clamp(0.78rem, 1.2vw, 0.92rem); color: var(--fg); margin:0;">
+        <strong style="color: var(--gold);">Browser</strong> &rarr; <strong>Next.js page</strong> (Server or Client) &rarr; <strong>fetch / Route Handler</strong> &rarr; <strong>Postgres (Supabase)</strong> &rarr; <strong>JSON or rendered UI</strong> back to the browser.
+      </p>
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>High-ROI focus</strong>
+        <span>Architecture (routes + server/client), TypeScript at boundaries, one happy-path trace through the stack</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Learn by shipping (two-week sprint shape)</strong>
+        <span>Static page &rarr; client state &rarr; Route Handler &rarr; database &rarr; optional auth &mdash; one vertical slice beats passive reading</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim); margin:0;">
+        <strong style="color: var(--gold);">Defer for now:</strong> advanced React patterns, bundler archaeology, Auth.js details (we preview security this week; login patterns land in Week 6).
+      </p>
+    </div>
+
+    <div class="slide-num">21 / 37</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Section Divider: Architecture
   -->
   <section class="slide title-slide" id="s18">
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="accent-line"></div>
     <h1>Multi-Tier Architecture</h1>
     <div class="subtitle">From one file to three layers</div>
-    <div class="slide-num">18 / 33</div>
+    <div class="slide-num">22 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -692,7 +880,7 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">19 / 33</div>
+    <div class="slide-num">23 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -714,18 +902,18 @@ export interface Todo {
       <div class="num-circle">2</div>
       <div class="num-text">
         <strong>Request and response</strong>
-        <span>The client sends a <strong>method</strong> (GET, POST, &hellip;), a <strong>URL</strong>, optional <strong>headers</strong> and <strong>body</strong>. The server replies with a <strong>status code</strong> and a body (often JSON).</span>
+        <span>The client sends a method (GET, POST, &hellip;), a  URL, optional headers and body. The server replies with a status code and a body (often JSON).</span>
       </div>
     </div>
     <div class="num-feature">
       <div class="num-circle">3</div>
       <div class="num-text">
         <strong>Browsers vs. APIs</strong>
-        <span>Navigating to a site returns HTML for rendering. Calling an API returns <strong>machine-readable data</strong> (usually JSON) for your code to parse &mdash; the same workflow you have used since Week 1.</span>
+        <span>Navigating to a site returns HTML for rendering. Calling an API returns machine-readable data (usually JSON) for your code to parse &mdash; the same workflow you have used since Week 1.</span>
       </div>
     </div>
 
-    <div class="slide-num">20 / 33</div>
+    <div class="slide-num">24 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -762,7 +950,7 @@ export interface Todo {
       </p>
     </div>
 
-    <div class="slide-num">21 / 33</div>
+    <div class="slide-num">25 / 37</div>
   </section>
 
 
@@ -793,7 +981,7 @@ export interface Todo {
       </div>
     </div>
 
-    <div class="slide-num">22 / 33</div>
+    <div class="slide-num">26 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -822,7 +1010,7 @@ data = response.json()
       </p>
     </div>
 
-    <div class="slide-num">23 / 33</div>
+    <div class="slide-num">27 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -873,7 +1061,7 @@ expect(data).toHaveProperty('items');</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">24 / 33</div>
+    <div class="slide-num">28 / 37</div>
   </section>
 
 
@@ -906,7 +1094,7 @@ expect(data).toHaveProperty('items');</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">25 / 33</div>
+    <div class="slide-num">29 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -960,7 +1148,7 @@ expect(data).toHaveProperty('items');</code></pre>
       </div>
     </div>
 
-    <div class="slide-num">26 / 33</div>
+    <div class="slide-num">30 / 37</div>
   </section>
 
 
@@ -998,7 +1186,7 @@ result = supabase.table("bookmarks").select("*").execute()</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">27 / 33</div>
+    <div class="slide-num">31 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1009,7 +1197,7 @@ result = supabase.table("bookmarks").select("*").execute()</code></pre>
     <div class="accent-line"></div>
     <h1>Security Architecture</h1>
     <div class="subtitle">Three rules for Weeks 5&ndash;10</div>
-    <div class="slide-num">28 / 33</div>
+    <div class="slide-num">32 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1063,7 +1251,7 @@ requests.get(url,
       The header says which algorithm, the payload carries user data (like user ID and email), and the signature proves it hasn't been tampered with. <strong>Supabase creates and verifies JWTs automatically</strong> — you never build them by hand.
     </div>
 
-    <div class="slide-num">29 / 33</div>
+    <div class="slide-num">33 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1100,7 +1288,7 @@ response = requests.get(
       </p>
     </div>
 
-    <div class="slide-num">30 / 33</div>
+    <div class="slide-num">34 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1134,7 +1322,7 @@ export default function Dashboard() {
       </p>
     </div>
 
-    <div class="slide-num">31 / 33</div>
+    <div class="slide-num">35 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1178,7 +1366,7 @@ export default function Dashboard() {
       </p>
     </div>
 
-    <div class="slide-num">32 / 33</div>
+    <div class="slide-num">36 / 37</div>
   </section>
 
   <!-- ============================================================
@@ -1197,7 +1385,7 @@ export default function Dashboard() {
       Write the spec before touching any AI tool. The 40% planning determines whether the 20% coding produces the right thing.
     </p>
 
-    <div class="slide-num">33 / 33</div>
+    <div class="slide-num">37 / 37</div>
   </section>
 
 

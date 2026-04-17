@@ -186,13 +186,13 @@
       <div class="timeline-item">
         <div class="timeline-marker"></div>
         <div class="timeline-content">
-          <strong>W8</strong> &mdash; Automated tests + CI pipelines
+          <strong>W8</strong> &mdash; Automated tests + CI + cross-project validation
         </div>
       </div>
       <div class="timeline-item">
         <div class="timeline-marker"></div>
         <div class="timeline-content">
-          <strong>W9</strong> &mdash; Agent evaluation sets + demo stability
+          <strong>Pre-demo</strong> &mdash; Code review + polish (Week 10 lab; no separate W9 class)
         </div>
       </div>
     </div>
@@ -236,7 +236,8 @@
     <div class="accent-line"></div>
 
     <div class="diagram">
-      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="max-height: 55vh;">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="max-height: 55vh;" role="img"
+        aria-label="Three-layer architecture: browser pages, Next.js server components and routes, and Supabase tables with security boundaries between layers.">
         <rect x="80" y="10" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
           opacity="0.6" />
         <text x="450" y="35" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
@@ -323,6 +324,17 @@
         RLS enforces ownership. No single layer is trusted alone.
       </p>
     </div>
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Definition:</strong> Defense in depth means multiple independent checks protect the same data.
+      </p>
+      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Why it matters:</strong> if one check fails, another check can still prevent a breach.
+      </p>
+      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Example:</strong> university grade data is protected by page access rules, API checks, and row-level ownership in database.
+      </p>
+    </div>
 
     <div class="slide-num">07 / 37</div>
   </section>
@@ -352,17 +364,28 @@
         </div>
       </div>
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">SQL Schema</div>
-        <pre style="margin: 0;"><code>CREATE TABLE tasks (
-  id         uuid PRIMARY KEY
-             DEFAULT gen_random_uuid(),
-  user_id    uuid REFERENCES
-             auth.users NOT NULL,
-  title      text NOT NULL,
-  status     text DEFAULT 'pending',
-  created_at timestamptz
-             DEFAULT now()
-);</code></pre>
+        <div class="col-label" style="color: var(--gold);">Data Design Checklist (No Code)</div>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Identity field</strong>
+            <span>Every task needs a unique ID so updates and deletes are reliable.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Ownership field</strong>
+            <span>Every row must store who owns it (user_id) so privacy rules can work.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">3</div>
+          <div class="num-text">
+            <strong>Status + timestamp</strong>
+            <span>Track current state and creation time for sorting and accountability.</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -403,7 +426,25 @@
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="accent-line"></div>
     <h1>Auth &amp;<br>Protected Routes</h1>
-    <div class="subtitle">Who is this person?</div>
+    <div class="subtitle">Who is this user, and what can they access?</div>
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.3rem); max-width: 54ch;">
+      <p style="font-size: clamp(0.8rem, 1.3vw, 0.98rem); color: var(--fg); text-align: center;">
+        By the end of this section, you can explain this full chain:
+        <strong style="color: var(--gold);">sign-up -> sign-in -> session -> route guard -> user_id -> RLS</strong>.
+      </p>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.8rem); max-width: 56ch;">
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Authentication:</strong> confirm who the user is.
+        <strong style="color: var(--gold);">Authorization:</strong> decide what that user can access.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Protected route:</strong> a page only authorized users can open.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Example:</strong> all students can log in, but only advisors can open advising admin pages.
+      </p>
+    </div>
     <div class="slide-num">10 / 37</div>
   </section>
 
@@ -412,33 +453,61 @@
   -->
   <section class="slide" id="s11">
     <div class="overline">Authentication</div>
-    <h2>Sign-Up vs. Sign-In</h2>
+    <h2>Sign-Up vs. Sign-In (Plain Language)</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">Sign-Up (creates user)</div>
-        <pre style="margin: 0;"><code>const { data, error } =
-  await supabase.auth.signUp({
-    email: 'alice@example.com',
-    password: 'securepassword123'
-  });</code></pre>
+        <div class="col-label" style="color: var(--gold);">Sign-Up = make a new account (one time)</div>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Collect identity information</strong>
+            <span>Email, password, and account confirmation method.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Create account record</strong>
+            <span>System stores the new user as a long-term identity.</span>
+          </div>
+        </div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); margin-top: 0.5rem; color: var(--fg-dim);">
+          <strong style="color: var(--gold);">Real-world scenario:</strong> Student A creates a campus planner account before the quarter starts.
+        </p>
       </div>
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">Sign-In (creates session)</div>
-        <pre style="margin: 0;"><code>const { data, error } =
-  await supabase.auth
-    .signInWithPassword({
-      email: 'alice@example.com',
-      password: 'securepassword123'
-    });</code></pre>
+        <div class="col-label" style="color: var(--gold);">Sign-In = start a session (every login)</div>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Verify account owner</strong>
+            <span>System checks credentials and confirms this person is the account owner.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Start session</strong>
+            <span>System issues temporary proof of identity for this browsing session.</span>
+          </div>
+        </div>
+        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); margin-top: 0.5rem; color: var(--fg-dim);">
+          <strong style="color: var(--gold);">Real-world scenario:</strong> Student A returns tomorrow, signs in, and regains access to only their own tasks.
+        </p>
       </div>
     </div>
 
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
       <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        Always write <span class="inline-code">if (error) throw error;</span> after every auth call. AI-generated auth
-        code often skips the error check.
+        Quick memory rule: <strong style="color: var(--gold);">Sign-up creates identity.</strong>
+        <strong style="color: var(--gold);">Sign-in creates access.</strong>
+      </p>
+    </div>
+    <div class="card" style="margin-top: clamp(0.4rem, 1.3vh, 0.8rem);">
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        Class prompt: In a food-delivery app, what problems appear if you only support sign-up but not sign-in sessions?
       </p>
     </div>
 
@@ -450,21 +519,44 @@
   -->
   <section class="slide" id="s12">
     <div class="overline">Authentication</div>
-    <h2>Session Management</h2>
+    <h2>What Is a Session?</h2>
     <div class="accent-line"></div>
 
     <div class="quote-block">
-      <p>&ldquo;Sign-up is a one-time event. Session management is ongoing.&rdquo;</p>
+      <p>&ldquo;An account identifies you once. A session proves you are still logged in right now.&rdquo;</p>
     </div>
 
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">The session &mdash; stored as a JWT in the browser &mdash; is
-      what your app checks on every subsequent request to decide whether this person is allowed in.</p>
+    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      A <strong>session</strong> is the logged-in state. Your app checks it on each protected page load.
+    </p>
 
-    <div class="card" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">JWT (JSON Web Token):</strong> A signed, self-contained token that carries
-        the user&rsquo;s identity. Supabase creates it automatically on sign-in. Your app never stores passwords
-        &mdash; only the token.
+    <div class="two-col" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What is stored?</div>
+        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+          A <strong>JWT (JSON Web Token)</strong>: a signed token that says who the user is for this session.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What is NOT stored?</div>
+        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+          The user's raw password. Password checking stays inside Supabase Auth.
+        </p>
+      </div>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.3vh, 0.75rem);">
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Why it matters:</strong> without a valid session, app cannot safely tell if the visitor should access private data.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Example:</strong> online banking asks you to log in again after inactivity because old sessions can expire.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
+        Transition: once session exists, next question is
+        <strong style="color: var(--gold);">"How do we protect a route before content appears?"</strong>
       </p>
     </div>
 
@@ -476,27 +568,56 @@
   -->
   <section class="slide" id="s13">
     <div class="overline">Protected Routes</div>
-    <h2>The Bug: Flash of Content</h2>
+    <h2>Common Bug: Flash of Protected Content</h2>
     <div class="accent-line"></div>
 
-    <pre><code>// Naive guard — looks correct but has a UX/security flaw
-const { data: { user } } = await supabase.auth.getUser();
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Failure pattern (no code needed)</div>
+      <div class="num-feature" style="margin-top: 0.2rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>User opens protected page</strong>
+          <span>Dashboard starts to load before auth status is confirmed.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Auth check finishes late</strong>
+          <span>System discovers user is logged out and triggers redirect.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Brief data exposure</strong>
+          <span>Content flashes for a moment, which is still a trust violation.</span>
+        </div>
+      </div>
+    </div>
 
-if (!user) {
-  redirect('/login');
-}
-
-// Dashboard content renders here...</code></pre>
-
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">Navigate to <span class="inline-code">/dashboard</span> while
-      logged out. For a fraction of a second, the dashboard is visible before the redirect fires.</p>
+    <div class="card" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
+      <div class="col-label" style="color: var(--gold);">Example walkthrough (Context -> Action -> Outcome)</div>
+      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin-top: 0.25rem;">
+        <strong>Context:</strong> Student B tries to open Student A's advising dashboard URL.
+      </p>
+      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+        <strong>Action:</strong> dashboard begins rendering before the access check finishes.
+      </p>
+      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+        <strong>Outcome:</strong> private note flashes briefly, then redirect happens.
+      </p>
+    </div>
 
     <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
       <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--red-soft);">Flash-of-content:</strong> Users see content they should not see, even
-        briefly. A UX problem <em>and</em> a trust problem. Extremely common in AI-generated protected routes.
+        <strong style="color: var(--red-soft);">Flash-of-content:</strong> users see protected content even for 0.2
+        seconds. That is still a security/trust failure.
       </p>
     </div>
+    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.5rem;">
+      <strong style="color: var(--gold);">Example:</strong> a student briefly sees another student's private advising note before redirect.
+    </p>
 
     <div class="slide-num">13 / 37</div>
   </section>
@@ -506,26 +627,52 @@ if (!user) {
   -->
   <section class="slide" id="s14">
     <div class="overline">Protected Routes</div>
-    <h2>The Fix: Loading State First</h2>
+    <h2>The Fix: 3-Step Guard Order</h2>
     <div class="accent-line"></div>
 
-    <pre><code>const [user, setUser] = useState(null);
-const [loading, setLoading] = useState(true);
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Safe guard sequence</div>
+      <div class="num-feature" style="margin-top: 0.2rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Show neutral loading state first</strong>
+          <span>Do not show private content while identity is unknown.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Verify session status</strong>
+          <span>Check whether this user is authenticated right now.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Only then choose route</strong>
+          <span>Authenticated users see content; others are redirected.</span>
+        </div>
+      </div>
+    </div>
 
-useEffect(() => {
-  supabase.auth.getUser().then(({ data }) => {
-    setUser(data.user);
-    setLoading(false);
-  });
-}, []);
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+        Beginner checklist: <strong>loading first</strong> -> <strong>auth check second</strong> ->
+        <strong>content last</strong>.
+      </p>
+    </div>
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.6rem);">
+      <p style="font-size: clamp(0.71rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Server-side check:</strong> access decision is enforced in backend, not only in browser display logic.
+      </p>
+      <p style="font-size: clamp(0.71rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Why it matters:</strong> client-side redirects can be bypassed; server checks cannot be skipped from UI tricks.
+      </p>
+    </div>
 
-if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
-if (!user) redirect('/login');</code></pre>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
       <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--green-soft);">Loading state first, auth check second, content third.</strong> The
-        order of these three lines is not a style preference &mdash; it is a security decision.
+        <strong style="color: var(--green-soft);">This order is a security rule, not just coding style.</strong>
       </p>
     </div>
 
@@ -537,25 +684,50 @@ if (!user) redirect('/login');</code></pre>
   -->
   <section class="slide" id="s15">
     <div class="overline">CRUD</div>
-    <h2>Inserting with user_id</h2>
+    <h2>Insert Safely: Always Attach user_id</h2>
     <div class="accent-line"></div>
 
-    <pre><code>const { data: { user } } = await supabase.auth.getUser();
-if (!user) return;
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Insert design factors</div>
+      <div class="num-feature" style="margin-top: 0.2rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Check login status first</strong>
+          <span>No authenticated user means no write operation.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Validate input before saving</strong>
+          <span>Reject empty, oversized, or malformed values.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Attach ownership metadata</strong>
+          <span>Every task must include who owns it.</span>
+        </div>
+      </div>
+    </div>
 
-const { data, error } = await supabase
-  .from('tasks')
-  .insert({
-    title: newTaskTitle.trim(),
-    user_id: user.id    // critical: always attach user_id
-  })
-  .select()
-  .single();</code></pre>
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Definition:</strong> <span class="inline-code">user_id</span> is the ownership field that marks who owns each row.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        Why this matters: if row has no owner, RLS cannot decide who should see it.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Real-world scenario:</strong> in a shared apartment app, chores without owner tags become visible/editable by everyone.
+      </p>
+    </div>
 
     <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
       <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--gold);">AI warning:</strong> AI-generated forms almost always skip input validation.
-        Every form needs required fields checked, length limits enforced, and special characters handled safely.
+        <strong style="color: var(--gold);">Ownership rule:</strong>
+        <span class="inline-code">user_id</span> connects a task to one user, then RLS can enforce access.
       </p>
     </div>
 
@@ -567,38 +739,53 @@ const { data, error } = await supabase
   -->
   <section class="slide" id="s16">
     <div class="overline">Data Integrity</div>
-    <h2>Form Validation with Zod</h2>
+    <h2>Zod: Write Rules Once, Reuse Everywhere</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
-      <div>
-        <h3 style="margin-bottom:0.75rem;">Define the Schema</h3>
-        <pre><code><span style="color:var(--gold)">import</span> { z } <span style="color:var(--gold)">from</span> <span style="color:var(--green-soft)">"zod"</span>;
-
-<span style="color:var(--gold)">const</span> TaskSchema = z.object({
-  title: z.string().min(<span style="color:var(--gold)">1</span>).max(<span style="color:var(--gold)">100</span>),
-  due:   z.string().datetime().optional(),
-  done:  z.boolean().default(<span style="color:var(--gold)">false</span>),
-});</code></pre>
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">Step 1: Define Input Rules</h3>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">A</div>
+          <div class="num-text">
+            <strong>Required fields</strong>
+            <span>What must always be present?</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">B</div>
+          <div class="num-text">
+            <strong>Allowed format</strong>
+            <span>What shape, type, and length are acceptable?</span>
+          </div>
+        </div>
       </div>
-      <div>
-        <h3 style="margin-bottom:0.75rem;">Server-Side Parse</h3>
-        <pre><code><span style="color:var(--gold)">const</span> result = TaskSchema
-  .safeParse(formData);
-
-<span style="color:var(--gold)">if</span> (!result.success) {
-  <span style="color:var(--fg-dim)">// result.error.issues[]</span>
-  <span style="color:var(--gold)">return</span> { error: result.error };
-}
-
-<span style="color:var(--fg-dim)">// result.data is typed &amp; safe</span>
-<span style="color:var(--gold)">await</span> db.insert(result.data);</code></pre>
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">Step 2: Enforce Before Write</h3>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">A</div>
+          <div class="num-text">
+            <strong>Reject bad input clearly</strong>
+            <span>Return specific feedback so users can recover.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">B</div>
+          <div class="num-text">
+            <strong>Store only validated data</strong>
+            <span>Never write untrusted values directly to database.</span>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="highlight-box">
-      <strong>Client validation is UX. Server validation is security.</strong> You need both. Zod lets you share one schema across client and server.
+      <strong>Input validation (definition):</strong> rules that block malformed or unsafe input before it is stored or processed.
     </div>
+    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.45rem;">
+      <strong style="color: var(--gold);">Why it matters:</strong> invalid input can break data quality and create security risk.
+      <strong style="color: var(--gold);">Example:</strong> airline booking forms check date format in UI, then re-check on server before ticket creation.
+    </p>
 
     <div class="slide-num">16 / 37</div>
   </section>
@@ -608,41 +795,49 @@ const { data, error } = await supabase
   -->
   <section class="slide" id="s17">
     <div class="overline">Architecture</div>
-    <h2>Data Contracts at Every Boundary</h2>
+    <h2>Every Boundary Needs a Rule</h2>
     <div class="accent-line"></div>
 
     <table class="slide-table">
+      <caption style="caption-side: top; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        Data quality and security rules at each boundary.
+      </caption>
       <thead>
-        <tr><th>Boundary</th><th>Contract Mechanism</th><th>What It Enforces</th></tr>
+        <tr><th>Boundary</th><th>Rule Tool</th><th>Plain-Language Effect</th></tr>
       </thead>
       <tbody>
         <tr>
           <td>Browser &rarr; Server</td>
           <td>Zod schema</td>
-          <td>Input shape and types before processing</td>
+          <td>Bad form input is blocked before processing</td>
         </tr>
         <tr>
-          <td>Server &rarr; Server</td>
+          <td>Server function &rarr; Server function</td>
           <td>TypeScript interface</td>
-          <td>Function signatures and return types</td>
+          <td>Wrong data types are caught early</td>
         </tr>
         <tr>
           <td>Server &rarr; Database</td>
           <td>SQL constraints</td>
-          <td>NOT NULL, UNIQUE, CHECK, foreign keys</td>
+          <td>Database rejects impossible rows</td>
         </tr>
         <tr>
           <td>Database &rarr; User</td>
-          <td><span class="inline-code">auth.uid()</span> RLS</td>
-          <td>Row-level ownership enforcement</td>
+          <td><span class="inline-code">auth.uid()</span> (current user ID) RLS</td>
+          <td>Each user only sees their own rows</td>
         </tr>
       </tbody>
     </table>
 
     <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
       <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Same idea as CSV format contract (W3) and CTOC (W4).</strong>
-        Every boundary needs a contract. The mechanism changes; the principle doesn&rsquo;t.
+        <strong style="color: var(--gold);">Data contract (definition):</strong> an explicit agreement about what data shape and behavior are allowed at a boundary.
+      </p>
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Why it matters:</strong> without a contract, systems silently disagree and produce fragile bugs.
+      </p>
+      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Example:</strong> if mobile app sends "done" but API expects true/false, task status updates fail unpredictably.
       </p>
     </div>
 
@@ -654,7 +849,7 @@ const { data, error } = await supabase
   -->
   <section class="slide" id="s18">
     <div class="overline">Check Your Understanding</div>
-    <h2>The Auth Chain</h2>
+    <h2>Quick Self-Check: The Auth Chain</h2>
     <div class="accent-line"></div>
 
     <div class="highlight-box">
@@ -662,36 +857,38 @@ const { data, error } = await supabase
         <div class="num-circle">1</div>
         <div class="num-text">
           <strong>Sign-up</strong>
-          <span>creates the user record</span>
+          <span>creates user identity once</span>
         </div>
       </div>
       <div class="num-feature">
         <div class="num-circle">2</div>
         <div class="num-text">
           <strong>Sign-in</strong>
-          <span>creates the session (JWT)</span>
+          <span>creates a session token (JWT)</span>
         </div>
       </div>
       <div class="num-feature">
         <div class="num-circle">3</div>
         <div class="num-text">
           <strong>Session</strong>
-          <span>guards the route</span>
+          <span>decides if protected route can load</span>
         </div>
       </div>
       <div class="num-feature">
         <div class="num-circle">4</div>
         <div class="num-text">
           <strong>user_id</strong>
-          <span>links every row to its owner &rarr; enables RLS</span>
+          <span>marks row ownership so RLS can enforce access</span>
         </div>
       </div>
     </div>
 
-    <p
-      style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      This chain is the backbone of everything we build today.
-    </p>
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        Scenario test: Bob logs in and visits <span class="inline-code">/dashboard</span>.
+        If he can see Alice's task, which link in this chain failed?
+      </p>
+    </div>
 
     <div class="slide-num">18 / 37</div>
   </section>
@@ -822,9 +1019,20 @@ const { data, error } = await supabase
         return the wrong rows.
       </p>
     </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">RLS (definition):</strong> database-level rule that limits which rows each user can read or change.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Why it matters:</strong> it protects data even when app-layer logic has bugs.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Real-world scenario:</strong> payroll portal loads for all employees, but each person sees only their own salary row.
+      </p>
+    </div>
 
-    <p style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">Toggle RLS on in Supabase &rarr; reload the app &rarr; nothing
-      loads. That is intentional design. Now we write the policy that opens up exactly the access we want.</p>
+    <p style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">Toggle RLS on &rarr; reload app &rarr; nothing loads.
+      That is intentional design. Next step is adding policy rules that open only the right rows.</p>
 
     <div class="slide-num">24 / 37</div>
   </section>
@@ -834,24 +1042,41 @@ const { data, error } = await supabase
   -->
   <section class="slide" id="s25">
     <div class="overline">Row Level Security</div>
-    <h2>SELECT Policy</h2>
+    <h2>Read Policy (Who Can See What?)</h2>
     <div class="accent-line"></div>
 
-    <pre><code>CREATE POLICY "Users can only see their own data"
-ON tasks
-FOR SELECT
-USING (auth.uid() = user_id);</code></pre>
-    <p style="font-size:0.85em; color: var(--fg-dim); margin-top: 0.3rem;">
-      <span class="inline-code">auth.uid()</span> — Supabase function that returns the current user's UUID from their JWT. Used in RLS policies to restrict rows to their owner.
-    </p>
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Policy intent (plain language)</div>
+      <p style="font-size: clamp(0.76rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+        A signed-in user can read only rows where the row owner matches that signed-in user.
+      </p>
+    </div>
 
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">The <span class="inline-code">USING</span> clause is the
-      enforcement condition. The database evaluates this for every row, every query, automatically.</p>
+    <div class="num-feature" style="margin-top: clamp(0.4rem, 1.2vh, 0.7rem);">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Identity comes from session token</strong>
+        <span>Database reads who the current user is from authentication context.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Ownership comes from row data</strong>
+        <span>Each row already stores owner ID.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Rows are filtered automatically</strong>
+        <span>Users see only rows where identity and ownership match.</span>
+      </div>
+    </div>
 
     <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
       <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        Your TypeScript code never has to remember to add a <span class="inline-code">WHERE</span> clause &mdash; the
-        database adds it for you. Same table, same query. Alice sees Alice&rsquo;s data. Bob sees Bob&rsquo;s.
+        Example: in a banking app, two users open the same "transactions" page URL, but each sees only their own history.
       </p>
     </div>
 
@@ -869,27 +1094,37 @@ USING (auth.uid() = user_id);</code></pre>
     <div class="two-col">
       <div class="card">
         <div class="col-label bad">Without RLS</div>
-        <pre style="margin: 0;"><code>Your code:
-SELECT * FROM tasks
-  WHERE user_id = current_user
-
-Bug in code:
-SELECT * FROM tasks
-  ← forgets WHERE clause
-
-Result: ALL data exposed</code></pre>
+        <div class="num-feature" style="margin-top: 0.25rem;">
+          <div class="num-circle">A</div>
+          <div class="num-text">
+            <strong>Team relies on app-layer filtering</strong>
+            <span>Developers must remember to apply privacy filters in every query path.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">B</div>
+          <div class="num-text">
+            <strong>One missed filter leaks data</strong>
+            <span>A single oversight can expose all user rows.</span>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="col-label good">With RLS</div>
-        <pre style="margin: 0;"><code>Your code:
-SELECT * FROM tasks
-  ← no WHERE clause needed
-
-Database automatically adds:
-WHERE user_id = auth.uid()
-
-Result: only user's data,
-EVEN IF your code has a bug</code></pre>
+        <div class="num-feature" style="margin-top: 0.25rem;">
+          <div class="num-circle">A</div>
+          <div class="num-text">
+            <strong>Database enforces ownership by default</strong>
+            <span>Access rules travel with the table, not with each developer memory.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">B</div>
+          <div class="num-text">
+            <strong>Bug impact is contained</strong>
+            <span>Even if app logic is imperfect, cross-user reads are still blocked.</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -899,6 +1134,21 @@ EVEN IF your code has a bug</code></pre>
         defense. Your code <em>will</em> have bugs. RLS is the safety net.
       </p>
     </div>
+    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.6rem);">
+      <div class="col-label" style="color: var(--gold);">Dedicated comparison example</div>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong>Situation:</strong> hospital nurse opens patient list.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
+        <strong>Risk without RLS:</strong> one missed filter could expose all patient charts.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
+        <strong>Safer with RLS:</strong> database limits rows to assigned patients, even if app query is imperfect.
+      </p>
+    </div>
+    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.45rem;">
+      Class prompt: In healthcare, which is safer for patient privacy: relying only on UI checks or enforcing row-level rules in database?
+    </p>
 
     <div class="slide-num">26 / 37</div>
   </section>
@@ -915,16 +1165,16 @@ EVEN IF your code has a bug</code></pre>
       <div class="card">
         <div class="col-label bad">The Bug</div>
         <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-          Agent uses <span class="inline-code">service_role</span> key.<br>
-          Query: <span class="inline-code">SELECT * FROM todos</span><br>
+          Agent uses a high-privilege service key in user-facing flow.<br>
+          Data request asks for all rows without ownership filtering.<br>
           Result: <strong style="color: var(--red-soft);">Returns ALL users' data.</strong>
         </p>
       </div>
       <div class="card">
         <div class="col-label good">The Fix</div>
         <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-          Agent uses <span class="inline-code">user JWT</span>.<br>
-          Same query, RLS enforces: <span class="inline-code">auth.uid() = user_id</span><br>
+          Agent acts with end-user identity context, not admin context.<br>
+          Row-level rules compare session identity to row owner automatically.<br>
           Result: <strong style="color: var(--green-soft);">Only that user's data.</strong>
         </p>
       </div>
@@ -945,27 +1195,34 @@ EVEN IF your code has a bug</code></pre>
   -->
   <section class="slide" id="s28">
     <div class="overline">Row Level Security</div>
-    <h2>INSERT &amp; UPDATE Policies</h2>
+    <h2>Write Policy Design: Create, Edit, Delete</h2>
     <div class="accent-line"></div>
 
-    <pre><code>CREATE POLICY "Users can insert their own data"
-ON tasks FOR INSERT
-WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update their own data"
-ON tasks FOR UPDATE
-USING (auth.uid() = user_id);
-
-<span style="color:var(--fg-dim)">-- DELETE: users can only delete their own rows</span>
-<span style="color:var(--gold)">CREATE POLICY</span> <span style="color:var(--green-soft)">"delete_own"</span> <span style="color:var(--gold)">ON</span> tasks
-  <span style="color:var(--gold)">FOR DELETE USING</span> (auth.uid() = user_id);</code></pre>
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Outgoing check (read/update/delete)</div>
+        <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);">
+          "Can this user touch this existing row?"
+        </p>
+        <p style="font-size: clamp(0.72rem, 1.12vw, 0.85rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          Example: a student cannot delete another student's assignment reminder.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Incoming check (create/update)</div>
+        <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);">
+          "Is the new row state allowed before saving?"
+        </p>
+        <p style="font-size: clamp(0.72rem, 1.12vw, 0.85rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          Example: user cannot create a task and assign ownership to someone else.
+        </p>
+      </div>
+    </div>
 
     <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
       <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--gold);">USING vs WITH CHECK:</strong>
-        <span class="inline-code">USING</span> filters rows going <strong>out</strong> (SELECT, UPDATE, DELETE).
-        <span class="inline-code">WITH CHECK</span> filters rows coming <strong>in</strong> (INSERT, UPDATE).
-        Both need to be present &mdash; or you have a half-locked door.
+        <strong style="color: var(--gold);">Best practice:</strong> protect both directions of data flow.
+        If you only check reads but not writes, attackers can still inject unsafe rows.
       </p>
     </div>
 
@@ -980,17 +1237,32 @@ USING (auth.uid() = user_id);
     <h2>Testing Your RLS</h2>
     <div class="accent-line"></div>
 
-    <p>After writing policies, <strong>verify they work</strong> in the Supabase SQL Editor:</p>
+    <p>After writing policies, <strong>run behavior tests</strong> (not just "it compiles").</p>
 
-    <pre><code><span style="color:var(--fg-dim)">-- Simulate being user A</span>
-<span style="color:var(--gold)">SET</span> request.jwt.claims = '{"sub":"user-a-uuid"}';
-
-<span style="color:var(--fg-dim)">-- Try to read user B's data — should return 0 rows</span>
-<span style="color:var(--gold)">SELECT</span> * <span style="color:var(--gold)">FROM</span> tasks
-<span style="color:var(--gold)">WHERE</span> user_id = <span style="color:var(--green-soft)">'user-b-uuid'</span>;
-
-<span style="color:var(--fg-dim)">-- ✓ If 0 rows: RLS is working</span>
-<span style="color:var(--fg-dim)">-- ✗ If rows appear: policy is broken</span></code></pre>
+    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      <div class="col-label" style="color: var(--gold);">Test script in plain English</div>
+      <div class="num-feature" style="margin-top: 0.25rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Act as User A</strong>
+          <span>Open app using A's login context.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Try to access User B's row</strong>
+          <span>Expected result: zero visible rows, always.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Repeat for write actions</strong>
+          <span>Ensure create/update/delete rules also block cross-user actions.</span>
+        </div>
+      </div>
+    </div>
 
     <div class="highlight-box">
       <strong>Test every policy.</strong> A missing RLS policy means any authenticated user can read/modify any row. This is the #1 Supabase security mistake.
@@ -1041,30 +1313,27 @@ USING (auth.uid() = user_id);
     <h2>Find the Vulnerability</h2>
     <div class="accent-line"></div>
 
-    <pre><code>// Snippet A: Missing input validation
-async function createTask(title: string, description: string) {
-  await supabase.from('tasks').insert({
-    title: title,           // no length check, no sanitization
-    description: description,
-    user_id: user.id
-  });
-}
-
-// Snippet B: Client-side-only auth check
-export default function Dashboard() {
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) window.location.href = '/login';
-      else setUser(data.user);
-    });
-  }, []);
-  // Dashboard content renders here — no server-side verification
-}
-
-// Snippet C: No RLS enabled
-// Table 'tasks' has RLS disabled
-// Anyone with the Supabase anon key can query all rows</code></pre>
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Scenario A: Input Safety</div>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> note form accepts unlimited text and raw HTML.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> malicious script can be stored and shown to other users.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> validate length and sanitize before save.</p>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.7rem);">
+      <div class="col-label" style="color: var(--gold);">Scenario B: Route Protection</div>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> login check exists only in browser UI.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> direct API calls bypass UI redirect behavior.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> enforce checks on server for every protected endpoint.</p>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.7rem);">
+      <div class="col-label" style="color: var(--gold);">Scenario C: Data Access Rules</div>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> user-specific table has no row-level rule.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> any authenticated account can query all rows.</p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> add ownership-based row policy on all user data tables.</p>
+    </div>
+    <p style="font-size: clamp(0.74rem, 1.13vw, 0.86rem); color: var(--fg-dim); margin-top: 0.55rem;">
+      Class prompt: Rank A/B/C from "most likely in beginner projects" to "most damaging in production."
+    </p>
 
     <div class="slide-num">30 / 37</div>
   </section>
@@ -1081,15 +1350,16 @@ export default function Dashboard() {
       <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">A</div>
       <div class="num-text">
         <strong>Missing input validation</strong>
-        <span>No length limit, no sanitization. An XSS payload goes straight into the database and renders in another
-          user&rsquo;s browser. Fix: validate on the server before the insert.</span>
+        <span>No length limit, no sanitization. An XSS payload can go straight into the database and render in another
+          user&rsquo;s browser.</span>
+        <span>Fix: add clear limits and sanitize content on the server before writing.</span>
       </div>
     </div>
     <div class="num-feature">
       <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">B</div>
       <div class="num-text">
         <strong>Client-side-only auth check</strong>
-        <span>The <span class="inline-code">useEffect</span> runs in the browser. JavaScript can be disabled. A direct
+        <span>The auth check runs only in browser UI logic. JavaScript can be disabled. A direct
           API call bypasses it entirely. The redirect is a UX affordance, not a security control.</span>
       </div>
     </div>
@@ -1168,16 +1438,41 @@ export default function Dashboard() {
     <h2>CLAUDE.md as Context</h2>
     <div class="accent-line"></div>
 
-    <pre><code># CLAUDE.md
-
-## Data Model
-- Table: tasks (id, title, description, user_id, created_at)
-- RLS: users can only CRUD their own tasks
-- Auth: Supabase email auth required for all pages
-
-## Rules
-- All inputs validated: title max 100 chars, description max 500 chars
-- Server-side auth check on all API routes</code></pre>
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">What this file should declare</div>
+      <div class="num-feature" style="margin-top: 0.25rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Data model intent</strong>
+          <span>What entities exist and who owns them.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Security rules</strong>
+          <span>Which routes need auth, and which tables need row-level protection.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Validation boundaries</strong>
+          <span>What input limits are mandatory before data writes.</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Spec-driven workflow (definition):</strong> define requirements before implementation so humans and AI follow the same source of truth.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Why it matters:</strong> consistent specs reduce rework, security omissions, and contradictory outputs.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong style="color: var(--gold);">Example:</strong> when teaching team project handoff, everyone reads one requirements file instead of relying on memory.
+      </p>
+    </div>
 
     <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">When the data model, auth requirements, and RLS rules are in
       <span class="inline-code">CLAUDE.md</span>, the AI generates correct Supabase queries on the first try. No prompt
@@ -1229,24 +1524,29 @@ export default function Dashboard() {
       </div>
 
       <div class="card">
-        <pre style="margin: 0;"><code><span style="color: var(--fg-dim);"># install &amp; initialize</span>
-<span style="color: var(--gold);">$ npx openspec init</span>
-
-<span style="color: var(--fg-dim);"># write a proposal</span>
-<span style="color: var(--gold);">$ openspec propose</span>
-<span style="color: var(--green-soft);">  title: Add task filtering
-  why:   Users need to find tasks by status
-  what:
-    ADDED   FilterBar component
-    MODIFIED TaskList to accept filter prop
-  checklist:
-    [ ] FilterBar renders status options
-    [ ] TaskList filters by selected status
-    [ ] Default: show all tasks</span>
-
-<span style="color: var(--fg-dim);"># implement from the checklist</span>
-<span style="color: var(--gold);">$ openspec apply</span></code></pre>
+        <div class="col-label" style="color: var(--gold);">Example proposal (no command syntax)</div>
+        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.4rem;">
+          <strong>Title:</strong> Add task filtering
+        </p>
+        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.35rem;">
+          <strong>Why:</strong> students need to quickly separate done vs pending work.
+        </p>
+        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.35rem;">
+          <strong>What changes:</strong> add filter control, update task list behavior, keep "show all" default.
+        </p>
+        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+          <strong>Completion checklist:</strong> filter options visible, filtering correct, default behavior preserved.
+        </p>
       </div>
+    </div>
+    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
+      <div class="col-label" style="color: var(--gold);">Before vs After (team impact)</div>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
+        <strong>Before spec:</strong> teammates interpret goals differently, rebuild features twice, and miss security expectations.
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+        <strong>After spec:</strong> one checklist aligns everyone, delivery is faster, and auth/RLS requirements are explicit.
+      </p>
     </div>
 
     <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">

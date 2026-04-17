@@ -62,7 +62,7 @@
     <div class="subtitle">Week 4: Pandas, Visualization &amp; AI-Assisted Analysis</div>
     <div class="dots"><span></span><span></span><span></span></div>
     <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
-    <div class="slide-num">01 / 25</div>
+    <div class="slide-num">01 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <div class="slide-num">02 / 25</div>
+    <div class="slide-num">02 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -128,18 +128,6 @@
         <span>Situation &rarr; Data &rarr; Insight &rarr; Action</span>
       </div>
     </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--gold); margin-bottom: 0.4rem;">
-        <strong>Capstone Objectives</strong>
-      </p>
-      <div class="num-feature">
-        <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
-        <div class="num-text">
-          <strong>Design a story-first dashboard layout</strong>
-          <span>Map JTBD elements to specific dashboard components</span>
-        </div>
-      </div>
       <div class="num-feature">
         <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">D</div>
         <div class="num-text">
@@ -147,9 +135,8 @@
           <span>Verify data transformation correctness and explain why each matters</span>
         </div>
       </div>
-    </div>
 
-    <div class="slide-num">03 / 25</div>
+    <div class="slide-num">03 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -161,7 +148,7 @@
     <h1>The Data Pipeline</h1>
     <div class="subtitle">From physical to digital</div>
     <div class="dots"><span></span><span></span><span></span></div>
-    <div class="slide-num">04 / 25</div>
+    <div class="slide-num">04 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -236,7 +223,7 @@
       aggregation correctness).
     </p>
 
-    <div class="slide-num">05 / 25</div>
+    <div class="slide-num">05 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -259,7 +246,7 @@
       </p>
     </div>
 
-    <div class="slide-num">06 / 25</div>
+    <div class="slide-num">06 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -302,7 +289,7 @@
       </div>
     </div>
 
-    <div class="slide-num">07 / 25</div>
+    <div class="slide-num">07 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -312,9 +299,9 @@
     <div class="overline">Part 2</div>
     <div class="accent-line"></div>
     <h1>Prompt Engineering for Data</h1>
-    <div class="subtitle">From vague to precise</div>
+    <div class="subtitle">Instructions are necessary; context engineering makes them sufficient</div>
     <div class="dots"><span></span><span></span><span></span></div>
-    <div class="slide-num">08 / 25</div>
+    <div class="slide-num">08 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -336,27 +323,40 @@ building permits data</code></pre>
         </p>
       </div>
       <div class="card">
-        <div class="col-label good">CTOC-Specified Prompt</div>
-        <pre><code>Using the Seattle building permits
-DataFrame with columns [permit_type,
-neighborhood, application_date,
-issue_date, value, contractor],
-create a bar chart showing the count
-of permits by neighborhood.
-Group by 'neighborhood', count rows
-(not sum of value). Sort descending,
-show top 15. Use Plotly Express.</code></pre>
+        <div class="col-label good">Frameworked Prompt (CTOC)</div>
+        <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim); margin: 0 0 0.45rem 0;">
+          <strong style="color: var(--gold);">CTOC</strong> = Context, Task (Objective), Output format, Constraints
+        </p>
+        <pre><code>You are a data analyst.
+Task/Objective: Create a Plotly Express
+bar chart for permit counts by neighborhood.
+
+Context:
+"""DataFrame: seattle_permits
+Columns: permit_type, neighborhood,
+application_date, issue_date, value,
+contractor"""
+
+Output format:
+1) Python code only
+2) Group by neighborhood and count rows
+3) Sort descending, top 15
+4) Print dropped_row_count
+
+Constraints:
+- Drop rows with null neighborhood
+- Do not use sum(value)</code></pre>
       </div>
     </div>
 
     <div class="highlight-box" style="margin-top: clamp(0.5rem, 1vh, 0.8rem);">
       <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
-        <strong style="color: var(--gold);">The difference:</strong> The AI no longer guesses. Every ambiguous decision
-        is now specified.
+        <strong style="color: var(--gold);">The difference:</strong> this is no longer guesswork. Framework fields make
+        output repeatable, reviewable, and easier to debug when it fails.
       </p>
     </div>
 
-    <div class="slide-num">09 / 25</div>
+    <div class="slide-num">09 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -364,50 +364,75 @@ show top 15. Use Plotly Express.</code></pre>
   -->
   <section class="slide" id="s10">
     <div class="overline">When AI Breaks Quietly</div>
-    <h2>AI Failure Modes</h2>
+    <h2>AI Failure Modes (Context Design Failures)</h2>
     <div class="accent-line"></div>
 
-    <div class="num-feature">
-      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">1</div>
-      <div class="num-text">
-        <strong>Hallucinated column name</strong>
-        <span><span class="inline-code">df['permit_category']</span> &rarr; KeyError (or silently wrong if column exists
-          with different data)</span>
+    <div class="diagram" style="margin-bottom: clamp(0.35rem, 1vh, 0.55rem);">
+      <svg viewBox="0 0 880 118" xmlns="http://www.w3.org/2000/svg" style="max-height: 22vh; width: 100%;">
+        <rect x="12" y="22" width="168" height="72" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.55" />
+        <text x="96" y="48" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">THIN CONTEXT</text>
+        <text x="96" y="66" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">No schema / rules</text>
+        <text x="96" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">or verify state</text>
+        <line x1="182" y1="58" x2="228" y2="58" stroke="#c1a778" stroke-width="1.3" opacity="0.5" />
+        <polygon points="228,54 238,58 228,62" fill="#c1a778" opacity="0.5" />
+        <rect x="242" y="22" width="188" height="72" rx="4" fill="none" stroke="#a67c6d" stroke-width="1.4" opacity="0.65" />
+        <text x="336" y="48" text-anchor="middle" fill="#d4a89a" font-family="Inter, sans-serif" font-size="10" font-weight="600">MODEL + TOOL ERRORS</text>
+        <text x="336" y="66" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">Wrong field / agg /</text>
+        <text x="336" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">silent NaN handling</text>
+        <line x1="434" y1="58" x2="478" y2="58" stroke="#c1a778" stroke-width="1.3" opacity="0.5" />
+        <polygon points="478,54 488,58 478,62" fill="#c1a778" opacity="0.5" />
+        <rect x="492" y="22" width="178" height="72" rx="4" fill="none" stroke="#a67c6d" stroke-width="1.4" opacity="0.55" />
+        <text x="581" y="48" text-anchor="middle" fill="#d4a89a" font-family="Inter, sans-serif" font-size="10" font-weight="600">PLAUSIBLE OUTPUT</text>
+        <text x="581" y="66" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">Runs, charts render</text>
+        <text x="581" y="82" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">numbers still wrong</text>
+        <line x1="674" y1="58" x2="718" y2="58" stroke="#c1a778" stroke-width="1.3" opacity="0.5" />
+        <polygon points="718,54 728,58 718,62" fill="#c1a778" opacity="0.5" />
+        <rect x="732" y="22" width="136" height="72" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.65" />
+        <text x="800" y="52" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">BAD DECISION</text>
+        <text x="800" y="72" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">Stakeholder trust lost</text>
+        <text x="440" y="14" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="500" opacity="0.55">Causal chain: weak context lets wrong assumptions survive verification</text>
+      </svg>
+    </div>
+
+    <div class="two-col" style="align-items: stretch;">
+      <div class="num-feature" style="margin: 0;">
+        <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">1</div>
+        <div class="num-text">
+          <strong>Hallucinated column</strong>
+          <span><span class="inline-code">df['permit_category']</span> &mdash; missing schema in context</span>
+        </div>
+      </div>
+      <div class="num-feature" style="margin: 0;">
+        <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">2</div>
+        <div class="num-text">
+          <strong>Wrong aggregation</strong>
+          <span><span class="inline-code">.sum(value)</span> vs row <span class="inline-code">.count()</span> &mdash; no explicit objective in context</span>
+        </div>
       </div>
     </div>
-    <div class="num-feature">
-      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">2</div>
-      <div class="num-text">
-        <strong>Wrong aggregation</strong>
-        <span><span class="inline-code">.sum()</span> on &lsquo;value&rsquo; instead of <span
-            class="inline-code">.count()</span> on rows &mdash; chart looks fine, scale is completely wrong</span>
-      </div>
-    </div>
-    <div class="num-feature">
+    <div class="num-feature" style="margin-top: clamp(0.25rem, 0.8vh, 0.45rem);">
       <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">3</div>
       <div class="num-text">
         <strong>Silent NaN drop</strong>
-        <span><span class="inline-code">df.dropna()</span> called before grouping &mdash; neighborhoods with incomplete
-          records vanish, totals no longer match</span>
+        <span><span class="inline-code">dropna()</span> before grouping &mdash; no guardrail or assert in the workflow context</span>
       </div>
     </div>
 
-    <div class="card" style="margin-top: clamp(0.8rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        <strong style="color: var(--red-soft);">The worst kind of bug:</strong> the one that doesn&rsquo;t crash. The
-        code runs, the chart renders, and the numbers are wrong.
+    <div class="highlight-box" style="margin-top: clamp(0.45rem, 1vh, 0.65rem);">
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Why this slide matters:</strong> pretty prompts cannot fix missing system context
+        (real columns, allowed tools, what &ldquo;done&rdquo; means). Engineering context is how you prevent silent success.
       </p>
     </div>
 
-    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Agent analog:</strong> Hallucinated column = agent calls wrong tool.
-        Wrong aggregation = agent chains tools in wrong order.
-        Silent NaN drop = agent swallows tool errors. Same failure modes, different context.
+    <div class="card" style="margin-top: clamp(0.25rem, 0.8vh, 0.45rem);">
+      <p style="font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Prompt-level fixes:</strong> CTOC clarifies intent, fields, and output format.
+        <strong style="color: var(--gold);">Context-level fixes:</strong> attach schema, tool boundaries, and verification hooks so bad assumptions cannot survive.
       </p>
     </div>
 
-    <div class="slide-num">10 / 25</div>
+    <div class="slide-num">10 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -417,6 +442,14 @@ show top 15. Use Plotly Express.</code></pre>
     <div class="overline">Prompt Spec</div>
     <h2>The CTOC Template</h2>
     <div class="accent-line"></div>
+    <p style="font-size: clamp(0.75rem, 1.15vw, 0.95rem); color: var(--fg-dim); margin: clamp(0.35rem, 1vh, 0.55rem) 0 clamp(0.5rem, 1.2vh, 0.75rem) 0;">
+      <strong style="color: var(--gold);">Prompt engineering</strong> is how you write one high-quality instruction for one generation step.
+      <strong style="color: var(--gold);">CTOC</strong> is your Week 4 baseline framework.
+    </p>
+    <p style="font-size: clamp(0.7rem, 1.05vw, 0.86rem); color: var(--fg-dim); margin: 0 0 clamp(0.45rem, 1vh, 0.65rem) 0;">
+      It maps to common framework anatomy used in industry: context, objective, format, and guardrails.
+      In Week 4, stay single-turn: one frameworked prompt, one generation step, then verify.
+    </p>
 
     <div class="num-feature">
       <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
@@ -428,40 +461,39 @@ show top 15. Use Plotly Express.</code></pre>
     <div class="num-feature">
       <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">T</div>
       <div class="num-text">
-        <strong>Task</strong>
-        <span>Specific transformation &mdash; group by X, count/sum/mean Y</span>
+        <strong>Task (Objective)</strong>
+        <span>Specific transformation goal &mdash; group by X, count/sum/mean Y</span>
       </div>
     </div>
     <div class="num-feature">
       <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">O</div>
       <div class="num-text">
         <strong>Output</strong>
-        <span>Chart type, axis labels, sort order, title</span>
+        <span>Response contract: chart type, axis labels, sort order, title</span>
       </div>
     </div>
     <div class="num-feature">
       <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.6rem, 1vw, 0.8rem);">C</div>
       <div class="num-text">
-        <strong>Constraints</strong>
-        <span>Handle NaN by dropping/filling, top N only, date range X to Y</span>
+        <strong>Constraints (Guardrails)</strong>
+        <span>Handle NaN explicitly, top N only, date range X to Y, no silent assumptions</span>
       </div>
     </div>
 
     <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
       <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
-        Four fields. That&rsquo;s it. The 40% planning phase applied directly to data work.
+        Four fields. That&rsquo;s the 40% planning phase translated into a reusable prompt schema.
       </p>
     </div>
 
     <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
       <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">CTOC: A Chart-Level Functional Spec.</strong>
-        Same structure returns in Week&nbsp;7: Context, Task, Output, Constraints &mdash;
-        CTOC is a mini system prompt for each visualization.
+      <strong style="color: var(--gold);">Extension rule:</strong>
+        if audience/tone matters, add style/tone/audience fields (for example, COSTAR) on top of CTOC.
       </p>
     </div>
 
-    <div class="slide-num">11 / 25</div>
+    <div class="slide-num">11 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -471,134 +503,372 @@ show top 15. Use Plotly Express.</code></pre>
     <div class="overline">Code Example</div>
     <h2>CTOC: Seattle Building Permits</h2>
     <div class="accent-line"></div>
+    <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin: clamp(0.35rem, 1vh, 0.55rem) 0 clamp(0.45rem, 1vh, 0.65rem) 0;">
+      CTOC with explicit output contract + guardrails (filled below).
+    </p>
 
-    <pre><code><span style="color: var(--gold);">Context:</span> Seattle building permits DataFrame.
-         Columns: permit_type, neighborhood,
-         application_date, issue_date, value, contractor
+    <pre><code>Instruction: Generate Python code for one Plotly chart.
+Python code only; no markdown and no explanation.
 
-<span style="color: var(--gold);">Task:</span>    Group by neighborhood. Count the number of
-         rows (permits) per neighborhood.
-         Do NOT sum the value column.
+<span style="color: var(--gold);">Context:</span> """Seattle building permits DataFrame.
+Columns: permit_type, neighborhood,
+application_date, issue_date, value, contractor"""
 
-<span style="color: var(--gold);">Output:</span>  Plotly Express bar chart.
-         Title: "Building Permits by Neighborhood"
-         X-axis: "Neighborhood", Y-axis: "Permit Count"
-         Sort descending by count. Show top 15 only.
-         Rotate x-axis labels 45 degrees.
+<span style="color: var(--gold);">Task:</span> Objective is permit volume by neighborhood.
+      Group by neighborhood and count rows.
+
+<span style="color: var(--gold);">Output:</span> Return valid Python using Plotly Express.
+      - Figure title: "Building Permits by Neighborhood"
+      - X-axis: neighborhood, Y-axis: permit_count
+      - Sort descending and keep top 15
+      - Rotate x labels to 45 degrees
+      - Print dropped_row_count
 
 <span style="color: var(--gold);">Constraints:</span> Drop rows where neighborhood is NaN
-             before grouping. Log how many rows
-             were dropped.</code></pre>
+      before grouping. Do not infer new columns.
+      If a required column is missing, raise ValueError.</code></pre>
 
-    <div class="slide-num">12 / 25</div>
+    <div class="slide-num">12 / 30</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 13 — JTBD → Spec → Prompt → Verification
+     SLIDE 13 — Same task, different context pack
+  -->
+  <section class="slide" id="s12b">
+    <div class="overline">Context Pack</div>
+    <h2>Same Task, Different Context</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Thin context (prompt only)</div>
+        <pre><code>Make a bar chart of building
+permits by neighborhood.</code></pre>
+        <p style="font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim); margin-top: 0.45rem; line-height: 1.45;">
+          Model must guess columns, aggregation, null handling, and chart contract. Each guess is a silent failure point.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Engineered context pack</div>
+        <p style="font-size: clamp(0.65rem, 1vw, 0.78rem); color: var(--fg-dim); margin: 0 0 0.35rem 0;">
+          <strong style="color: var(--gold);">Bundle:</strong> real column list + objective (row counts, not dollars) + output spec + NaN rule + <span class="inline-code">ValueError</span> if schema missing + asserts after run.
+        </p>
+        <p style="font-size: clamp(0.65rem, 1vw, 0.78rem); color: var(--fg-dim); margin: 0;">
+          Same model &mdash; fewer wrong turns because the <em>environment</em> removed ambiguity before generation.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">13 / 30</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — JTBD → Spec → Prompt → Verification
   -->
   <section class="slide" id="s13">
     <div class="overline">The Full Flow</div>
-    <h2>JTBD &rarr; Spec &rarr; Prompt &rarr; Verify</h2>
+    <h2>JTBD &rarr; Context Pack &rarr; Implement &rarr; Verify</h2>
     <div class="accent-line"></div>
+    <p style="font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim); margin: 0 0 clamp(0.35rem, 1vh, 0.5rem) 0;">
+      <strong style="color: var(--gold);">Context pack</strong> = what you attach at generation time: schema, tool/API contracts, run state, and what you deliberately omit (signal density over volume).
+    </p>
 
     <div class="diagram">
-      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
-        <rect x="30" y="30" width="190" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <rect x="270" y="30" width="190" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <rect x="510" y="30" width="150" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <rect x="710" y="30" width="160" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
+      <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" style="max-height: 46vh;">
+        <text x="450" y="22" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600" opacity="0.65">CONTEXT PACK (feeds Implement + grounds Verify)</text>
+        <rect x="60" y="34" width="230" height="52" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="175" y="56" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">SCHEMA + RULES</text>
+        <text x="175" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">columns, dtypes, NaN policy</text>
+        <rect x="335" y="34" width="230" height="52" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="450" y="56" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">TOOLS + APIS</text>
+        <text x="450" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">allowed libs, file paths, limits</text>
+        <rect x="610" y="34" width="230" height="52" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="725" y="56" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">RUN STATE</text>
+        <text x="725" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.72">filters, date window, prior errors</text>
+        <line x1="175" y1="86" x2="175" y2="108" stroke="#c1a778" stroke-width="1" opacity="0.45" />
+        <line x1="450" y1="86" x2="450" y2="108" stroke="#c1a778" stroke-width="1" opacity="0.45" />
+        <line x1="725" y1="86" x2="725" y2="108" stroke="#c1a778" stroke-width="1" opacity="0.45" />
+        <line x1="175" y1="108" x2="585" y2="108" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <line x1="585" y1="108" x2="585" y2="118" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <polygon points="585,118 581,128 589,128" fill="#c1a778" opacity="0.45" />
 
-        <text x="125" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="600" letter-spacing="2">JTBD</text>
-        <text x="365" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="600" letter-spacing="2">SPEC (40%)</text>
-        <text x="585" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="600" letter-spacing="2">PROMPT (20%)</text>
-        <text x="790" y="57" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="600" letter-spacing="2">VERIFY (40%)</text>
+        <rect x="30" y="118" width="190" height="92" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <rect x="270" y="118" width="190" height="92" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <rect x="510" y="118" width="150" height="92" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <rect x="710" y="118" width="160" height="92" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
 
-        <text x="125" y="80" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">"When a city planner</text>
-        <text x="125" y="95" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">reviews permits..."</text>
-        <text x="125" y="115" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">→ defines aggregation</text>
+        <text x="125" y="142" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="1.5">JTBD</text>
+        <text x="365" y="142" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600" letter-spacing="1">FRAMEWORK (40%)</text>
+        <text x="585" y="142" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600" letter-spacing="1">IMPLEMENT (20%)</text>
+        <text x="790" y="142" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600" letter-spacing="1">VERIFY (40%)</text>
 
-        <text x="365" y="78" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">column names</text>
-        <text x="365" y="93" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">+ aggregation</text>
-        <text x="365" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">+ chart type + NaN</text>
+        <text x="125" y="164" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">decision + unit</text>
+        <text x="125" y="180" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">of analysis</text>
+        <text x="365" y="168" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">CTOC fields +</text>
+        <text x="365" y="184" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">few-shot if needed</text>
+        <text x="585" y="168" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">merge pack +</text>
+        <text x="585" y="184" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">generate + run</text>
+        <text x="790" y="168" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">asserts + spot</text>
+        <text x="790" y="184" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.72">checks + revise</text>
 
-        <text x="585" y="83" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">fills CTOC →</text>
-        <text x="585" y="98" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">AI generates code</text>
+        <line x1="225" y1="164" x2="265" y2="164" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="265,160 275,164 265,168" fill="#c1a778" opacity="0.5" />
+        <line x1="465" y1="164" x2="505" y2="164" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="505,160 515,164 505,168" fill="#c1a778" opacity="0.5" />
+        <line x1="665" y1="164" x2="705" y2="164" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
+        <polygon points="705,160 715,164 705,168" fill="#c1a778" opacity="0.5" />
 
-        <text x="790" y="78" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">assert len ≤ 15</text>
-        <text x="790" y="93" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">assert monotonic</text>
-        <text x="790" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">assert dropped ≥ 0</text>
+        <path d="M 790 230 Q 820 280 365 250 Q 120 235 125 218" fill="none" stroke="#c1a778" stroke-width="1.3" stroke-dasharray="5 4" opacity="0.55" />
+        <polygon points="125,218 133,214 129,226" fill="#c1a778" opacity="0.55" />
+        <text x="480" y="268" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="500" opacity="0.6">Feedback: failed asserts / new edge cases → update context pack + prompt</text>
 
-        <line x1="225" y1="80" x2="265" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
-        <polygon points="265,76 275,80 265,84" fill="#c1a778" opacity="0.5" />
-
-        <line x1="465" y1="80" x2="505" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
-        <polygon points="505,76 515,80 505,84" fill="#c1a778" opacity="0.5" />
-
-        <line x1="665" y1="80" x2="705" y2="80" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
-        <polygon points="705,76 715,80 705,84" fill="#c1a778" opacity="0.5" />
-
-        <rect x="100" y="180" width="280" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
-          opacity="0.3" />
-        <rect x="380" y="180" width="140" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
-          opacity="0.3" />
-        <rect x="520" y="180" width="280" height="24" rx="3" fill="none" stroke="#c1a778" stroke-width="1"
-          opacity="0.3" />
-
-        <text x="240" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="500" opacity="0.6">40% PLANNING</text>
-        <text x="450" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="500" opacity="0.6">20% CODE</text>
-        <text x="660" y="197" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11"
-          font-weight="500" opacity="0.6">40% VERIFICATION</text>
+        <rect x="100" y="292" width="280" height="22" rx="3" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <rect x="380" y="292" width="140" height="22" rx="3" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <rect x="520" y="292" width="280" height="22" rx="3" fill="none" stroke="#c1a778" stroke-width="1" opacity="0.3" />
+        <text x="240" y="307" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.55">40% PLANNING</text>
+        <text x="450" y="307" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.55">20% CODE</text>
+        <text x="660" y="307" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="500" opacity="0.55">40% VERIFY</text>
+        <text x="450" y="348" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.55">Week 4: single-turn generation + verification. Week 7: multi-step agents + compaction / external memory.</text>
       </svg>
     </div>
 
-    <div class="slide-num">13 / 25</div>
+    <div class="slide-num">14 / 30</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 14 — Quote: Context Engineering
+     SLIDE 15 — Why context engineering matters
+  -->
+  <section class="slide" id="s13b">
+    <div class="overline">Impact</div>
+    <h2>Why Context Engineering Matters</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram" style="margin-bottom: clamp(0.4rem, 1vh, 0.65rem);">
+      <svg viewBox="0 0 860 120" xmlns="http://www.w3.org/2000/svg" style="max-height: 22vh; width: 100%;">
+        <rect x="20" y="28" width="250" height="72" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="145" y="54" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">ATTENTION IS NOT UNIFORM</text>
+        <text x="145" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">Long windows still have &ldquo;lost in the middle&rdquo; risk</text>
+        <text x="145" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">(Liu et al., arXiv:2307.03172)</text>
+        <rect x="305" y="28" width="250" height="72" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="430" y="54" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">ORDERING + SELECTION</text>
+        <text x="430" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">Moving standards to the start of context</text>
+        <text x="430" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">cut style violations ~35&ndash;40% (reported deployment)</text>
+        <rect x="590" y="28" width="250" height="72" rx="4" fill="none" stroke="#c1a778" stroke-width="1.2" opacity="0.55" />
+        <text x="715" y="54" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">TOOLS MUST BE OBVIOUS</text>
+        <text x="715" y="74" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">If engineers cannot pick the right tool,</text>
+        <text x="715" y="90" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">agents will not reliably either</text>
+      </svg>
+    </div>
+
+    <div class="num-feature">
+      <div class="num-circle" style="font-family: var(--font-mono); font-size: clamp(0.55rem, 0.95vw, 0.72rem);">$</div>
+      <div class="num-text">
+        <strong>Business cost</strong>
+        <span>Teams adopt AI assistants widely, yet measured engineering throughput often stalls until workflows, evals, and context design catch up (see discussion in Faros&rsquo; developer blog).</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle" style="border-color: var(--green-soft); color: var(--green-soft);">&#10003;</div>
+      <div class="num-text">
+        <strong>What you control</strong>
+        <span>Smallest high-signal token set, JIT retrieval, compaction, external notes, clear tool surfaces &mdash; the craft of shipping reliable agentic workflows.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.45rem, 1vh, 0.65rem);">
+      <p style="font-size: clamp(0.65rem, 1vw, 0.78rem); color: var(--fg-dim); line-height: 1.45;">
+        <strong style="color: var(--gold);">Read more:</strong>
+        Anthropic &mdash; <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" style="color: var(--gold);">Effective context engineering for AI agents</a>
+        &middot; Faros &mdash; <a href="https://www.faros.ai/blog/context-engineering-for-developers" style="color: var(--gold);">Context engineering for developers</a>
+        &middot; Vijaykumar &mdash; <a href="https://abvijaykumar.medium.com/context-engineering-1-2-getting-the-best-out-of-agentic-ai-systems-90e4fe036faf" style="color: var(--gold);">Context Engineering 1&amp;2</a>
+      </p>
+    </div>
+
+    <div class="slide-num">15 / 30</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Quote: Context Engineering
   -->
   <section class="slide" id="s14">
     <div class="overline">Big Idea</div>
     <h2>Context Engineering</h2>
     <div class="accent-line"></div>
 
-    <div class="quote-block">
-      <p>&ldquo;You are not just writing a better prompt. You are engineering the context the model operates in so that
-        its failure modes are structurally eliminated.&rdquo;</p>
+    <div class="quote-block" style="margin-bottom: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.82rem, 1.35vw, 1rem);"><strong style="color: var(--gold);">Principle:</strong> seek the smallest set of
+        <em>high-signal</em> tokens that maximize the odds of a correct completion (vs. stuffing the window). This is the core shift from prompt
+        tweaking to <strong style="color: var(--gold);">context engineering</strong> described in Anthropic&rsquo;s agent-context guidance.</p>
     </div>
 
-    <div class="card" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        If you give the model the <strong style="color: var(--gold);">real column names</strong>, it cannot hallucinate
-        fake ones. The spec constrains the AI&rsquo;s generation space.
-      </p>
-      <p style="font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--fg-dim); margin-top: 0.5rem;">
-        This same principle applies in Week 7 when you write system prompts for the Anthropic API.
+    <div class="diagram">
+      <svg viewBox="0 0 880 200" xmlns="http://www.w3.org/2000/svg" style="max-height: 30vh; width: 100%;">
+        <text x="440" y="22" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600" opacity="0.75">Three pillars (what you load into the window)</text>
+        <rect x="40" y="40" width="240" height="130" rx="5" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="160" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600">GLOBAL</text>
+        <text x="160" y="92" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">Role, policies, standards,</text>
+        <text x="160" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">non-negotiable rules</text>
+        <text x="160" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Stable across tasks</text>
+        <rect x="320" y="40" width="240" height="130" rx="5" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="440" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600">DYNAMIC</text>
+        <text x="440" y="92" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">Schema slice, filters,</text>
+        <text x="440" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">session state, JIT snippets</text>
+        <text x="440" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Changes each run</text>
+        <rect x="600" y="40" width="240" height="130" rx="5" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="720" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600">TOOLS + MEMORY</text>
+        <text x="720" y="92" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">Callable surfaces,</text>
+        <text x="720" y="108" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.78">notes, compaction hooks</text>
+        <text x="720" y="136" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">Boundaries + recall</text>
+        <line x1="160" y1="175" x2="440" y2="175" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <line x1="440" y1="175" x2="720" y2="175" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <text x="440" y="192" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" opacity="0.55">Also engineer what you leave out (noise competes with signal)</text>
+      </svg>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.72rem, 1.08vw, 0.86rem); color: var(--fg-dim);">
+        Frameworks make prompts consistent; <strong style="color: var(--gold);">context engineering</strong> makes the whole operating envelope consistent.
+        Verification (asserts, spot checks) still closes the loop.
       </p>
     </div>
 
-    <div class="slide-num">14 / 25</div>
+    <div class="slide-num">16 / 30</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Framework Selection
+  -->
+  <section class="slide" id="s14b">
+    <div class="overline">Framework Selection</div>
+    <h2>CTOC vs. COSTAR vs. RACE (Week 4)</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram" style="margin-bottom: clamp(0.4rem, 1vh, 0.65rem);">
+      <svg viewBox="0 0 860 168" xmlns="http://www.w3.org/2000/svg" style="max-height: 28vh; width: 100%;">
+        <text x="430" y="20" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600" opacity="0.75">Pick the lightest framework that kills your likely failures</text>
+        <polygon points="430,40 480,62 430,84 380,62" fill="none" stroke="#c1a778" stroke-width="1.3" opacity="0.65" />
+        <text x="430" y="68" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" font-weight="600">What is the deliverable?</text>
+        <line x1="430" y1="84" x2="430" y2="98" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="430,98 434,108 426,108" fill="#c1a778" opacity="0.55" />
+        <rect x="70" y="112" width="200" height="48" rx="4" fill="none" stroke="#7d9b76" stroke-width="1.3" opacity="0.7" />
+        <text x="170" y="132" text-anchor="middle" fill="#a8c4a0" font-family="Inter, sans-serif" font-size="10" font-weight="600">DATA / CODE / CHART</text>
+        <text x="170" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">→ CTOC default</text>
+        <rect x="330" y="112" width="200" height="48" rx="4" fill="none" stroke="#c1a778" stroke-width="1.3" opacity="0.65" />
+        <text x="430" y="132" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">CUSTOMER-FACING COPY</text>
+        <text x="430" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">→ add COSTAR fields</text>
+        <rect x="590" y="112" width="200" height="48" rx="4" fill="none" stroke="#c1a778" stroke-width="1.3" opacity="0.65" />
+        <text x="690" y="132" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">QUICK INTERNAL TASK</text>
+        <text x="690" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.78">→ RACE-style brevity</text>
+        <line x1="410" y1="62" x2="170" y2="112" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <line x1="430" y1="84" x2="430" y2="112" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+        <line x1="450" y1="62" x2="690" y2="112" stroke="#c1a778" stroke-width="1" opacity="0.35" />
+      </svg>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">CTOC (default for this class)</div>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); line-height: 1.5;">
+          Schema + objective + output contract + guardrails. Best default for pandas / Plotly generation and dashboard logic.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Extend, do not replace</div>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); line-height: 1.5;">
+          <strong style="color: var(--gold);">COSTAR</strong> layers audience/tone on top of CTOC.
+          <strong style="color: var(--gold);">RACE</strong> is a compact memo when stakes are low and ambiguity is already solved elsewhere.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
+      <p style="font-size: clamp(0.76rem, 1.15vw, 0.9rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Heuristic:</strong> if missing context would force the model to guess about data shape or tools, fix context first &mdash; swapping frameworks rarely fixes that.
+      </p>
+    </div>
+
+    <div class="slide-num">17 / 30</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — Best Practices (footer 18 / 30)
+  -->
+  <section class="slide" id="s14c">
+    <div class="overline">Practice Pattern</div>
+    <h2>Best Practices: From Prompt Craft to Process</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram" style="margin-bottom: clamp(0.35rem, 1vh, 0.5rem);">
+      <svg viewBox="0 0 900 178" xmlns="http://www.w3.org/2000/svg" style="max-height: 26vh; max-width: 100%;">
+        <defs>
+          <marker id="w4-bp-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#c1a778" opacity="0.55" />
+          </marker>
+          <marker id="w4-bp-arrow-fb" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#c1a778" opacity="0.5" />
+          </marker>
+        </defs>
+        <!-- DEFINE -->
+        <rect x="18" y="12" width="158" height="74" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="97" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">DEFINE</text>
+        <text x="97" y="50" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.75">JTBD + CTOC + context pack</text>
+        <!-- RUN -->
+        <rect x="192" y="12" width="158" height="74" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="271" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">RUN</text>
+        <text x="271" y="50" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.75">generate + execute</text>
+        <!-- EVALUATE -->
+        <rect x="366" y="12" width="158" height="74" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="445" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">EVALUATE</text>
+        <text x="445" y="50" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.75">asserts + spot checks</text>
+        <!-- REVISE -->
+        <rect x="540" y="12" width="158" height="74" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="619" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">REVISE</text>
+        <text x="619" y="50" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.75">prompt + context delta</text>
+        <!-- COMPACT -->
+        <rect x="714" y="12" width="158" height="74" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6" />
+        <text x="793" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" font-weight="600">COMPACT</text>
+        <text x="793" y="50" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="8" opacity="0.75">drop stale tool output</text>
+        <!-- Forward arrows (center row) -->
+        <line x1="176" y1="49" x2="190" y2="49" stroke="#c1a778" stroke-width="1.5" opacity="0.5" marker-end="url(#w4-bp-arrow)" />
+        <line x1="350" y1="49" x2="364" y2="49" stroke="#c1a778" stroke-width="1.5" opacity="0.5" marker-end="url(#w4-bp-arrow)" />
+        <line x1="524" y1="49" x2="538" y2="49" stroke="#c1a778" stroke-width="1.5" opacity="0.5" marker-end="url(#w4-bp-arrow)" />
+        <line x1="698" y1="49" x2="712" y2="49" stroke="#c1a778" stroke-width="1.5" opacity="0.5" marker-end="url(#w4-bp-arrow)" />
+        <!-- Feedback loop: COMPACT → DEFINE (dashed arc below) -->
+        <path d="M 793 86 L 793 102 C 793 138 97 138 97 102 L 97 86" fill="none" stroke="#c1a778" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55" marker-end="url(#w4-bp-arrow-fb)" />
+        <text x="450" y="128" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="500" opacity="0.55">Feedback → next iteration</text>
+      </svg>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label good">Context + prompt craft</div>
+        <p style="font-size: clamp(0.66rem, 1.02vw, 0.8rem); color: var(--fg-dim); line-height: 1.48;">
+          Start minimal; add context only when a failure mode appears.<br />
+          Right-altitude instructions: specific, not brittle rule soup.<br />
+          Put instructions first; delimit data with fences.<br />
+          Prefer a few canonical examples over long edge-case lists.<br />
+          Design tools like APIs: clear names, non-overlapping jobs, token-efficient returns.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Ops + reliability</div>
+        <p style="font-size: clamp(0.66rem, 1.02vw, 0.8rem); color: var(--fg-dim); line-height: 1.48;">
+          JIT retrieval: pointers + fetch details at runtime.<br />
+          Hybrid preload: stable standards + exploratory snippets.<br />
+          Compact before you hit context rot; keep decisions + open issues.<br />
+          Externalize durable notes (playbooks) for long tasks.<br />
+          Version prompts like code; humans own architecture + eval gates.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.25rem, 0.8vh, 0.45rem);">
+      <p style="font-size: clamp(0.66rem, 1.02vw, 0.8rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Hint:</strong> for factual extraction and transforms, keep <span class="inline-code">temperature</span> low (often near 0) to reduce sampling noise.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -610,7 +880,7 @@ show top 15. Use Plotly Express.</code></pre>
     <h1>Visualization Landscape</h1>
     <div class="subtitle">Choosing the right library for the job</div>
     <div class="dots"><span></span><span></span><span></span></div>
-    <div class="slide-num">15 / 25</div>
+    <div class="slide-num">19 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -661,7 +931,7 @@ show top 15. Use Plotly Express.</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">16 / 25</div>
+    <div class="slide-num">20 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -673,7 +943,7 @@ show top 15. Use Plotly Express.</code></pre>
     <h1>Story-First Dashboard</h1>
     <div class="subtitle">Situation &rarr; Evidence &rarr; Action</div>
     <div class="dots"><span></span><span></span><span></span></div>
-    <div class="slide-num">17 / 25</div>
+    <div class="slide-num">21 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -711,7 +981,7 @@ show top 15. Use Plotly Express.</code></pre>
       </div>
     </div>
 
-    <div class="slide-num">18 / 25</div>
+    <div class="slide-num">22 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -743,7 +1013,7 @@ col3.metric(<span style="color: var(--green-soft);">"Conversion Rate"</span>, <s
       </div>
     </div>
 
-    <div class="slide-num">19 / 25</div>
+    <div class="slide-num">23 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -782,7 +1052,7 @@ col3.metric(<span style="color: var(--green-soft);">"Conversion Rate"</span>, <s
       </p>
     </div>
 
-    <div class="slide-num">20 / 25</div>
+    <div class="slide-num">24 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -794,7 +1064,7 @@ col3.metric(<span style="color: var(--green-soft);">"Conversion Rate"</span>, <s
     <h1>Trust But Verify</h1>
     <div class="subtitle">Assertion-Based Verification</div>
     <div class="dots"><span></span><span></span><span></span></div>
-    <div class="slide-num">21 / 25</div>
+    <div class="slide-num">25 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -841,7 +1111,7 @@ col3.metric(<span style="color: var(--green-soft);">"Conversion Rate"</span>, <s
       </p>
     </div>
 
-    <div class="slide-num">22 / 25</div>
+    <div class="slide-num">26 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -889,7 +1159,7 @@ assert len(filtered) <= len(df)</code></pre>
       </div>
     </div>
 
-    <div class="slide-num">23 / 25</div>
+    <div class="slide-num">27 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -945,7 +1215,7 @@ assert len(filtered) <= len(df)</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">24 / 25</div>
+    <div class="slide-num">28 / 30</div>
   </section>
 
   <!-- ============================================================
@@ -982,7 +1252,61 @@ assert filtered_df['region'].unique() == ['West']</code></pre>
       </p>
     </div>
 
-    <div class="slide-num">25 / 25</div>
+    <div class="slide-num">29 / 30</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 26 — Lab preview: Staff Interview
+  -->
+  <section class="slide" id="s26">
+    <div class="overline">Up Next in Lab</div>
+    <h2>Preview: Staff Interview</h2>
+    <div class="accent-line"></div>
+
+    <p style="margin-bottom: clamp(0.4rem, 1.2vh, 0.75rem); font-size: clamp(0.78rem, 1.2vw, 0.92rem); color: var(--fg-dim);">
+      Lab Component A: you will attend a <strong style="color: var(--fg);">staff interview</strong>, take notes, and turn what you hear into a JTBD statement, a <strong style="color: var(--fg);">story-to-prompt mapping</strong> (each row ties a story element to a prompt constraint), and your main scaffold prompt for the Streamlit build.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.4rem, 1.2vh, 0.85rem);">
+      <p style="font-size: clamp(0.75rem, 1.15vw, 0.9rem); color: var(--fg); margin-bottom: 0.35rem;">
+        <strong style="color: var(--gold);">Guest:</strong> Cristie Chase, Assistant Director of Finance &amp; Operations
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); line-height: 1.45;">
+        She builds multi-year enrollment and tuition projections in Excel and needs a more dynamic way to model growth scenarios and visualize financial impact&mdash;including net operating revenue dashboards and tuition sensitivity analysis.
+      </p>
+    </div>
+
+    <div style="margin-top: clamp(0.5rem, 1.4vh, 0.9rem);">
+      <div class="num-feature">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>During the interview</strong>
+          <span>Write down exact phrases; note data-driven vs. gut decisions; listen for frustrations, workarounds, and gaps; track metrics they mention (your KPI seeds).</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>After: JTBD</strong>
+          <span>&ldquo;When [interviewee] is [situation], they want to [motivation] so they can [outcome].&rdquo; Every chart should trace back to this sentence.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Deliverables</strong>
+          <span>Interview notes, one JTBD statement, story-to-prompt mapping table, and your main scaffold prompt for the Streamlit dashboard.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
+      <p style="font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim); line-height: 1.42; margin: 0;">
+        <strong style="color: var(--gold);">Scaffold prompt quality bar:</strong> spell out <strong style="color: var(--fg);">who</strong> is deciding and <strong style="color: var(--fg);">what</strong> decision the dashboard supports; <strong style="color: var(--fg);">which data</strong> (file, key columns, grain); <strong style="color: var(--fg);">layout in words</strong> (e.g. headline &rarr; KPIs &rarr; charts &rarr; recommendation); and <strong style="color: var(--fg);">verification</strong> (e.g. ask for <span class="inline-code">assert</span> checks on transformations).
+      </p>
+    </div>
+
+    <div class="slide-num">30 / 30</div>
   </section>
 
 
