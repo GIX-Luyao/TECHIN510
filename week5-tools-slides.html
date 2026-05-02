@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 5 Bonus — The Modern AI Coding Stack</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+  <style>
+    /* ---- Bonus deck local styles ---- */
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(0.5rem, 1.2vw, 1rem);
+      width: 100%;
+      max-width: 1100px;
+      margin: clamp(0.5rem, 1.5vh, 1rem) auto;
+    }
+
+    @media (max-width: 800px) {
+      .pipeline {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .pipeline-step {
+      background: var(--bg-card);
+      border: 1px solid rgba(193, 167, 120, 0.18);
+      border-radius: 4px;
+      padding: clamp(0.7rem, 1.6vw, 1.1rem);
+      position: relative;
+    }
+
+    .pipeline-step .step-num {
+      font-family: var(--font-mono);
+      font-size: clamp(0.55rem, 0.95vw, 0.7rem);
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .pipeline-step .step-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      color: #f5f0e8;
+      margin-bottom: 0.3rem;
+      line-height: 1.2;
+    }
+
+    .pipeline-step .step-tool {
+      font-family: var(--font-mono);
+      font-size: clamp(0.65rem, 1.05vw, 0.78rem);
+      color: var(--gold-bright);
+    }
+
+    .pipeline-step .step-desc {
+      font-size: clamp(0.7rem, 1.15vw, 0.85rem);
+      color: var(--fg-dim);
+      line-height: 1.45;
+      margin-top: 0.4rem;
+    }
+
+    /* Command list for tool slides */
+    .cmd-list {
+      list-style: none;
+      padding: 0;
+      margin: clamp(0.4rem, 1vh, 0.7rem) 0;
+    }
+
+    .cmd-list li {
+      display: grid;
+      grid-template-columns: minmax(180px, 26%) 1fr;
+      gap: clamp(0.6rem, 1.5vw, 1.2rem);
+      padding: clamp(0.4rem, 0.9vh, 0.65rem) 0;
+      border-bottom: 1px solid rgba(193, 167, 120, 0.08);
+      align-items: baseline;
+    }
+
+    .cmd-list li:last-child {
+      border-bottom: none;
+    }
+
+    .cmd-list .cmd {
+      font-family: var(--font-mono);
+      font-size: clamp(0.7rem, 1.18vw, 0.9rem);
+      color: var(--gold-bright);
+    }
+
+    .cmd-list .cmd-desc {
+      font-size: clamp(0.72rem, 1.2vw, 0.92rem);
+      color: var(--fg);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 700px) {
+      .cmd-list li {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+      }
+    }
+
+    /* Loop diagram */
+    .loop-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: clamp(0.4rem, 1vw, 0.8rem);
+      align-items: stretch;
+      margin: clamp(0.5rem, 1.5vh, 1rem) 0;
+    }
+
+    @media (max-width: 800px) {
+      .loop-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .loop-step {
+      border: 1px solid rgba(193, 167, 120, 0.18);
+      border-radius: 4px;
+      padding: clamp(0.7rem, 1.5vw, 1rem);
+      background: var(--bg-card);
+    }
+
+    .loop-step .label {
+      font-family: var(--font-mono);
+      font-size: clamp(0.55rem, 0.95vw, 0.7rem);
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .loop-step .verb {
+      font-family: var(--font-serif);
+      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      color: #f5f0e8;
+      line-height: 1.15;
+      margin-bottom: 0.3rem;
+    }
+
+    .loop-step .body {
+      font-size: clamp(0.7rem, 1.15vw, 0.85rem);
+      color: var(--fg-dim);
+      line-height: 1.4;
+    }
+
+    /* Compact reference grid */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.6rem, 1.6vw, 1.4rem);
+      margin-top: clamp(0.5rem, 1.5vh, 1rem);
+    }
+
+    @media (max-width: 700px) {
+      .ref-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ref-card {
+      border: 1px solid rgba(193, 167, 120, 0.15);
+      border-radius: 4px;
+      padding: clamp(0.7rem, 1.5vw, 1.1rem);
+      background: var(--bg-card);
+    }
+
+    .ref-card .ref-label {
+      font-family: var(--font-mono);
+      font-size: clamp(0.55rem, 0.95vw, 0.7rem);
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .ref-card .ref-title {
+      font-family: var(--font-serif);
+      font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+      color: #f5f0e8;
+      margin-bottom: 0.3rem;
+    }
+
+    .ref-card .ref-url {
+      font-family: var(--font-mono);
+      font-size: clamp(0.65rem, 1.05vw, 0.78rem);
+      color: var(--gold-bright);
+      word-break: break-all;
+    }
+
+    .ref-card .ref-note {
+      font-size: clamp(0.7rem, 1.15vw, 0.85rem);
+      color: var(--fg-dim);
+      line-height: 1.45;
+      margin-top: 0.35rem;
+    }
+
+    /* === Light-theme contrast overrides ===
+       Custom classes in this deck hardcode cream (#f5f0e8) for emphasis,
+       which is invisible on light-mode white cards. Mirror the pattern
+       theme.css uses for h1/h2: cream in dark, near-black in light. */
+    [data-theme="light"] .pipeline-step .step-title,
+    [data-theme="light"] .loop-step .verb,
+    [data-theme="light"] .ref-card .ref-title {
+      color: #1a1a1a;
+    }
+
+    /* Slide 15 SVG: rects and #f5f0e8 text are hardcoded dark/cream.
+       theme.css covers #e8e4dd text but not #f5f0e8 or rect fills. */
+    [data-theme="light"] #s15 svg rect {
+      fill: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    [data-theme="light"] #s15 svg text[fill="#f5f0e8"] {
+      fill: var(--fg) !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week5-tools-slides.html">W5+</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-slides.html">W7</a>
+      <a href="week8-slides.html">W8</a>
+      <a href="week9-slides.html">W9</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+
+  <div id="nav-dots"></div>
+
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026 &mdash; Week 5 Bonus</div>
+    <div class="accent-line"></div>
+    <h1>The Modern AI<br>Coding Stack</h1>
+    <div class="subtitle">A live tour of four tools that have changed how I ship code in 2026</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Why this deck exists
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">Read Me First</div>
+    <h2>Why a Bonus Deck</h2>
+    <div class="accent-line"></div>
+
+    <p>The AI tooling landscape moves faster than any syllabus. The original Week 5 deck &mdash; <em>Next.js, APIs, Databases</em> &mdash; is still the foundation, and you should review it offline before lab.</p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.4rem);">
+      <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 1.9vw, 1.3rem); line-height: 1.4;">Today is a working tour of the four tools I now reach for first &mdash; and that I expect you to use on this quarter's project.</p>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); color: var(--fg-dim); font-size: clamp(0.78rem, 1.3vw, 1rem);">
+      Original Week 5 slides: <a href="week5-slides.html" style="color: var(--gold-bright); text-decoration: none; border-bottom: 1px dashed var(--gold-dim);">week5-slides.html</a> &mdash; review at home.
+    </p>
+
+    <div class="slide-num">02 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — The Pipeline (visual)
+  -->
+  <section class="slide" id="s3">
+    <div class="overline">The Map</div>
+    <h2>One Workflow, Four Tools</h2>
+    <div class="accent-line"></div>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-num">01 &mdash; Plan</div>
+        <div class="step-title">Decide what to build</div>
+        <div class="step-tool">gstack</div>
+        <div class="step-desc">Slash commands that interrogate the idea before you touch code.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">02 &mdash; Design</div>
+        <div class="step-title">Shape the interface</div>
+        <div class="step-tool">Claude Design</div>
+        <div class="step-desc">Generate real HTML prototypes you can read and adapt.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">03 &mdash; Build</div>
+        <div class="step-title">Implement with tests first</div>
+        <div class="step-tool">superpowers</div>
+        <div class="step-desc">Skills that enforce TDD instead of letting AI freestyle.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">04 &mdash; Verify</div>
+        <div class="step-title">Confirm it actually works</div>
+        <div class="step-tool">Playwright CLI</div>
+        <div class="step-desc">End-to-end browser tests next to your code.</div>
+      </div>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); text-align: center; color: var(--fg-dim); font-size: clamp(0.75rem, 1.25vw, 0.95rem);">
+      Each tool owns one stage. None of them replaces your judgment.
+    </p>
+
+    <div class="slide-num">03 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — 40/20/40 reminder
+  -->
+  <section class="slide" id="s4">
+    <div class="overline">Why This Order Matters</div>
+    <h2>The 40 / 20 / 40 Discipline</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <div>
+        <div class="num-feature">
+          <div class="num-circle">40</div>
+          <div class="num-text">
+            <strong>Planning</strong>
+            <span>Understand the user, the constraints, the architecture &mdash; before any prompt that produces code.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">20</div>
+          <div class="num-text">
+            <strong>Coding</strong>
+            <span>The shortest part of the loop. AI handles most of the typing once the spec is clear.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">40</div>
+          <div class="num-text">
+            <strong>Testing</strong>
+            <span>Verification, regressions, edge cases. Equal weight to planning &mdash; not an afterthought.</span>
+          </div>
+        </div>
+      </div>
+      <div class="highlight-box">
+        <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 1.8vw, 1.3rem); line-height: 1.4;">
+          &ldquo;Vibe coding hangover&rdquo; is the cost of skipping the first 40% and the last 40%.
+        </p>
+        <p style="margin-top: 0.6rem; font-size: clamp(0.7rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+          Today's tools each defend one of those buckets so you can&rsquo;t skip them by accident.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">04 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — gstack intro
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">Tool 01</div>
+    <h2>gstack</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold);">A senior team, summoned through slash commands.</p>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">gstack is an open-source pack of Claude Code skills authored by Garry Tan&apos;s team. Each command turns Claude into a specific kind of reviewer or operator &mdash; CEO, eng manager, designer, QA &mdash; with a sharply scoped prompt and checklist.</p>
+
+    <div class="card" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.3vw, 1rem); color: var(--fg);">
+        Install once. Available in every project. Today we use it for the <strong style="color: var(--gold-bright);">planning stage</strong>.
+      </p>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); color: var(--fg-dim); font-size: clamp(0.75rem, 1.25vw, 0.95rem);">
+      Repository: <span class="inline-code">github.com/garrytan/gstack</span>
+    </p>
+
+    <div class="slide-num">05 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — gstack commands
+  -->
+  <section class="slide" id="s6">
+    <div class="overline">Tool 01 &mdash; In Practice</div>
+    <h2>The Commands That Earn Their Keep</h2>
+    <div class="accent-line"></div>
+
+    <ul class="cmd-list">
+      <li>
+        <div class="cmd">/office-hours</div>
+        <div class="cmd-desc">YC-style forcing questions on demand reality. Surfaces the &ldquo;who would actually use this?&rdquo; you&rsquo;ve been avoiding.</div>
+      </li>
+      <li>
+        <div class="cmd">/plan-ceo-review</div>
+        <div class="cmd-desc">Challenges premises. Asks whether you&rsquo;re building the 1x version when a 10x version is in reach.</div>
+      </li>
+      <li>
+        <div class="cmd">/plan-eng-review</div>
+        <div class="cmd-desc">Locks in architecture, data flow, edge cases. Produces the spec you&rsquo;ll execute against.</div>
+      </li>
+      <li>
+        <div class="cmd">/plan-design-review</div>
+        <div class="cmd-desc">Designer&rsquo;s eye on the UX flow before pixels exist. Catches confusing states early.</div>
+      </li>
+      <li>
+        <div class="cmd">/design-consultation</div>
+        <div class="cmd-desc">Researches the visual landscape, proposes a complete direction. Useful starting point for the design stage.</div>
+      </li>
+      <li>
+        <div class="cmd">/review &nbsp;&middot;&nbsp; /ship</div>
+        <div class="cmd-desc">Pre-merge diff review and a guarded ship workflow. Keeps the &ldquo;commit before testing&rdquo; instinct in check.</div>
+      </li>
+    </ul>
+
+    <div class="slide-num">06 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — gstack recommended loop
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Tool 01 &mdash; Try This</div>
+    <h2>A Realistic Planning Session</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--fg-dim);"># 1. Sanity check the idea</span>
+<span style="color: var(--gold-bright);">/office-hours</span>           &rarr; do real people want this?
+
+<span style="color: var(--fg-dim);"># 2. Pressure-test the framing</span>
+<span style="color: var(--gold-bright);">/plan-ceo-review</span>        &rarr; what would 10x look like?
+
+<span style="color: var(--fg-dim);"># 3. Lock in the build plan</span>
+<span style="color: var(--gold-bright);">/plan-eng-review</span>        &rarr; architecture, data flow, edge cases
+
+<span style="color: var(--fg-dim);"># 4. Decide the look</span>
+<span style="color: var(--gold-bright);">/design-consultation</span>    &rarr; visual direction
+</code></pre>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.78rem, 1.3vw, 1rem);">
+        <strong style="color: var(--gold-bright);">Lab task:</strong> run this sequence on your Week 5 Next.js project before you write a single component. Save the output of <span class="inline-code">/plan-eng-review</span> &mdash; you&rsquo;ll feed it to superpowers next.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Claude Design intro
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Tool 02</div>
+    <h2>Claude Design</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold);">A design surface that outputs real HTML, not screenshots.</p>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      Most AI-generated UI looks generic because the model is generating <em>tokens of code</em> from scratch every time. Claude Design flips that: it owns a dedicated visual workspace, lets you iterate on a design, and exports a real prototype file you can read, fetch from your IDE, and adapt.
+    </p>
+
+    <div class="two-col" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <div class="card">
+        <div class="col-label bad">Without it</div>
+        <p style="font-size: clamp(0.75rem, 1.25vw, 0.95rem);">Paste &ldquo;design me a settings page&rdquo; into chat &rarr; cardboard-cutout layout, generic palette, no consistency between screens.</p>
+      </div>
+      <div class="card">
+        <div class="col-label good">With it</div>
+        <p style="font-size: clamp(0.75rem, 1.25vw, 0.95rem);">Iterate visually, hold a coherent system across screens, hand the export to Claude Code as a reference instead of a starting prompt.</p>
+      </div>
+    </div>
+
+    <div class="slide-num">08 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Claude Design workflow
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Tool 02 &mdash; Workflow</div>
+    <h2>How To Use It Well</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Open the Design surface inside Claude</strong>
+        <span>It&rsquo;s a separate workspace &mdash; not a chat reply. Treat it like Figma, not autocomplete.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Describe the screen <em>and</em> the intent</strong>
+        <span>&ldquo;A settings page&rdquo; is weak. &ldquo;A settings page where the user can rotate API keys, with destructive actions visually separated&rdquo; is real.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Iterate visually, then export</strong>
+        <span>Refine inside the surface. When it&rsquo;s right, export the prototype HTML. You now have a versioned design artifact.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Hand the export to Claude Code as a <em>reference</em></strong>
+        <span>Not as final code. Tell Claude: &ldquo;match this layout and palette in our Next.js components.&rdquo;</span>
+      </div>
+    </div>
+
+    <div class="slide-num">09 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Claude Design recommended use
+  -->
+  <section class="slide" id="s10">
+    <div class="overline">Tool 02 &mdash; Try This</div>
+    <h2>Where Claude Design Fits This Quarter</h2>
+    <div class="accent-line"></div>
+
+    <div class="highlight-box">
+      <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 1.8vw, 1.3rem); line-height: 1.4;">
+        Use it for the front-end shell of your Week 5&ndash;6 project. Not the full app build.
+      </p>
+    </div>
+
+    <ul class="checklist" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <li><strong>After</strong> you have a plan from <span class="inline-code">/plan-eng-review</span></li>
+      <li><strong>Before</strong> you ask Claude Code to scaffold components</li>
+      <li>For 2&ndash;3 screens that define the look &mdash; not every page</li>
+      <li>Export, version it, then iterate in real code</li>
+    </ul>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); color: var(--fg-dim); font-size: clamp(0.75rem, 1.25vw, 0.95rem);">
+      Reference: <span class="inline-code">support.claude.com/&hellip;/get-started-with-claude-design</span>
+    </p>
+
+    <div class="slide-num">10 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — superpowers intro
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Tool 03</div>
+    <h2>superpowers</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold);">A library of skills that make Claude work like a disciplined engineer.</p>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      Each &ldquo;superpower&rdquo; is a structured workflow that Claude Code activates automatically when it sees the right kind of task. They&rsquo;re not chat templates &mdash; they enforce process. Today&rsquo;s focus is the one that runs the build stage:
+    </p>
+
+    <div class="card" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <p style="font-family: var(--font-mono); font-size: clamp(0.85rem, 1.5vw, 1.1rem); color: var(--gold-bright);">superpowers:test-driven-development</p>
+      <p style="margin-top: 0.4rem; font-size: clamp(0.75rem, 1.25vw, 0.95rem); color: var(--fg-dim);">
+        &ldquo;Use when implementing any feature or bugfix, before writing implementation code.&rdquo;
+      </p>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); font-size: clamp(0.75rem, 1.25vw, 0.95rem); color: var(--fg-dim);">
+      Companion skills: <span class="inline-code">brainstorming</span>, <span class="inline-code">writing-plans</span>, <span class="inline-code">executing-plans</span>, <span class="inline-code">systematic-debugging</span>, <span class="inline-code">verification-before-completion</span>.
+    </p>
+
+    <div class="slide-num">11 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — TDD loop with superpowers
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Tool 03 &mdash; The Loop</div>
+    <h2>Red &middot; Green &middot; Refactor &middot; Verify</h2>
+    <div class="accent-line"></div>
+
+    <div class="loop-row">
+      <div class="loop-step">
+        <div class="label">01 &mdash; Red</div>
+        <div class="verb">Write a failing test</div>
+        <div class="body">superpowers refuses to write implementation code first. The test names the contract.</div>
+      </div>
+      <div class="loop-step">
+        <div class="label">02 &mdash; Green</div>
+        <div class="verb">Smallest passing change</div>
+        <div class="body">Just enough code to make the new test pass &mdash; no &ldquo;while we&rsquo;re here&rdquo; refactors.</div>
+      </div>
+      <div class="loop-step">
+        <div class="label">03 &mdash; Refactor</div>
+        <div class="verb">Clean while green</div>
+        <div class="body">Tests still pass. Improve names, extract helpers, only after the bar is green.</div>
+      </div>
+      <div class="loop-step">
+        <div class="label">04 &mdash; Verify</div>
+        <div class="verb">Don&rsquo;t self-grade</div>
+        <div class="body">superpowers:verification-before-completion runs the suite and inspects output before claiming done.</div>
+      </div>
+    </div>
+
+    <div class="quote-block" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p>Don&rsquo;t let AI mark its own homework. The verification skill exists because models will tell you they finished while the test runner is still red.</p>
+      <div class="quote-attr">&mdash; the lesson behind <span class="inline-code">verification-before-completion</span></div>
+    </div>
+
+    <div class="slide-num">12 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Playwright intro
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">Tool 04</div>
+    <h2>Playwright CLI</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold);">End-to-end browser tests, versioned alongside your code.</p>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      Unit tests prove your functions work. Playwright proves the <em>app</em> works &mdash; that a real browser, against your real Next.js + Supabase stack, can sign up, click through, and not blow up.
+    </p>
+
+    <div class="two-col" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <div class="card">
+        <div class="col-label bad">Manual QA</div>
+        <p style="font-size: clamp(0.75rem, 1.25vw, 0.95rem);">Click through the flow yourself before every push. Forget half the edge cases. Find the regression in production.</p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Playwright</div>
+        <p style="font-size: clamp(0.75rem, 1.25vw, 0.95rem);">Tests survive the week. Run on CI before deploy. Catch the regression you&rsquo;d never click through manually.</p>
+      </div>
+    </div>
+
+    <div class="slide-num">13 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — Playwright commands
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Tool 04 &mdash; The Three Commands</div>
+    <h2>You Only Need Three</h2>
+    <div class="accent-line"></div>
+
+    <ul class="cmd-list">
+      <li>
+        <div class="cmd">npm init playwright@latest</div>
+        <div class="cmd-desc">One-time setup. Adds <span class="inline-code">playwright.config.ts</span>, a sample test, and the browser binaries.</div>
+      </li>
+      <li>
+        <div class="cmd">npx playwright codegen</div>
+        <div class="cmd-desc">Opens a real browser. Click through your app &mdash; Playwright transcribes each interaction into a runnable test. The fastest way to write your first one.</div>
+      </li>
+      <li>
+        <div class="cmd">npx playwright test &mdash;&mdash;ui</div>
+        <div class="cmd-desc">Run the suite in interactive UI mode. Step through, see screenshots at each action, debug failures visually.</div>
+      </li>
+    </ul>
+
+    <div class="highlight-box">
+      <p style="font-size: clamp(0.78rem, 1.3vw, 1rem);">
+        <strong style="color: var(--gold-bright);">Lab task:</strong> for your Next.js project, write one Playwright test that covers the critical sign-up &rarr; first-action flow. That single test will catch 80% of the regressions you&rsquo;d ship by accident.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — Putting it together
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">The Whole Loop</div>
+    <h2>One Project, All Four Tools</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Title row -->
+        <text x="450" y="30" text-anchor="middle" fill="#c1a778" font-family="Inter, system-ui, sans-serif" font-size="13" letter-spacing="3" font-weight="600">PLAN  ·  DESIGN  ·  BUILD  ·  VERIFY</text>
+
+        <!-- Boxes -->
+        <g font-family="Inter, system-ui, sans-serif">
+          <!-- 1. Plan -->
+          <rect x="30" y="70" width="190" height="140" rx="3" fill="rgba(18,26,18,0.85)" stroke="#c1a778" stroke-opacity="0.3"/>
+          <text x="125" y="100" text-anchor="middle" fill="#c1a778" font-size="11" letter-spacing="2.5">01 — PLAN</text>
+          <text x="125" y="130" text-anchor="middle" fill="#f5f0e8" font-family="Cormorant Garamond, serif" font-size="22" font-weight="600">gstack</text>
+          <text x="125" y="160" text-anchor="middle" fill="#e8e4dd" font-size="11">/office-hours</text>
+          <text x="125" y="180" text-anchor="middle" fill="#e8e4dd" font-size="11">/plan-eng-review</text>
+
+          <!-- 2. Design -->
+          <rect x="240" y="70" width="190" height="140" rx="3" fill="rgba(18,26,18,0.85)" stroke="#c1a778" stroke-opacity="0.3"/>
+          <text x="335" y="100" text-anchor="middle" fill="#c1a778" font-size="11" letter-spacing="2.5">02 — DESIGN</text>
+          <text x="335" y="130" text-anchor="middle" fill="#f5f0e8" font-family="Cormorant Garamond, serif" font-size="22" font-weight="600">Claude Design</text>
+          <text x="335" y="160" text-anchor="middle" fill="#e8e4dd" font-size="11">2–3 anchor screens</text>
+          <text x="335" y="180" text-anchor="middle" fill="#e8e4dd" font-size="11">export → reference</text>
+
+          <!-- 3. Build -->
+          <rect x="450" y="70" width="190" height="140" rx="3" fill="rgba(18,26,18,0.85)" stroke="#c1a778" stroke-opacity="0.3"/>
+          <text x="545" y="100" text-anchor="middle" fill="#c1a778" font-size="11" letter-spacing="2.5">03 — BUILD</text>
+          <text x="545" y="130" text-anchor="middle" fill="#f5f0e8" font-family="Cormorant Garamond, serif" font-size="22" font-weight="600">superpowers</text>
+          <text x="545" y="160" text-anchor="middle" fill="#e8e4dd" font-size="11">test-driven-development</text>
+          <text x="545" y="180" text-anchor="middle" fill="#e8e4dd" font-size="11">verification-before-completion</text>
+
+          <!-- 4. Verify -->
+          <rect x="660" y="70" width="190" height="140" rx="3" fill="rgba(18,26,18,0.85)" stroke="#c1a778" stroke-opacity="0.3"/>
+          <text x="755" y="100" text-anchor="middle" fill="#c1a778" font-size="11" letter-spacing="2.5">04 — VERIFY</text>
+          <text x="755" y="130" text-anchor="middle" fill="#f5f0e8" font-family="Cormorant Garamond, serif" font-size="22" font-weight="600">Playwright CLI</text>
+          <text x="755" y="160" text-anchor="middle" fill="#e8e4dd" font-size="11">codegen → test --ui</text>
+          <text x="755" y="180" text-anchor="middle" fill="#e8e4dd" font-size="11">runs on every push</text>
+
+          <!-- Arrows -->
+          <path d="M 220 140 L 240 140" stroke="#c1a778" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+          <path d="M 430 140 L 450 140" stroke="#c1a778" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+          <path d="M 640 140 L 660 140" stroke="#c1a778" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+          <!-- Loop back arrow -->
+          <path d="M 755 210 Q 755 270 450 270 Q 125 270 125 210" stroke="#c1a778" stroke-opacity="0.5" stroke-width="1.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow)"/>
+          <text x="450" y="300" text-anchor="middle" fill="#c1a778" font-size="11" font-style="italic" opacity="0.7">test failures feed back into planning</text>
+
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#c1a778"/>
+            </marker>
+          </defs>
+        </g>
+      </svg>
+    </div>
+
+    <div class="slide-num">15 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — This week's recommendation
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">What I&rsquo;m Asking You To Do</div>
+    <h2>This Week&rsquo;s Recommendation</h2>
+    <div class="accent-line"></div>
+
+    <p>For your Week 5 Next.js + Supabase project, run the full stack at least once. Even if it feels like overkill for a small lab &mdash; that&rsquo;s the point of practicing it small.</p>
+
+    <ul class="checklist" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <li>Run <span class="inline-code">/office-hours</span> and <span class="inline-code">/plan-eng-review</span> in gstack before writing any code</li>
+      <li>Generate one anchor screen with Claude Design and reference it from your components</li>
+      <li>Use <span class="inline-code">superpowers:test-driven-development</span> for the trickiest piece of business logic</li>
+      <li>Write <strong>one</strong> Playwright test that walks the critical user flow end-to-end</li>
+      <li>In your reflection, note which tool surprised you &mdash; positively or otherwise</li>
+    </ul>
+
+    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.3vw, 1rem);">
+        Grading note: I care about whether you <em>tried the workflow</em> and learned something, not whether you used every tool perfectly. Reflection beats checklist completion.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 17</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — References
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Take These With You</div>
+    <h2>References</h2>
+    <div class="accent-line"></div>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <div class="ref-label">Tool 01 &mdash; Plan</div>
+        <div class="ref-title">gstack</div>
+        <div class="ref-url">github.com/garrytan/gstack</div>
+        <div class="ref-note">Slash commands. Install once, available in every Claude Code project.</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-label">Tool 02 &mdash; Design</div>
+        <div class="ref-title">Claude Design</div>
+        <div class="ref-url">support.claude.com/en/articles/14604416-get-started-with-claude-design</div>
+        <div class="ref-note">A design surface that exports real HTML you can read and adapt.</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-label">Tool 03 &mdash; Build</div>
+        <div class="ref-title">superpowers</div>
+        <div class="ref-url">superpowers:test-driven-development &middot; verification-before-completion</div>
+        <div class="ref-note">Already available inside Claude Code. Activates automatically when the task fits.</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-label">Tool 04 &mdash; Verify</div>
+        <div class="ref-title">Playwright CLI</div>
+        <div class="ref-url">playwright.dev/docs/intro</div>
+        <div class="ref-note">npm init playwright@latest &middot; npx playwright codegen &middot; npx playwright test --ui</div>
+      </div>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.5vh, 1rem); text-align: center; color: var(--fg-dim); font-size: clamp(0.75rem, 1.25vw, 0.95rem); font-style: italic;">
+      Questions? Office hours Mondays after class &mdash; or run <span class="inline-code">/office-hours</span> on yourself first.
+    </p>
+
+    <div class="slide-num">17 / 17</div>
+  </section>
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

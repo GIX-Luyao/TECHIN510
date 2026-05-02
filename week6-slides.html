@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHIN 510 Week 6 — Full-Stack Applications</title>
+  <title>TECHIN 510 Week 6 — Auth, Ownership &amp; RLS</title>
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/slides.css">
   <link rel="stylesheet" href="css/site-nav.css">
@@ -22,6 +22,7 @@
       <a href="week3-slides.html">W3</a>
       <a href="week4-slides.html">W4</a>
       <a href="week5-slides.html">W5</a>
+      <a href="week5-tools-slides.html">W5+</a>
       <a href="week6-slides.html">W6</a>
       <a href="week7-slides.html">W7</a>
       <a href="week8-slides.html">W8</a>
@@ -36,1613 +37,1185 @@
   <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
 
   <!-- ============================================================
+       SECTION 1 — THE STAKES (slides 1-6)
+       ============================================================ -->
+
+  <!-- ============================================================
      SLIDE 1 — Title
   -->
   <section class="slide title-slide" id="s1">
     <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
     <div class="accent-line"></div>
-    <h1>Full-Stack Applications</h1>
-    <div class="subtitle">Week 6: Architecture, Auth, CRUD &amp; Security</div>
-    <div class="dots"><span></span><span></span><span></span></div>
+    <h1>Authentication, Ownership<br>&amp; Row-Level Security</h1>
+    <div class="subtitle">Trace the chain. Break the chain. Defend the chain.</div>
     <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
-    <div class="slide-num">01 / 37</div>
+    <div class="slide-num">01 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 2 — Learning Objectives 1/2
+     SLIDE 2 — A Breach Pattern You Can Understand (OpenReview / ICLR 2026)
   -->
   <section class="slide" id="s2">
-    <div class="overline">What You Will Learn</div>
-    <h2>Learning Objectives</h2>
+    <div class="overline">Real-World Breach</div>
+    <h2>A Recent Real-World Breach</h2>
     <div class="accent-line"></div>
 
-    <div class="num-feature">
-      <div class="num-circle">1</div>
-      <div class="num-text">
-        <strong>Explain why RLS is necessary</strong>
-        <span>Understand data exposure risks without Row Level Security</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">2</div>
-      <div class="num-text">
-        <strong>Implement authentication flows</strong>
-        <span>Supabase Auth: sign-up, sign-in, and session management</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">3</div>
-      <div class="num-text">
-        <strong>Design a relational data model</strong>
-        <span>Work backward from user-facing screens and JTBD requirements</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">4</div>
-      <div class="num-text">
-        <strong>Build a validated form</strong>
-        <span>Client-side and server-side input validation to prevent malformed data</span>
-      </div>
-    </div>
-
-    <div class="slide-num">02 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 3 — Learning Objectives 2/2
-  -->
-  <section class="slide" id="s3">
-    <div class="overline">What You Will Learn</div>
-    <h2>Learning Objectives (continued)</h2>
-    <div class="accent-line"></div>
-
-    <div class="num-feature">
-      <div class="num-circle">5</div>
-      <div class="num-text">
-        <strong>Write an RLS policy in Supabase</strong>
-        <span>Verify that users cannot access each other&rsquo;s data</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">6</div>
-      <div class="num-text">
-        <strong>Identify AI-generated security vulnerabilities</strong>
-        <span>Explain why they occur and how to catch them</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">7</div>
-      <div class="num-text">
-        <strong>Use a spec as AI context</strong>
-        <span>PRD / CLAUDE.md drives architecture-aligned, security-aware code generation</span>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--gold);">
-        Today: lecture + demo (55 min) then hands-on lab (105 min)
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">OpenReview / ICLR 2026 &mdash; November 2025</div>
+      <p style="font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--fg); margin-top: 0.3rem;">
+        Around <strong>10,000 papers&rsquo;</strong> worth of reviewer, author, and area-chair (senior reviewer)
+        identities were de-anonymized and circulated publicly. Once names became public, third parties harassed and even tried to bribe reviewers. OpenReview patched the
+        bug within an hour.
+      </p>
+      <p style="font-size: clamp(0.74rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin-top: 0.4rem;">
+        <strong style="color: var(--gold);">The cause:</strong> an API endpoint returned full user profiles for
+        any conference on the platform with <strong>no check</strong> that the caller was allowed to see them.
+        OWASP calls this class of bug <em>Broken Access Control</em>. Logging in worked. The authorization check
+        did not exist.
       </p>
     </div>
 
-    <div class="slide-num">03 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 4 — Section Divider: Application Architecture
-  -->
-  <section class="slide title-slide" id="s4">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <div class="accent-line"></div>
-    <h1>Application<br>Architecture</h1>
-    <div class="subtitle">Three layers, three security boundaries</div>
-    <div class="slide-num">04 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 5 — Security Stack Across the Quarter
-  -->
-  <section class="slide" id="s5">
-    <div class="overline">Systems Thinking</div>
-    <h2>Security Stack Across the Quarter</h2>
-    <div class="accent-line"></div>
-
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W1</strong> &mdash; No secrets needed (free APIs)
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W3</strong> &mdash; Format contracts (CSV specs, validation)
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W4</strong> &mdash; Asserts (DataFrame consistency checks)
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W5</strong> &mdash; Environment variables + error boundaries
-        </div>
-      </div>
-      <div class="timeline-item" style="border-left-color: var(--gold);">
-        <div class="timeline-marker" style="background: var(--gold);"></div>
-        <div class="timeline-content">
-          <strong style="color: var(--gold);">W6</strong> &mdash; <strong style="color: var(--gold);">Auth + RLS + defense in depth</strong>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W7</strong> &mdash; Agent guardrails (tool constraints, refusal policies)
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>W8</strong> &mdash; Automated tests + CI + cross-project validation
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-marker"></div>
-        <div class="timeline-content">
-          <strong>Pre-demo</strong> &mdash; Code review + polish (Week 10 lab; no separate W9 class)
-        </div>
-      </div>
+    <div class="quote-block" style="margin-top: clamp(0.5rem, 1.4vh, 0.9rem);">
+      <p>A working app moves data across boundaries.
+        A safe app validates each crossing. This week we learn the three checks that would have stopped this breach.
+      </p>
     </div>
 
-    <div class="slide-num">05 / 37</div>
+    </div>
+
+    <div class="slide-num">02 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 6 — Opening Hook
+     SLIDE 3 — Three Layers, Three Trust Levels
   -->
   <section class="slide" id="s6">
-    <div class="overline">The Security Demo</div>
-    <h2>Every Row, Every User</h2>
-    <div class="accent-line"></div>
-
-    <div class="quote-block">
-      <p>&ldquo;Every task in this database &mdash; every to-do, every note, every piece of personal data &mdash; is
-        visible to any authenticated user. Not just their own tasks. Everyone&rsquo;s.&rdquo;</p>
-    </div>
-
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">If this were a medical records system, that&rsquo;s a HIPAA
-      violation. If it were a university system, that&rsquo;s FERPA. If it were a financial app, that&rsquo;s potential
-      litigation.</p>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        This isn&rsquo;t a bug in the code. The code works perfectly. This is an <strong
-          style="color: var(--gold);">architectural failure</strong>.
-      </p>
-    </div>
-
-    <div class="slide-num">06 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 7 — Three-Layer Architecture (SVG diagram)
-  -->
-  <section class="slide" id="s7">
     <div class="overline">Architecture</div>
-    <h2>Three-Layer Architecture</h2>
+    <h2>Trust Levels</h2>
     <div class="accent-line"></div>
 
     <div class="diagram">
-      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="max-height: 55vh;" role="img"
-        aria-label="Three-layer architecture: browser pages, Next.js server components and routes, and Supabase tables with security boundaries between layers.">
-        <rect x="80" y="10" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <text x="450" y="35" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
-          font-weight="600" letter-spacing="2">BROWSER</text>
-        <rect x="110" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="200" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">/login</text>
-        <text x="200" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(public)</text>
-        <rect x="360" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="450" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">/dashboard</text>
-        <text x="450" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(protected)</text>
-        <rect x="610" y="48" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="700" y="70" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">/settings</text>
-        <text x="700" y="88" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(protected)</text>
+      <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;" role="img"
+        aria-label="Three layers: browser is untrusted, Next.js server is trusted only if it verifies session, Supabase is the final enforcement layer with RLS.">
 
-        <line x1="450" y1="115" x2="450" y2="145" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
-        <polygon points="446,143 450,153 454,143" fill="#c1a778" opacity="0.5" />
-        <text x="490" y="137" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" opacity="0.5">HTTP
-          Request</text>
+        <!-- BROWSER -->
+        <rect x="80" y="10" width="740" height="90" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="450" y="35" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600" letter-spacing="2">BROWSER</text>
+        <rect x="120" y="48" width="320" height="44" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="0.8" opacity="0.5"/>
+        <text x="280" y="68" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.75">Anything you send from here</text>
+        <text x="280" y="84" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">an attacker can rewrite</text>
+        <rect x="460" y="48" width="320" height="44" rx="3" fill="rgba(220,90,90,0.10)" stroke="rgba(220,90,90,0.5)" stroke-width="1" opacity="0.85"/>
+        <text x="620" y="68" text-anchor="middle" fill="#e8a8a8" font-family="Inter, sans-serif" font-size="11" font-weight="600">Trust level: untrusted</text>
+        <text x="620" y="84" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">treat as a hostile witness</text>
 
-        <rect x="80" y="155" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <text x="450" y="178" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
-          font-weight="600" letter-spacing="2">NEXT.JS SERVER</text>
-        <rect x="130" y="190" width="280" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="270" y="212" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">Pages &amp; Layout</text>
-        <text x="270" y="228" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(React Server Components)</text>
-        <rect x="490" y="190" width="280" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="630" y="212" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">API Routes</text>
-        <text x="630" y="228" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">/api/tasks · /api/profile</text>
+        <!-- arrow down -->
+        <line x1="450" y1="105" x2="450" y2="125" stroke="#c1a778" stroke-width="1.5" opacity="0.5"/>
+        <polygon points="446,123 450,133 454,123" fill="#c1a778" opacity="0.5"/>
 
-        <line x1="450" y1="260" x2="450" y2="290" stroke="#c1a778" stroke-width="1.5" opacity="0.5" />
-        <polygon points="446,288 450,298 454,288" fill="#c1a778" opacity="0.5" />
-        <text x="498" y="282" fill="#c1a778" font-family="Inter, sans-serif" font-size="10" opacity="0.5">SQL (with
-          RLS)</text>
+        <!-- SERVER -->
+        <rect x="80" y="135" width="740" height="90" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="450" y="160" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600" letter-spacing="2">NEXT.JS SERVER</text>
+        <rect x="120" y="173" width="320" height="44" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="0.8" opacity="0.5"/>
+        <text x="280" y="193" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.75">Verifies the session</text>
+        <text x="280" y="209" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">derives user_id from JWT, not request body</text>
+        <rect x="460" y="173" width="320" height="44" rx="3" fill="rgba(193,167,120,0.10)" stroke="rgba(193,167,120,0.5)" stroke-width="1" opacity="0.85"/>
+        <text x="620" y="193" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">Trust level: trusted IF it checks</text>
+        <text x="620" y="209" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">your code, your responsibility</text>
 
-        <rect x="80" y="300" width="740" height="100" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5"
-          opacity="0.6" />
-        <text x="450" y="323" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12"
-          font-weight="600" letter-spacing="2">SUPABASE (POSTGRESQL)</text>
-        <rect x="110" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="200" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">auth.users</text>
-        <text x="200" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(managed)</text>
-        <rect x="360" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="450" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">tasks</text>
-        <text x="450" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(with RLS)</text>
-        <rect x="610" y="335" width="180" height="50" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778"
-          stroke-width="0.8" opacity="0.4" />
-        <text x="700" y="357" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11"
-          opacity="0.7">profiles</text>
-        <text x="700" y="373" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10"
-          opacity="0.5">(with RLS)</text>
+        <!-- arrow down -->
+        <line x1="450" y1="230" x2="450" y2="250" stroke="#c1a778" stroke-width="1.5" opacity="0.5"/>
+        <polygon points="446,248 450,258 454,248" fill="#c1a778" opacity="0.5"/>
+
+        <!-- DATABASE -->
+        <rect x="80" y="260" width="740" height="90" rx="4" fill="none" stroke="#c1a778" stroke-width="1.5" opacity="0.6"/>
+        <text x="450" y="285" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600" letter-spacing="2">SUPABASE (POSTGRES + RLS)</text>
+        <rect x="120" y="298" width="320" height="44" rx="3" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="0.8" opacity="0.5"/>
+        <text x="280" y="318" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.75">Row-level rules with auth.uid()</text>
+        <text x="280" y="334" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">enforced per row, per query</text>
+        <rect x="460" y="298" width="320" height="44" rx="3" fill="rgba(125,171,110,0.12)" stroke="rgba(125,171,110,0.55)" stroke-width="1" opacity="0.9"/>
+        <text x="620" y="318" text-anchor="middle" fill="#a8d49a" font-family="Inter, sans-serif" font-size="11" font-weight="600">Trust level: final enforcement</text>
+        <text x="620" y="334" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.5">last layer that can still say no</text>
       </svg>
     </div>
 
-    <p
-      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
-      Three separate locations, three different security boundaries. Defense in depth: every layer checks.
-    </p>
-
-    <div class="highlight-box" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg);">
-        <strong style="color: var(--gold);">Defense in Depth.</strong> Client checks catch mistakes. Server checks enforce rules.
-        RLS enforces ownership. No single layer is trusted alone.
-      </p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.55rem);">
-      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Definition:</strong> Defense in depth means multiple independent checks protect the same data.
-      </p>
-      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Why it matters:</strong> if one check fails, another check can still prevent a breach.
-      </p>
-      <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Example:</strong> university grade data is protected by page access rules, API checks, and row-level ownership in database.
+    <div class="highlight-box" style="margin-top: clamp(0.45rem, 1.3vh, 0.75rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg); text-align: center;">
+        <strong style="color: var(--gold);">Never trust the browser to tell you who owns a row.</strong>
       </p>
     </div>
 
-    <div class="slide-num">07 / 37</div>
+    <div class="slide-num">03 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 8 — User-First Data Modeling
+     SLIDE 4 — Every Row, Every User (the demo)
   -->
-  <section class="slide" id="s8">
-    <div class="overline">Data Modeling</div>
-    <h2>User-First Data Modeling</h2>
+  <section class="slide" id="s3">
+    <div class="overline">Demo</div>
+    <h2>Broken Access Pattern</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block">
+      <p>&ldquo;Alice creates three private tasks. Bob signs up, logs in, opens his dashboard
+        &mdash; and sees Alice&rsquo;s tasks too.&rdquo;</p>
+    </div>
+
+    <p style="margin-top: clamp(0.6rem, 1.6vh, 1rem);">
+      No bug was introduced. No exploit was needed. The app behaves exactly as it was built.
+    </p>
+
+    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.95rem, 1.6vw, 1.2rem); color: var(--fg); text-align: center;">
+        The app works.<br><strong style="color: var(--red-soft);">The system is unsafe.</strong>
+      </p>
+    </div>
+
+    <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      This is not a bug. It is the default. Privacy must be earned, not assumed.
+    </p>
+
+    <div class="slide-num">04 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Authenticated ≠ Authorized
+  -->
+  <section class="slide" id="s4">
+    <div class="overline">The Distinction</div>
+    <h2>Authenticated &ne; Authorized</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">Dashboard Card</div>
-        <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); margin-bottom: 0.5rem;">What the user sees:</p>
-        <div
-          style="background: rgba(0,0,0,0.35); border: 1px solid rgba(193,167,120,0.15); border-radius: 4px; padding: clamp(0.6rem, 1.5vw, 1rem);">
-          <p style="font-size: clamp(0.75rem, 1.1vw, 0.9rem); color: var(--gold); margin-bottom: 0.3rem;"><strong>My
-              Tasks</strong></p>
-          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">Title &bull; Status &bull; Created
-          </p>
-          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim); margin-top: 0.2rem;">Buy groceries
-            &bull; pending &bull; Mar 4</p>
-          <p style="font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--fg-dim);">Review PR &bull; done &bull; Mar 3
-          </p>
-        </div>
+        <div class="col-label" style="color: var(--gold);">Authentication</div>
+        <p style="font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--fg); margin-top: 0.3rem;">
+          <strong>Definition:</strong> the process of verifying that a user is <strong>who they claim to be</strong> &mdash; usually by checking credentials.
+        </p>
+        <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          After signing in, the user holds a valid session token. The system can now recognize this person across requests.
+        </p>
       </div>
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">Data Design Checklist (No Code)</div>
+        <div class="col-label" style="color: var(--gold);">Authorization</div>
+        <p style="font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--fg); margin-top: 0.3rem;">
+          <strong>Definition:</strong> the process of deciding <strong>what an authenticated user may access or change</strong>.
+        </p>
+        <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          For each piece of data, the system asks: is this specific user allowed to read or write <em>this row</em>?
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.85rem, 1.35vw, 1.05rem); color: var(--fg); text-align: center;">
+        The demo had authentication.<br>
+        It had <strong style="color: var(--red-soft);">no real authorization</strong>.
+      </p>
+    </div>
+
+    <div class="slide-num">05 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — The Chain We Will Defend (7-node SVG)
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">The Diagram</div>
+    <h2>The Chain We Will Defend</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 160" xmlns="http://www.w3.org/2000/svg" style="max-height: 30vh;" role="img"
+        aria-label="Seven-link chain: sign-up, sign-in, session, protected route, user_id, RLS policy, zero rows.">
+
+        <!-- Node 1: Sign-up -->
+        <rect x="12" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="68" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">1</text>
+        <text x="68" y="86" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" font-weight="600">Sign-up</text>
+        <text x="68" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">create identity</text>
+
+        <!-- Arrow 1->2 -->
+        <line x1="126" y1="80" x2="132" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="132,76 138,80 132,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 2: Sign-in -->
+        <rect x="138" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="194" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">2</text>
+        <text x="194" y="86" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" font-weight="600">Sign-in</text>
+        <text x="194" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">mint JWT</text>
+
+        <!-- Arrow 2->3 -->
+        <line x1="252" y1="80" x2="258" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="258,76 264,80 258,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 3: Session -->
+        <rect x="264" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="320" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">3</text>
+        <text x="320" y="86" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" font-weight="600">Session</text>
+        <text x="320" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">browser holds JWT</text>
+
+        <!-- Arrow 3->4 -->
+        <line x1="378" y1="80" x2="384" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="384,76 390,80 384,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 4: Protected route -->
+        <rect x="390" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="446" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">4</text>
+        <text x="446" y="86" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" font-weight="600">Protected route</text>
+        <text x="446" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">server check</text>
+
+        <!-- Arrow 4->5 -->
+        <line x1="504" y1="80" x2="510" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="510,76 516,80 510,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 5: user_id -->
+        <rect x="516" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="572" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">5</text>
+        <text x="572" y="86" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">user_id</text>
+        <text x="572" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">row owner</text>
+
+        <!-- Arrow 5->6 -->
+        <line x1="630" y1="80" x2="636" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="636,76 642,80 636,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 6: RLS policy -->
+        <rect x="642" y="50" width="112" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="698" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">6</text>
+        <text x="698" y="86" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" font-weight="600">RLS policy</text>
+        <text x="698" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.6">auth.uid()</text>
+
+        <!-- Arrow 6->7 -->
+        <line x1="756" y1="80" x2="762" y2="80" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="762,76 768,80 762,84" fill="#c1a778" opacity="0.7"/>
+
+        <!-- Node 7: 0 rows (success state, gold-tinted) -->
+        <rect x="768" y="50" width="112" height="60" rx="6" fill="rgba(193,167,120,0.16)" stroke="#c1a778" stroke-width="1.6"/>
+        <text x="824" y="68" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="9" font-weight="600" letter-spacing="2">7</text>
+        <text x="824" y="86" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="13" font-weight="700">0 rows</text>
+        <text x="824" y="100" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="9" opacity="0.7">cross-user query</text>
+
+        <!-- Caption strip -->
+        <text x="450" y="142" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.55" font-style="italic">
+          Each link installs a defense. Break any link &rarr; the chain leaks.
+        </text>
+      </svg>
+    </div>
+
+    <p style="font-size: clamp(0.68rem, 1.02vw, 0.8rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.25rem, 0.7vh, 0.4rem); font-style: italic;">
+      <strong style="color: var(--gold); font-style: normal;">JWT</strong> = JSON Web Token (a signed session credential, defined on slide 8) &middot;
+      <strong style="color: var(--gold); font-style: normal;">RLS</strong> = Row-Level Security (defined on slide 15)
+    </p>
+
+    <div class="slide-num">06 / 24</div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 — PILLAR 1: AUTH ESTABLISHES WHO (slides 7-10)
+       ============================================================ -->
+
+  <!-- ============================================================
+     SLIDE 7 — Sign-Up vs Sign-In
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Pillar 1 &mdash; Auth Establishes Who</div>
+    <h2>Sign-Up vs. Sign-In</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Sign-Up &mdash; one time</div>
         <div class="num-feature" style="margin-top: 0.2rem;">
           <div class="num-circle">1</div>
           <div class="num-text">
-            <strong>Identity field</strong>
-            <span>Every task needs a unique ID so updates and deletes are reliable.</span>
+            <strong>Collect identity</strong>
+            <span>Email, password, optional confirmation.</span>
           </div>
         </div>
         <div class="num-feature">
           <div class="num-circle">2</div>
           <div class="num-text">
-            <strong>Ownership field</strong>
-            <span>Every row must store who owns it (user_id) so privacy rules can work.</span>
+            <strong>Create the account record</strong>
+            <span>Supabase writes a row in <span class="inline-code">auth.users</span>.</span>
+          </div>
+        </div>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.83rem); margin-top: 0.55rem; color: var(--fg-dim);">
+          API: <span class="inline-code">supabase.auth.signUp({ email, password })</span>
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Sign-In &mdash; every session</div>
+        <div class="num-feature" style="margin-top: 0.2rem;">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Verify the credentials</strong>
+            <span>Prove the person is the account owner.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Mint a session token</strong>
+            <span>Browser receives a JWT for this session.</span>
+          </div>
+        </div>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.83rem); margin-top: 0.55rem; color: var(--fg-dim);">
+          API: <span class="inline-code">supabase.auth.signInWithPassword({...})</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.5vh, 0.95rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        Memory rule: <strong style="color: var(--gold);">Sign-up creates identity. Sign-in creates access.</strong>
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Why Passwords Live in the Auth Server
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Where Passwords Must Not Live</div>
+    <h2>Why Passwords Live in the Auth Server</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: clamp(0.4rem, 1vh, 0.6rem);">
+      A password is the most sensitive secret a user gives you. Where you put it and how you store it decide
+      whether a single bug, leaked backup, or stray log line turns into a breach. The industry has learned this the hard way.
+    </p>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Wrong places &mdash; what went wrong</div>
+        <div class="num-feature" style="margin-top: 0.25rem;">
+          <div class="num-circle">A</div>
+          <div class="num-text">
+            <strong>In the browser (React state, <span class="inline-code">localStorage</span>)</strong>
+            <span>Any XSS, browser extension, or shared device reads it in plaintext. <em>British Airways 2018:</em> injected script skimmed credentials from 380K users in the page itself.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">B</div>
+          <div class="num-text">
+            <strong>In your own database, weakly hashed</strong>
+            <span><em>LinkedIn 2012:</em> 167M unsalted SHA-1 hashes leaked &mdash; most cracked within days. <em>Adobe 2013:</em> 153M reversibly-encrypted passwords + plaintext hints exposed.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">C</div>
+          <div class="num-text">
+            <strong>In application logs or plaintext files</strong>
+            <span><em>Facebook 2019:</em> 200M&ndash;600M passwords found stored in plaintext in internal logs, searchable by ~20K employees over years. <em>RockYou 2009:</em> 32M plaintext passwords still seed credential-stuffing attacks today.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Right place &mdash; the auth server</div>
+        <div class="num-feature" style="margin-top: 0.25rem;">
+          <div class="num-circle">1</div>
+          <div class="num-text">
+            <strong>Hashed with bcrypt/argon2, per-user salt</strong>
+            <span>A leaked row gives an attacker a slow, costly hash &mdash; not a password.</span>
+          </div>
+        </div>
+        <div class="num-feature">
+          <div class="num-circle">2</div>
+          <div class="num-text">
+            <strong>Isolated from your app code &amp; tables</strong>
+            <span>Your queries, logs, and frontend never touch the raw password &mdash; so they cannot leak it.</span>
           </div>
         </div>
         <div class="num-feature">
           <div class="num-circle">3</div>
           <div class="num-text">
-            <strong>Status + timestamp</strong>
-            <span>Track current state and creation time for sorting and accountability.</span>
+            <strong>Your app holds a JWT, not the password</strong>
+            <span><span class="inline-code">{ sub: user_id, exp: timestamp }</span> &mdash; a short-lived signed claim. The server verifies the signature on each request.</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="slide-num">08 / 37</div>
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.85rem, 1.35vw, 1.05rem); color: var(--fg); text-align: center;">
+        Rule of thumb: <strong style="color: var(--gold);">if your code can read the password, your breach can leak it.</strong>
+        Let Supabase Auth hold the secret; your app holds the JWT.
+      </p>
+    </div>
+
+    <div class="slide-num">08 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 9 — Principle: Screen → Spec → Schema → RLS
+     SLIDE 9 — The User ID Is the Anchor
   -->
   <section class="slide" id="s9">
-    <div class="overline">Design Principle</div>
+    <div class="overline">The Bridge to Ownership</div>
+    <h2>The User ID Is the Anchor</h2>
+    <div class="accent-line"></div>
+
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">After sign-in, the server can read</div>
+      <p style="font-family: var(--font-mono); font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--gold); margin-top: 0.3rem;">
+        const { data: { user } } = await supabase.auth.getUser();<br>
+        const userId = user.id;<br>
+        <span style="color: var(--fg-dim); font-style: italic;">// e.g. "8f3c1a2e-4e72-4...-9b6d"</span>
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.74rem, 1.16vw, 0.88rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">UUID (Universally Unique Identifier):</strong> a 36-character random string
+        that identifies one user globally and never collides with another.
+      </p>
+      <p style="font-size: clamp(0.75rem, 1.18vw, 0.9rem); color: var(--fg-dim); margin-top: 0.3rem;">
+        <strong style="color: var(--gold);">This UUID is the anchor.</strong>
+        It comes from the verified session. The same value is stored on every row this user owns,
+        and the same value appears inside every RLS policy as <span class="inline-code">auth.uid()</span>.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        User_id at three places: <strong style="color: var(--gold);">session &rarr; row &rarr; policy</strong>.
+      </p>
+    </div>
+
+    <div class="slide-num">09 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Protected Routes
+  -->
+  <section class="slide" id="s10">
+    <div class="overline">Pillar 1 &mdash; Guarding the Door</div>
+    <h2>Protected Routes</h2>
+    <div class="accent-line"></div>
+
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Recipe: 3-step guard order</div>
+      <div class="num-feature" style="margin-top: 0.25rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text">
+          <strong>Loading state first</strong>
+          <span>Show neutral UI while identity is unknown.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text">
+          <strong>Server-side session check</strong>
+          <span>Verify on the server (middleware or server component) before any private content renders.</span>
+        </div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text">
+          <strong>Only then render content</strong>
+          <span>Authenticated users see the page; everyone else is redirected.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.9rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        <strong style="color: var(--gold);">Order matters.</strong> Render-then-check leaks data.
+      </p>
+    </div>
+
+    <div class="slide-num">10 / 24</div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 — PILLAR 2: OWNERSHIP TAGS WHAT (slides 11-12)
+       ============================================================ -->
+
+  <!-- ============================================================
+     SLIDE 11 — Screen → Spec → Schema → RLS
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">Pillar 2 &mdash; Ownership Tags What</div>
     <h2>Screen &rarr; Spec &rarr; Schema &rarr; RLS</h2>
     <div class="accent-line"></div>
 
-    <div class="quote-block">
-      <p>&ldquo;The screen is the spec. The spec drives the schema. The schema drives the RLS policy.&rdquo;</p>
+    <div class="diagram">
+      <svg viewBox="0 0 900 130" xmlns="http://www.w3.org/2000/svg" style="max-height: 22vh;" role="img"
+        aria-label="Four stage flow from screen to specification to schema to RLS policy.">
+        <!-- 4 stages -->
+        <rect x="20" y="35" width="190" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="115" y="60" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">SCREEN</text>
+        <text x="115" y="80" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">"My Tasks"</text>
+
+        <line x1="212" y1="65" x2="222" y2="65" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="222,61 228,65 222,69" fill="#c1a778" opacity="0.7"/>
+
+        <rect x="230" y="35" width="190" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="325" y="60" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">SPEC</text>
+        <text x="325" y="80" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">tasks belong to one user</text>
+
+        <line x1="422" y1="65" x2="432" y2="65" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="432,61 438,65 432,69" fill="#c1a778" opacity="0.7"/>
+
+        <rect x="440" y="35" width="200" height="60" rx="6" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1.2"/>
+        <text x="540" y="60" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">SCHEMA</text>
+        <text x="540" y="80" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace" font-size="10" opacity="0.7">tasks(user_id uuid)</text>
+
+        <line x1="642" y1="65" x2="652" y2="65" stroke="#c1a778" stroke-width="1.4" opacity="0.6"/>
+        <polygon points="652,61 658,65 652,69" fill="#c1a778" opacity="0.7"/>
+
+        <rect x="660" y="35" width="220" height="60" rx="6" fill="rgba(193,167,120,0.12)" stroke="#c1a778" stroke-width="1.5"/>
+        <text x="770" y="60" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">RLS POLICY</text>
+        <text x="770" y="80" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace" font-size="10" opacity="0.75">auth.uid() = user_id</text>
+      </svg>
     </div>
 
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">If the dashboard shows &ldquo;My Tasks,&rdquo; then the
-      <span class="inline-code">tasks</span> table must have a <span class="inline-code">user_id</span> column, and the
-      RLS policy must filter on that column. A direct, traceable line from UX decision to database security rule.
-    </p>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--gold);">AI principle:</strong> AI writes code layer by layer. If you don&rsquo;t
-        understand the layers, you can&rsquo;t verify what the AI built &mdash; or catch the RLS it forgot to enable.
+    <div class="card" style="margin-top: clamp(0.55rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.76rem, 1.2vw, 0.92rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Every screen rule should land in a database rule.</strong>
+        If the dashboard says &ldquo;My Tasks,&rdquo; the schema needs a <span class="inline-code">user_id</span> column,
+        and the RLS policy must check it. A traceable line from UX intent to database enforcement.
       </p>
     </div>
 
-    <div class="slide-num">09 / 37</div>
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        Privacy is a design decision before it is a database column.
+      </p>
+    </div>
+
+    <div class="slide-num">11 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 10 — Section Divider: Auth & Protected Routes
-  -->
-  <section class="slide title-slide" id="s10">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <div class="accent-line"></div>
-    <h1>Auth &amp;<br>Protected Routes</h1>
-    <div class="subtitle">Who is this user, and what can they access?</div>
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.3rem); max-width: 54ch;">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 0.98rem); color: var(--fg); text-align: center;">
-        By the end of this section, you can explain this full chain:
-        <strong style="color: var(--gold);">sign-up -> sign-in -> session -> route guard -> user_id -> RLS</strong>.
-      </p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.8rem); max-width: 56ch;">
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Authentication:</strong> confirm who the user is.
-        <strong style="color: var(--gold);">Authorization:</strong> decide what that user can access.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Protected route:</strong> a page only authorized users can open.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Example:</strong> all students can log in, but only advisors can open advising admin pages.
-      </p>
-    </div>
-    <div class="slide-num">10 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 11 — Auth Flow: Sign-Up vs Sign-In
-  -->
-  <section class="slide" id="s11">
-    <div class="overline">Authentication</div>
-    <h2>Sign-Up vs. Sign-In (Plain Language)</h2>
-    <div class="accent-line"></div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">Sign-Up = make a new account (one time)</div>
-        <div class="num-feature" style="margin-top: 0.2rem;">
-          <div class="num-circle">1</div>
-          <div class="num-text">
-            <strong>Collect identity information</strong>
-            <span>Email, password, and account confirmation method.</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">2</div>
-          <div class="num-text">
-            <strong>Create account record</strong>
-            <span>System stores the new user as a long-term identity.</span>
-          </div>
-        </div>
-        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); margin-top: 0.5rem; color: var(--fg-dim);">
-          <strong style="color: var(--gold);">Real-world scenario:</strong> Student A creates a campus planner account before the quarter starts.
-        </p>
-      </div>
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">Sign-In = start a session (every login)</div>
-        <div class="num-feature" style="margin-top: 0.2rem;">
-          <div class="num-circle">1</div>
-          <div class="num-text">
-            <strong>Verify account owner</strong>
-            <span>System checks credentials and confirms this person is the account owner.</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">2</div>
-          <div class="num-text">
-            <strong>Start session</strong>
-            <span>System issues temporary proof of identity for this browsing session.</span>
-          </div>
-        </div>
-        <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); margin-top: 0.5rem; color: var(--fg-dim);">
-          <strong style="color: var(--gold);">Real-world scenario:</strong> Student A returns tomorrow, signs in, and regains access to only their own tasks.
-        </p>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        Quick memory rule: <strong style="color: var(--gold);">Sign-up creates identity.</strong>
-        <strong style="color: var(--gold);">Sign-in creates access.</strong>
-      </p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.4rem, 1.3vh, 0.8rem);">
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        Class prompt: In a food-delivery app, what problems appear if you only support sign-up but not sign-in sessions?
-      </p>
-    </div>
-
-    <div class="slide-num">11 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 12 — Session Management
+     SLIDE 12 — CRUD With Ownership
   -->
   <section class="slide" id="s12">
-    <div class="overline">Authentication</div>
-    <h2>What Is a Session?</h2>
+    <div class="overline">All Four Operations</div>
+    <h2>CRUD With Ownership</h2>
     <div class="accent-line"></div>
 
-    <div class="quote-block">
-      <p>&ldquo;An account identifies you once. A session proves you are still logged in right now.&rdquo;</p>
-    </div>
-
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      A <strong>session</strong> is the logged-in state. Your app checks it on each protected page load.
+    <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: clamp(0.4rem, 1vh, 0.65rem);">
+      <strong style="color: var(--gold);">CRUD</strong> = <strong>C</strong>reate, <strong>R</strong>ead, <strong>U</strong>pdate, <strong>D</strong>elete &mdash; the four basic operations on stored data.
     </p>
-
-    <div class="two-col" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">What is stored?</div>
-        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
-          A <strong>JWT (JSON Web Token)</strong>: a signed token that says who the user is for this session.
-        </p>
-      </div>
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">What is NOT stored?</div>
-        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
-          The user's raw password. Password checking stays inside Supabase Auth.
-        </p>
-      </div>
-    </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.3vh, 0.75rem);">
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Why it matters:</strong> without a valid session, app cannot safely tell if the visitor should access private data.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Example:</strong> online banking asks you to log in again after inactivity because old sessions can expire.
-      </p>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
-      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
-        Transition: once session exists, next question is
-        <strong style="color: var(--gold);">"How do we protect a route before content appears?"</strong>
-      </p>
-    </div>
-
-    <div class="slide-num">12 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 13 — Protected Routes: The Bug
-  -->
-  <section class="slide" id="s13">
-    <div class="overline">Protected Routes</div>
-    <h2>Common Bug: Flash of Protected Content</h2>
-    <div class="accent-line"></div>
-
-    <div class="card">
-      <div class="col-label" style="color: var(--gold);">Failure pattern (no code needed)</div>
-      <div class="num-feature" style="margin-top: 0.2rem;">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>User opens protected page</strong>
-          <span>Dashboard starts to load before auth status is confirmed.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Auth check finishes late</strong>
-          <span>System discovers user is logged out and triggers redirect.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Brief data exposure</strong>
-          <span>Content flashes for a moment, which is still a trust violation.</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: clamp(0.6rem, 1.8vh, 1rem);">
-      <div class="col-label" style="color: var(--gold);">Example walkthrough (Context -> Action -> Outcome)</div>
-      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin-top: 0.25rem;">
-        <strong>Context:</strong> Student B tries to open Student A's advising dashboard URL.
-      </p>
-      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
-        <strong>Action:</strong> dashboard begins rendering before the access check finishes.
-      </p>
-      <p style="font-size: clamp(0.73rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
-        <strong>Outcome:</strong> private note flashes briefly, then redirect happens.
-      </p>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--red-soft);">Flash-of-content:</strong> users see protected content even for 0.2
-        seconds. That is still a security/trust failure.
-      </p>
-    </div>
-    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.5rem;">
-      <strong style="color: var(--gold);">Example:</strong> a student briefly sees another student's private advising note before redirect.
-    </p>
-
-    <div class="slide-num">13 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 14 — Protected Routes: The Fix
-  -->
-  <section class="slide" id="s14">
-    <div class="overline">Protected Routes</div>
-    <h2>The Fix: 3-Step Guard Order</h2>
-    <div class="accent-line"></div>
-
-    <div class="card">
-      <div class="col-label" style="color: var(--gold);">Safe guard sequence</div>
-      <div class="num-feature" style="margin-top: 0.2rem;">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Show neutral loading state first</strong>
-          <span>Do not show private content while identity is unknown.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Verify session status</strong>
-          <span>Check whether this user is authenticated right now.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Only then choose route</strong>
-          <span>Authenticated users see content; others are redirected.</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
-        Beginner checklist: <strong>loading first</strong> -> <strong>auth check second</strong> ->
-        <strong>content last</strong>.
-      </p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.6rem);">
-      <p style="font-size: clamp(0.71rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Server-side check:</strong> access decision is enforced in backend, not only in browser display logic.
-      </p>
-      <p style="font-size: clamp(0.71rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Why it matters:</strong> client-side redirects can be bypassed; server checks cannot be skipped from UI tricks.
-      </p>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--green-soft);">This order is a security rule, not just coding style.</strong>
-      </p>
-    </div>
-
-    <div class="slide-num">14 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 15 — CRUD Pattern
-  -->
-  <section class="slide" id="s15">
-    <div class="overline">CRUD</div>
-    <h2>Insert Safely: Always Attach user_id</h2>
-    <div class="accent-line"></div>
-
-    <div class="card">
-      <div class="col-label" style="color: var(--gold);">Insert design factors</div>
-      <div class="num-feature" style="margin-top: 0.2rem;">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Check login status first</strong>
-          <span>No authenticated user means no write operation.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Validate input before saving</strong>
-          <span>Reject empty, oversized, or malformed values.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Attach ownership metadata</strong>
-          <span>Every task must include who owns it.</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Definition:</strong> <span class="inline-code">user_id</span> is the ownership field that marks who owns each row.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        Why this matters: if row has no owner, RLS cannot decide who should see it.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Real-world scenario:</strong> in a shared apartment app, chores without owner tags become visible/editable by everyone.
-      </p>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--gold);">Ownership rule:</strong>
-        <span class="inline-code">user_id</span> connects a task to one user, then RLS can enforce access.
-      </p>
-    </div>
-
-    <div class="slide-num">15 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 16 — Form Validation with Zod
-  -->
-  <section class="slide" id="s16">
-    <div class="overline">Data Integrity</div>
-    <h2>Zod: Write Rules Once, Reuse Everywhere</h2>
-    <div class="accent-line"></div>
-
-    <div class="two-col">
-      <div class="card">
-        <h3 style="margin-bottom:0.75rem;">Step 1: Define Input Rules</h3>
-        <div class="num-feature" style="margin-top: 0.2rem;">
-          <div class="num-circle">A</div>
-          <div class="num-text">
-            <strong>Required fields</strong>
-            <span>What must always be present?</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">B</div>
-          <div class="num-text">
-            <strong>Allowed format</strong>
-            <span>What shape, type, and length are acceptable?</span>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <h3 style="margin-bottom:0.75rem;">Step 2: Enforce Before Write</h3>
-        <div class="num-feature" style="margin-top: 0.2rem;">
-          <div class="num-circle">A</div>
-          <div class="num-text">
-            <strong>Reject bad input clearly</strong>
-            <span>Return specific feedback so users can recover.</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">B</div>
-          <div class="num-text">
-            <strong>Store only validated data</strong>
-            <span>Never write untrusted values directly to database.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="highlight-box">
-      <strong>Input validation (definition):</strong> rules that block malformed or unsafe input before it is stored or processed.
-    </div>
-    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.45rem;">
-      <strong style="color: var(--gold);">Why it matters:</strong> invalid input can break data quality and create security risk.
-      <strong style="color: var(--gold);">Example:</strong> airline booking forms check date format in UI, then re-check on server before ticket creation.
-    </p>
-
-    <div class="slide-num">16 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 17 — Data Contracts at Every Boundary
-  -->
-  <section class="slide" id="s17">
-    <div class="overline">Architecture</div>
-    <h2>Every Boundary Needs a Rule</h2>
-    <div class="accent-line"></div>
 
     <table class="slide-table">
-      <caption style="caption-side: top; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        Data quality and security rules at each boundary.
-      </caption>
       <thead>
-        <tr><th>Boundary</th><th>Rule Tool</th><th>Plain-Language Effect</th></tr>
+        <tr><th>Operation</th><th>Ownership rule</th><th>Failure mode if you skip it</th></tr>
       </thead>
       <tbody>
         <tr>
-          <td>Browser &rarr; Server</td>
-          <td>Zod schema</td>
-          <td>Bad form input is blocked before processing</td>
+          <td><strong>Create</strong></td>
+          <td>Attach <span class="inline-code">user_id</span> from the session</td>
+          <td>Row has no owner, or worse: a forged owner</td>
         </tr>
         <tr>
-          <td>Server function &rarr; Server function</td>
-          <td>TypeScript interface</td>
-          <td>Wrong data types are caught early</td>
+          <td><strong>Read</strong></td>
+          <td>Scope queries to the current owner</td>
+          <td>Every authenticated user reads every row</td>
         </tr>
         <tr>
-          <td>Server &rarr; Database</td>
-          <td>SQL constraints</td>
-          <td>Database rejects impossible rows</td>
+          <td><strong>Update</strong></td>
+          <td>Reject if row owner &ne; current user</td>
+          <td>Anyone can edit anyone&rsquo;s data</td>
         </tr>
         <tr>
-          <td>Database &rarr; User</td>
-          <td><span class="inline-code">auth.uid()</span> (current user ID) RLS</td>
-          <td>Each user only sees their own rows</td>
+          <td><strong>Delete</strong></td>
+          <td>Reject if row owner &ne; current user</td>
+          <td>Anyone can delete anyone&rsquo;s data</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Data contract (definition):</strong> an explicit agreement about what data shape and behavior are allowed at a boundary.
-      </p>
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Why it matters:</strong> without a contract, systems silently disagree and produce fragile bugs.
-      </p>
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Example:</strong> if mobile app sends "done" but API expects true/false, task status updates fail unpredictably.
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        AI often generates code that <strong style="color: var(--red-soft);">works</strong>
+        before it generates code that <strong style="color: var(--gold);">enforces ownership</strong>.
       </p>
     </div>
 
-    <div class="slide-num">17 / 37</div>
+    <div class="slide-num">12 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 18 — Check: The Auth Chain
-  -->
-  <section class="slide" id="s18">
-    <div class="overline">Check Your Understanding</div>
-    <h2>Quick Self-Check: The Auth Chain</h2>
-    <div class="accent-line"></div>
-
-    <div class="highlight-box">
-      <div class="num-feature">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Sign-up</strong>
-          <span>creates user identity once</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Sign-in</strong>
-          <span>creates a session token (JWT)</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Session</strong>
-          <span>decides if protected route can load</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">4</div>
-        <div class="num-text">
-          <strong>user_id</strong>
-          <span>marks row ownership so RLS can enforce access</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        Scenario test: Bob logs in and visits <span class="inline-code">/dashboard</span>.
-        If he can see Alice's task, which link in this chain failed?
-      </p>
-    </div>
-
-    <div class="slide-num">18 / 37</div>
-  </section>
+       SECTION 4 — PILLAR 3: RLS ENFORCES THE BOUNDARY (slides 13-17)
+       ============================================================ -->
 
   <!-- ============================================================
-     SLIDE 19 — Section Divider: UX for AI Applications
+     SLIDE 13 — Why App Logic Is Not Enough (Equifax)
   -->
-  <section class="slide title-slide" id="s19">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <div class="accent-line"></div>
-    <h1>UX for AI<br>Applications</h1>
-    <div class="subtitle">Context engineering for humans</div>
-    <div class="slide-num">19 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 20 — Context Engineering for Users
-  -->
-  <section class="slide" id="s20">
-    <div class="overline">UX Principle</div>
-    <h2>Context Engineering for Users</h2>
-    <div class="accent-line"></div>
-
-    <div class="quote-block">
-      <p>&ldquo;Claude streams tokens as they generate. This is not just a performance trick &mdash; this is a design
-        decision about trust. While that text appears, you know the system is working.&rdquo;</p>
-    </div>
-
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">We talk about context engineering for giving AI the right
-      information. The same concept applies in reverse: giving <em>users</em> the right information about what the
-      system is doing at any given moment.</p>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Perplexity:</strong> &ldquo;Searching 14 sources&hellip;&rdquo; &mdash; that
-        sentence tells you the system is not frozen, and the answer is based on something. Compare that to a blank white
-        screen for 3 seconds.
-      </p>
-    </div>
-
-    <div class="slide-num">20 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 21 — Three UX Patterns
-  -->
-  <section class="slide" id="s21">
-    <div class="overline">UX Patterns</div>
-    <h2>Three Patterns That Matter</h2>
-    <div class="accent-line"></div>
-
-    <div class="num-feature">
-      <div class="num-circle">1</div>
-      <div class="num-text">
-        <strong>Loading states are context signals</strong>
-        <span>A spinner or skeleton screen is the system telling the user &ldquo;I am working, not broken.&rdquo; In
-          Next.js, the <span class="inline-code">loading.tsx</span> file does exactly this.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">2</div>
-      <div class="num-text">
-        <strong>Progressive disclosure in AI apps</strong>
-        <span>Show results as they become available. Users can begin processing partial information. Perplexity&rsquo;s
-          source count, Copilot&rsquo;s grayed-out suggestions &mdash; the system narrating its own reasoning.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">3</div>
-      <div class="num-text">
-        <strong>Flash-of-content is a context failure</strong>
-        <span>When protected content briefly appears, users doubt whether the system is actually protecting their data.
-          The loading state is not a UX nicety &mdash; it is a security layer.</span>
-      </div>
-    </div>
-
-    <div class="slide-num">21 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 22 — UX Principle
-  -->
-  <section class="slide" id="s22">
-    <div class="overline">Principle</div>
-    <h2>Context Engineering for Humans</h2>
-    <div class="accent-line"></div>
-
-    <div class="highlight-box">
-      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); color: #f5f0e8; text-align: center;">
-        &ldquo;Great UX for AI-powered applications is context engineering for humans.&rdquo;
-      </p>
-    </div>
-
-    <p
-      style="margin-top: clamp(1rem, 2vh, 1.5rem); font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center;">
-      Every loading state, every streaming token, every progress indicator is the system giving users the context they
-      need to maintain trust.
-    </p>
-
-    <div class="slide-num">22 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 23 — Section Divider: Verification & Security
-  -->
-  <section class="slide title-slide" id="s23">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <div class="accent-line"></div>
-    <h1>Verification<br>&amp; Security</h1>
-    <div class="subtitle">Row Level Security and defense in depth</div>
-    <div class="slide-num">23 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 24 — RLS Demo: Enable
-  -->
-  <section class="slide" id="s24">
-    <div class="overline">Row Level Security</div>
-    <h2>RLS: Enable &rarr; Deny All</h2>
-    <div class="accent-line"></div>
-
-    <div class="highlight-box">
-      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); color: #f5f0e8;">
-        RLS enabled + no policy = <strong style="color: var(--red-soft);">zero rows returned</strong>
-      </p>
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); margin-top: 0.5rem;">
-        Not a bug. RLS defaults to deny-all. The database would rather silently return zero rows than accidentally
-        return the wrong rows.
-      </p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">RLS (definition):</strong> database-level rule that limits which rows each user can read or change.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Why it matters:</strong> it protects data even when app-layer logic has bugs.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Real-world scenario:</strong> payroll portal loads for all employees, but each person sees only their own salary row.
-      </p>
-    </div>
-
-    <p style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">Toggle RLS on &rarr; reload app &rarr; nothing loads.
-      That is intentional design. Next step is adding policy rules that open only the right rows.</p>
-
-    <div class="slide-num">24 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 25 — RLS Policy: SELECT
-  -->
-  <section class="slide" id="s25">
-    <div class="overline">Row Level Security</div>
-    <h2>Read Policy (Who Can See What?)</h2>
+  <section class="slide" id="s13">
+    <div class="overline">Pillar 3 &mdash; RLS Enforces the Boundary</div>
+    <h2>Why App Logic Is Not Enough</h2>
     <div class="accent-line"></div>
 
     <div class="card">
-      <div class="col-label" style="color: var(--gold);">Policy intent (plain language)</div>
-      <p style="font-size: clamp(0.76rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        A signed-in user can read only rows where the row owner matches that signed-in user.
+      <div class="col-label" style="color: var(--gold);">Equifax &mdash; September 2017 (disclosed)</div>
+      <p style="font-size: clamp(0.76rem, 1.18vw, 0.92rem); color: var(--fg); margin-top: 0.3rem;">
+        About <strong>147 million</strong> Americans &mdash; plus ~15M in the UK and ~19K in Canada &mdash; had records exposed:
+        <strong>Social Security numbers, dates of birth, home addresses, driver&rsquo;s license numbers</strong>,
+        roughly <strong>209,000 credit-card numbers</strong>, and ~182,000 dispute documents containing further PII.
+        Settlement: up to <strong>$700M</strong> with the FTC, CFPB, and state AGs.
       </p>
     </div>
 
-    <div class="num-feature" style="margin-top: clamp(0.4rem, 1.2vh, 0.7rem);">
-      <div class="num-circle">1</div>
-      <div class="num-text">
-        <strong>Identity comes from session token</strong>
-        <span>Database reads who the current user is from authentication context.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">2</div>
-      <div class="num-text">
-        <strong>Ownership comes from row data</strong>
-        <span>Each row already stores owner ID.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle">3</div>
-      <div class="num-text">
-        <strong>Rows are filtered automatically</strong>
-        <span>Users see only rows where identity and ownership match.</span>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        Example: in a banking app, two users open the same "transactions" page URL, but each sees only their own history.
+    <div class="card" style="margin-top: clamp(0.45rem, 1.3vh, 0.8rem);">
+      <div class="col-label" style="color: var(--gold);">What a second layer would have done</div>
+      <p style="font-size: clamp(0.74rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin-top: 0.3rem;">
+        Each layer <strong>trusted the one before it</strong>. The web tier trusted the patch, the app trusted the web tier,
+        the databases trusted the app&rsquo;s service account &mdash; so one missed update drained <em>everything</em>.
+      </p>
+      <p style="font-size: clamp(0.74rem, 1.15vw, 0.88rem); color: var(--fg-dim); margin-top: 0.5rem;">
+        If the database itself had enforced row rules &mdash;
+        <span class="inline-code">auth.uid() = user_id</span> &mdash; a stolen connection would inherit
+        <strong>one user&rsquo;s scope, not 147 million</strong>. The patch failure becomes a contained incident,
+        not a national one.
       </p>
     </div>
 
-    <div class="slide-num">25 / 37</div>
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        One missed patch should not expose <strong style="color: var(--red-soft);">everything</strong>.
+        Defense in depth: app-level checks <em>and</em> RLS &mdash; not one or the other.
+      </p>
+    </div>
+
+    <div class="slide-num">13 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 26 — RLS Comparison: Without vs With
+     SLIDE 14 — Every Boundary Needs a Rule
   -->
-  <section class="slide" id="s26">
+  <section class="slide" id="s14">
     <div class="overline">Defense in Depth</div>
+    <h2>Every Boundary Needs a Rule</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr><th>Boundary</th><th>Rule tool</th><th>What it catches</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Browser &rarr; Server</td>
+          <td>Form validation + Zod schema</td>
+          <td>Bad input blocked before processing</td>
+        </tr>
+        <tr>
+          <td>Server fn &rarr; Server fn</td>
+          <td>TypeScript interface + auth check</td>
+          <td>Wrong types and unauthenticated callers</td>
+        </tr>
+        <tr>
+          <td>Server &rarr; Database</td>
+          <td>SQL constraints + parameterized queries</td>
+          <td>Impossible rows, injection attempts</td>
+        </tr>
+        <tr>
+          <td>Database &rarr; User</td>
+          <td><span class="inline-code">auth.uid()</span> RLS policy</td>
+          <td>Cross-user reads and writes</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        Code-level filters and database-level enforcement are <strong style="color: var(--gold);">two different lines of defense</strong>,
+        not duplicates of each other.
+      </p>
+    </div>
+
+    <div class="slide-num">14 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — RLS: Enable → Deny All
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">RLS &mdash; Step 1</div>
+    <h2>Enable &rarr; Deny All</h2>
+    <div class="accent-line"></div>
+
+    <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: clamp(0.45rem, 1.2vh, 0.7rem);">
+      <strong style="color: var(--gold);">Row-Level Security (RLS):</strong> a database-level rule that decides &mdash;
+      per row, per query &mdash; which rows each user is allowed to read or change.
+      It runs inside Postgres, not inside your app.
+    </p>
+
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Two SQL lines, big consequence</div>
+      <p style="font-family: var(--font-mono); font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--gold); margin-top: 0.35rem;">
+        alter table tasks enable row level security;
+      </p>
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-top: 0.4rem;">
+        The instant that runs, every app-client <span class="inline-code">select</span> against
+        <span class="inline-code">tasks</span> returns <strong>0 rows</strong>. The app appears broken.
+      </p>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.5vh, 0.95rem);">
+      <p style="font-size: clamp(0.95rem, 1.55vw, 1.18rem); color: var(--fg); text-align: center;">
+        Deny-by-default is <strong style="color: var(--gold);">not a bug</strong>.<br>
+        It is the starting point.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--gold);">Mental model:</strong> RLS is a bouncer who says &ldquo;no&rdquo; until you write a policy that lets specific people in.
+        Supabase dashboard and service-role access can bypass this; your browser app should not.
+      </p>
+    </div>
+
+    <div class="slide-num">15 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Write Policies: using vs with check
+  -->
+  <section class="slide" id="s16">
+    <div class="overline">The Distinction Most People Miss</div>
+    <h2>Write Policies: <span class="inline-code">using</span> vs. <span class="inline-code">with check</span></h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table">
+      <thead>
+        <tr><th>Operation</th><th>Clause</th><th>What it asks</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>SELECT</strong></td>
+          <td><span class="inline-code">using</span></td>
+          <td>Which existing rows may this user see?</td>
+        </tr>
+        <tr>
+          <td><strong>DELETE</strong></td>
+          <td><span class="inline-code">using</span></td>
+          <td>Which existing rows may this user remove?</td>
+        </tr>
+        <tr>
+          <td><strong>INSERT</strong></td>
+          <td><span class="inline-code">with check</span></td>
+          <td>Is the <em>new</em> row state allowed?</td>
+        </tr>
+        <tr>
+          <td><strong>UPDATE</strong></td>
+          <td>both</td>
+          <td>May this user touch this row, AND is the new state allowed?</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.72rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
+        <strong style="color: var(--red-soft);">Common bug:</strong>
+        you write a <span class="inline-code">using</span> policy, feel safe, and forget <span class="inline-code">with check</span>.
+        Inserts can smuggle bad rows; updates can change ownership unless the new row state is checked.
+      </p>
+    </div>
+
+    <div class="slide-num">16 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — Without RLS vs With RLS
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">Same Query, Two Outcomes</div>
     <h2>Without RLS vs. With RLS</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
       <div class="card">
         <div class="col-label bad">Without RLS</div>
-        <div class="num-feature" style="margin-top: 0.25rem;">
-          <div class="num-circle">A</div>
-          <div class="num-text">
-            <strong>Team relies on app-layer filtering</strong>
-            <span>Developers must remember to apply privacy filters in every query path.</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">B</div>
-          <div class="num-text">
-            <strong>One missed filter leaks data</strong>
-            <span>A single oversight can expose all user rows.</span>
-          </div>
-        </div>
+        <p style="font-family: var(--font-mono); font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          select * from tasks;
+        </p>
+        <p style="font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--red-soft); margin-top: 0.4rem; text-align: center;">
+          <strong>12 rows</strong>
+        </p>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          Alice sees Alice&rsquo;s rows, Bob&rsquo;s rows, and everyone else&rsquo;s. The query is identical.
+        </p>
       </div>
       <div class="card">
         <div class="col-label good">With RLS</div>
-        <div class="num-feature" style="margin-top: 0.25rem;">
-          <div class="num-circle">A</div>
-          <div class="num-text">
-            <strong>Database enforces ownership by default</strong>
-            <span>Access rules travel with the table, not with each developer memory.</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">B</div>
-          <div class="num-text">
-            <strong>Bug impact is contained</strong>
-            <span>Even if app logic is imperfect, cross-user reads are still blocked.</span>
-          </div>
-        </div>
+        <p style="font-family: var(--font-mono); font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.3rem;">
+          select * from tasks;
+          <span style="color: var(--gold); display: block; opacity: 0.6;">-- using ( auth.uid() = user_id )</span>
+        </p>
+        <p style="font-size: clamp(0.78rem, 1.22vw, 0.95rem); color: var(--gold); margin-top: 0.4rem; text-align: center;">
+          <strong>3 rows</strong>
+        </p>
+        <p style="font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--fg-dim); margin-top: 0.35rem;">
+          Postgres silently appends the policy to every read. Alice sees only Alice&rsquo;s tasks. App code unchanged.
+        </p>
       </div>
     </div>
 
-    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
-        Code-level filtering and database-level enforcement are not redundant &mdash; they are two different lines of
-        defense. Your code <em>will</em> have bugs. RLS is the safety net.
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        The chain&rsquo;s last link is visible as <strong style="color: var(--gold);">a row count</strong>.
       </p>
     </div>
-    <div class="card" style="margin-top: clamp(0.35rem, 1vh, 0.6rem);">
-      <div class="col-label" style="color: var(--gold);">Dedicated comparison example</div>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong>Situation:</strong> hospital nurse opens patient list.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
-        <strong>Risk without RLS:</strong> one missed filter could expose all patient charts.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
-        <strong>Safer with RLS:</strong> database limits rows to assigned patients, even if app query is imperfect.
-      </p>
+
+    <div class="slide-num">17 / 24</div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 5 — BREAK THE CHAIN (slides 18-24)
+       ============================================================ -->
+
+  <!-- ============================================================
+     SLIDE 18 — Real-World Damage: Four Failure Patterns (2x2 grid)
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">When the Chain Breaks</div>
+    <h2>Real-World Damage: Four Failure Patterns</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Broken object access</div>
+        <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg); margin-top: 0.2rem;">
+          <strong>First American (2019)</strong> &mdash; predictable URLs, no ownership check.
+        </p>
+        <p style="font-size: clamp(0.68rem, 1.04vw, 0.8rem); color: var(--fg-dim); margin-top: 0.25rem;">
+          <strong style="color: var(--gold);">W6 habit:</strong> check ownership on every read, every URL.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Weak internal boundaries</div>
+        <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg); margin-top: 0.2rem;">
+          <strong>Equifax (2017)</strong> &mdash; one missed patch, no second line of defense.
+        </p>
+        <p style="font-size: clamp(0.68rem, 1.04vw, 0.8rem); color: var(--fg-dim); margin-top: 0.25rem;">
+          <strong style="color: var(--gold);">W6 habit:</strong> layer defenses &mdash; app checks <em>and</em> RLS.
+        </p>
+      </div>
     </div>
-    <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.45rem;">
-      Class prompt: In healthcare, which is safer for patient privacy: relying only on UI checks or enforcing row-level rules in database?
+
+    <div class="two-col" style="margin-top: clamp(0.45rem, 1.3vh, 0.8rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Leaked credentials</div>
+        <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg); margin-top: 0.2rem;">
+          <strong>Uber (2022)</strong> &mdash; admin credentials in a script, plus MFA (Multi-Factor Authentication) push fatigue.
+        </p>
+        <p style="font-size: clamp(0.68rem, 1.04vw, 0.8rem); color: var(--fg-dim); margin-top: 0.25rem;">
+          <strong style="color: var(--gold);">W6 habit:</strong> protect keys &mdash; service-role keys never in client code.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Student data exposure</div>
+        <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg); margin-top: 0.2rem;">
+          <strong>Chegg (multiple)</strong> &mdash; weak controls on data the company didn&rsquo;t need to keep.
+        </p>
+        <p style="font-size: clamp(0.68rem, 1.04vw, 0.8rem); color: var(--fg-dim); margin-top: 0.25rem;">
+          <strong style="color: var(--gold);">W6 habit:</strong> minimize sensitive data; collect only what the JTBD requires.
+        </p>
+      </div>
+    </div>
+
+    <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.45rem, 1.3vh, 0.8rem);">
+      Four very different breaches. Four habits you build tonight.
     </p>
 
-    <div class="slide-num">26 / 37</div>
+    <div class="slide-num">18 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 27 — RLS Is Non-Negotiable for Agents
+     SLIDE 19 — Testing Your RLS
   -->
-  <section class="slide" id="s27">
-    <div class="overline">Agentic AI</div>
-    <h2>RLS Is Non-Negotiable for Agents</h2>
-    <div class="accent-line"></div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="col-label bad">The Bug</div>
-        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-          Agent uses a high-privilege service key in user-facing flow.<br>
-          Data request asks for all rows without ownership filtering.<br>
-          Result: <strong style="color: var(--red-soft);">Returns ALL users' data.</strong>
-        </p>
-      </div>
-      <div class="card">
-        <div class="col-label good">The Fix</div>
-        <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-          Agent acts with end-user identity context, not admin context.<br>
-          Row-level rules compare session identity to row owner automatically.<br>
-          Result: <strong style="color: var(--green-soft);">Only that user's data.</strong>
-        </p>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg);">
-        Overlay Plane&nbsp;2 agent locations on your architecture diagram.
-        Every agent endpoint needs the same auth + RLS stack as every human endpoint.
-      </p>
-    </div>
-
-    <div class="slide-num">27 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 28 — RLS Policies: INSERT & UPDATE
-  -->
-  <section class="slide" id="s28">
-    <div class="overline">Row Level Security</div>
-    <h2>Write Policy Design: Create, Edit, Delete</h2>
-    <div class="accent-line"></div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">Outgoing check (read/update/delete)</div>
-        <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);">
-          "Can this user touch this existing row?"
-        </p>
-        <p style="font-size: clamp(0.72rem, 1.12vw, 0.85rem); color: var(--fg-dim); margin-top: 0.35rem;">
-          Example: a student cannot delete another student's assignment reminder.
-        </p>
-      </div>
-      <div class="card">
-        <div class="col-label" style="color: var(--gold);">Incoming check (create/update)</div>
-        <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);">
-          "Is the new row state allowed before saving?"
-        </p>
-        <p style="font-size: clamp(0.72rem, 1.12vw, 0.85rem); color: var(--fg-dim); margin-top: 0.35rem;">
-          Example: user cannot create a task and assign ownership to someone else.
-        </p>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.2rem);">
-      <p style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg);">
-        <strong style="color: var(--gold);">Best practice:</strong> protect both directions of data flow.
-        If you only check reads but not writes, attackers can still inject unsafe rows.
-      </p>
-    </div>
-
-    <div class="slide-num">28 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 29 — Testing Your RLS
-  -->
-  <section class="slide" id="s29">
-    <div class="overline">Security Verification</div>
+  <section class="slide" id="s19">
+    <div class="overline">Verification</div>
     <h2>Testing Your RLS</h2>
     <div class="accent-line"></div>
 
-    <p>After writing policies, <strong>run behavior tests</strong> (not just "it compiles").</p>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 0.9rem);">
-      <div class="col-label" style="color: var(--gold);">Test script in plain English</div>
-      <div class="num-feature" style="margin-top: 0.25rem;">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Act as User A</strong>
-          <span>Open app using A's login context.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Try to access User B's row</strong>
-          <span>Expected result: zero visible rows, always.</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Repeat for write actions</strong>
-          <span>Ensure create/update/delete rules also block cross-user actions.</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="highlight-box">
-      <strong>Test every policy.</strong> A missing RLS policy means any authenticated user can read/modify any row. This is the #1 Supabase security mistake.
-    </div>
-
-    <table class="slide-table" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+    <table class="slide-table">
       <thead>
-        <tr><th>Test Case</th><th>Expected Result</th><th>Pass Criteria</th></tr>
+        <tr><th>Test case</th><th>Acting as</th><th>Expected</th></tr>
       </thead>
       <tbody>
         <tr>
-          <td>Same-user query</td>
-          <td>Returns user's own rows</td>
-          <td><span style="color: var(--green-soft);">count &gt; 0</span></td>
+          <td>Read own rows</td>
+          <td>Alice</td>
+          <td>N rows (her own)</td>
         </tr>
         <tr>
-          <td>Cross-user query</td>
-          <td>Returns zero rows</td>
-          <td><strong style="color: var(--red-soft);">count == 0 always</strong></td>
+          <td>Read another user&rsquo;s rows</td>
+          <td>Alice querying Bob&rsquo;s id</td>
+          <td><strong style="color: var(--gold);">0 rows</strong> (invisible, not 403)</td>
         </tr>
         <tr>
-          <td>Unauthenticated query</td>
-          <td>Request blocked</td>
-          <td>401 or empty result</td>
+          <td>Read while signed out</td>
+          <td>Anonymous</td>
+          <td><strong style="color: var(--gold);">0 rows</strong></td>
         </tr>
         <tr>
-          <td>Admin / service role</td>
-          <td>Broadened access (intentional)</td>
-          <td>Only via server-side, never client</td>
+          <td>Insert with someone else&rsquo;s <span class="inline-code">user_id</span></td>
+          <td>Alice writing as Bob</td>
+          <td>Policy violation</td>
+        </tr>
+        <tr>
+          <td>Update another user&rsquo;s row</td>
+          <td>Alice updating Bob&rsquo;s row</td>
+          <td>0 rows affected</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="card" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
-      <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Key metric:</strong> Cross-user queries must <em>always</em> return 0 rows.
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        If any expected cell turns out non-zero, <strong style="color: var(--red-soft);">your chain is broken</strong>.
       </p>
     </div>
 
-    <div class="slide-num">29 / 37</div>
+    <div class="slide-num">19 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 30 — Find the Vulnerability
+     SLIDE 20 — Trace The Chain: Diagnose The Failure
   -->
-  <section class="slide" id="s30">
-    <div class="overline">PRIMM: Predict</div>
-    <h2>Find the Vulnerability</h2>
+  <section class="slide" id="s20">
+    <div class="overline">Quick Self-Check</div>
+    <h2>Trace the Chain: Diagnose the Failure</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 900 110" xmlns="http://www.w3.org/2000/svg" style="max-height: 18vh;" role="img"
+        aria-label="Compact chain reminder.">
+        <!-- compact chain -->
+        <g font-family="Inter, sans-serif">
+          <rect x="6" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="59" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">1</text>
+          <text x="59" y="66" text-anchor="middle" fill="#e8e4dd" font-size="10" font-weight="600">Sign-up</text>
+
+          <line x1="113" y1="55" x2="125" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="125,52 130,55 125,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="132" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="185" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">2</text>
+          <text x="185" y="66" text-anchor="middle" fill="#e8e4dd" font-size="10" font-weight="600">Sign-in</text>
+
+          <line x1="239" y1="55" x2="251" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="251,52 256,55 251,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="258" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="311" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">3</text>
+          <text x="311" y="66" text-anchor="middle" fill="#e8e4dd" font-size="10" font-weight="600">Session</text>
+
+          <line x1="365" y1="55" x2="377" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="377,52 382,55 377,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="384" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="437" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">4</text>
+          <text x="437" y="66" text-anchor="middle" fill="#e8e4dd" font-size="10" font-weight="600">Protected route</text>
+
+          <line x1="491" y1="55" x2="503" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="503,52 508,55 503,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="510" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="563" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">5</text>
+          <text x="563" y="66" text-anchor="middle" fill="#e8e4dd" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">user_id</text>
+
+          <line x1="617" y1="55" x2="629" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="629,52 634,55 629,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="636" y="35" width="106" height="40" rx="5" fill="rgba(0,0,0,0.3)" stroke="#c1a778" stroke-width="1"/>
+          <text x="689" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">6</text>
+          <text x="689" y="66" text-anchor="middle" fill="#e8e4dd" font-size="10" font-weight="600">RLS policy</text>
+
+          <line x1="743" y1="55" x2="755" y2="55" stroke="#c1a778" stroke-width="1.2" opacity="0.6"/>
+          <polygon points="755,52 760,55 755,58" fill="#c1a778" opacity="0.7"/>
+
+          <rect x="762" y="35" width="106" height="40" rx="5" fill="rgba(193,167,120,0.16)" stroke="#c1a778" stroke-width="1.4"/>
+          <text x="815" y="52" text-anchor="middle" fill="#c1a778" font-size="8" letter-spacing="1.5">7</text>
+          <text x="815" y="66" text-anchor="middle" fill="#c1a778" font-size="11" font-weight="700">0 rows</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-top: clamp(0.4rem, 1.2vh, 0.7rem);">
+      <div class="col-label" style="color: var(--gold);">Which link failed in each scenario?</div>
+      <div class="num-feature" style="margin-top: 0.2rem;">
+        <div class="num-circle">A</div>
+        <div class="num-text"><strong>Alice signs in but her dashboard is blank.</strong><span>Hint: where could the chain stop early?</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">B</div>
+        <div class="num-text"><strong>Alice sees Bob&rsquo;s tasks.</strong><span>Hint: ownership filter or RLS policy?</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">C</div>
+        <div class="num-text"><strong>Content flashes for 200ms before redirect.</strong><span>Hint: which guard runs where?</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">D</div>
+        <div class="num-text"><strong>Insert succeeds but the row has the wrong owner.</strong><span>Hint: who set the user_id?</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">E</div>
+        <div class="num-text"><strong>An anonymous visitor can query private rows.</strong><span>Hint: what does <span class="inline-code">auth.uid()</span> return when null?</span></div>
+      </div>
+    </div>
+
+    <div class="slide-num">20 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Validation Is a Boundary
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">Boundary Rule</div>
+    <h2>Validation Is a Boundary</h2>
     <div class="accent-line"></div>
 
     <div class="card">
-      <div class="col-label" style="color: var(--gold);">Scenario A: Input Safety</div>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> note form accepts unlimited text and raw HTML.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> malicious script can be stored and shown to other users.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> validate length and sanitize before save.</p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.7rem);">
-      <div class="col-label" style="color: var(--gold);">Scenario B: Route Protection</div>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> login check exists only in browser UI.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> direct API calls bypass UI redirect behavior.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> enforce checks on server for every protected endpoint.</p>
-    </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.7rem);">
-      <div class="col-label" style="color: var(--gold);">Scenario C: Data Access Rules</div>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Situation:</strong> user-specific table has no row-level rule.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Risk:</strong> any authenticated account can query all rows.</p>
-      <p style="font-size: clamp(0.75rem, 1.18vw, 0.89rem); color: var(--fg-dim);"><strong>Safer practice:</strong> add ownership-based row policy on all user data tables.</p>
-    </div>
-    <p style="font-size: clamp(0.74rem, 1.13vw, 0.86rem); color: var(--fg-dim); margin-top: 0.55rem;">
-      Class prompt: Rank A/B/C from "most likely in beginner projects" to "most damaging in production."
-    </p>
-
-    <div class="slide-num">30 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 31 — Vulnerability Debrief
-  -->
-  <section class="slide" id="s31">
-    <div class="overline">PRIMM: Investigate</div>
-    <h2>Vulnerability Debrief</h2>
-    <div class="accent-line"></div>
-
-    <div class="num-feature">
-      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">A</div>
-      <div class="num-text">
-        <strong>Missing input validation</strong>
-        <span>No length limit, no sanitization. An XSS payload can go straight into the database and render in another
-          user&rsquo;s browser.</span>
-        <span>Fix: add clear limits and sanitize content on the server before writing.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">B</div>
-      <div class="num-text">
-        <strong>Client-side-only auth check</strong>
-        <span>The auth check runs only in browser UI logic. JavaScript can be disabled. A direct
-          API call bypasses it entirely. The redirect is a UX affordance, not a security control.</span>
-      </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle" style="border-color: var(--red-soft); color: var(--red-soft);">C</div>
-      <div class="num-text">
-        <strong>No RLS enabled</strong>
-        <span>The Supabase anon key is public &mdash; it&rsquo;s in your client-side bundle. Without RLS, that key is a
-          skeleton key to your entire table. This is the default state of a new Supabase project.</span>
-      </div>
-    </div>
-
-    <div class="slide-num">31 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 32 — AI Security Checklist
-  -->
-  <section class="slide" id="s32">
-    <div class="overline">Security</div>
-    <h2>AI Security Checklist</h2>
-    <div class="accent-line"></div>
-
-    <div class="highlight-box">
-      <p style="font-size: clamp(0.9rem, 1.5vw, 1.15rem); color: #f5f0e8; margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">
-        These three are the <strong style="color: var(--gold);">top vulnerabilities</strong> in AI-generated full-stack
-        code:
-      </p>
-      <div class="num-feature">
-        <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Missing input validation</strong>
-          <span>Does the form check length, type, and special characters on the server?</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Client-side-only auth</strong>
-          <span>Is there a server-side auth check, or only a browser redirect?</span>
-        </div>
-      </div>
-      <div class="num-feature">
-        <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>No Row Level Security</strong>
-          <span>Is RLS enabled on every table with user-specific data?</span>
-        </div>
-      </div>
-    </div>
-
-    <p
-      style="font-size: clamp(0.8rem, 1.3vw, 1rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      Run this checklist every time AI generates a form, a protected route, or a database insert.
-    </p>
-
-    <div class="slide-num">32 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 33 — Section Divider: Spec as Context
-  -->
-  <section class="slide title-slide" id="s33">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <div class="accent-line"></div>
-    <h1>Spec as Context</h1>
-    <div class="subtitle">The planning artifact that codes for you</div>
-    <div class="slide-num">33 / 37</div>
-  </section>
-
-  <!-- ============================================================
-     SLIDE 34 — CLAUDE.md
-  -->
-  <section class="slide" id="s34">
-    <div class="overline">Spec-Driven AI</div>
-    <h2>CLAUDE.md as Context</h2>
-    <div class="accent-line"></div>
-
-    <div class="card">
-      <div class="col-label" style="color: var(--gold);">What this file should declare</div>
+      <div class="col-label" style="color: var(--gold);">Every form is a door into your database</div>
       <div class="num-feature" style="margin-top: 0.25rem;">
         <div class="num-circle">1</div>
-        <div class="num-text">
-          <strong>Data model intent</strong>
-          <span>What entities exist and who owns them.</span>
-        </div>
+        <div class="num-text"><strong>Required fields</strong><span>Reject blank values before they become impossible rows.</span></div>
       </div>
       <div class="num-feature">
         <div class="num-circle">2</div>
-        <div class="num-text">
-          <strong>Security rules</strong>
-          <span>Which routes need auth, and which tables need row-level protection.</span>
-        </div>
+        <div class="num-text"><strong>Length limits</strong><span>Stop a 10,000-character paste from becoming a UI and database problem.</span></div>
       </div>
       <div class="num-feature">
         <div class="num-circle">3</div>
-        <div class="num-text">
-          <strong>Validation boundaries</strong>
-          <span>What input limits are mandatory before data writes.</span>
-        </div>
+        <div class="num-text"><strong>Type checks</strong><span>Email should look like email; status should be one of the allowed choices.</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">4</div>
+        <div class="num-text"><strong>Plain text storage</strong><span>User text should display as text, not execute as markup.</span></div>
       </div>
     </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Spec-driven workflow (definition):</strong> define requirements before implementation so humans and AI follow the same source of truth.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Why it matters:</strong> consistent specs reduce rework, security omissions, and contradictory outputs.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.86rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong style="color: var(--gold);">Example:</strong> when teaching team project handoff, everyone reads one requirements file instead of relying on memory.
+
+    <div class="highlight-box" style="margin-top: clamp(0.55rem, 1.5vh, 0.95rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        Client validation helps the user. Server validation protects the system.
       </p>
     </div>
 
-    <p style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">When the data model, auth requirements, and RLS rules are in
-      <span class="inline-code">CLAUDE.md</span>, the AI generates correct Supabase queries on the first try. No prompt
-      iteration, no back-and-forth.
-    </p>
-
-    <div class="card" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      <p style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
-        <strong style="color: var(--gold);">Key insight:</strong> A chat prompt is ephemeral. A <span
-          class="inline-code">CLAUDE.md</span> is re-read at the start of every session &mdash; the 10th query is as
-        accurate as the 1st.
-      </p>
-    </div>
-
-    <div class="slide-num">34 / 37</div>
+    <div class="slide-num">21 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 35 — OpenSpec: Specs Before Code
+     SLIDE 22 — Spec as Context
   -->
-  <section class="slide" id="s35">
-    <div class="overline">SPEC-DRIVEN AI</div>
-    <h2>OpenSpec: Specs Before Code</h2>
+  <section class="slide" id="s22">
+    <div class="overline">40 / 20 / 40 &mdash; the planning 40%</div>
+    <h2>The Spec Becomes the Prompt</h2>
     <div class="accent-line"></div>
 
     <div class="two-col">
-      <div>
-        <div class="num-feature">
+      <div class="card">
+        <div class="col-label bad">Chat-only context</div>
+        <div class="num-feature" style="margin-top: 0.25rem;">
           <div class="num-circle">1</div>
-          <div class="num-text">
-            <strong>Propose</strong>
-            <span>Write <em>what</em> changes and <em>why</em> before touching code &mdash; ADDED / MODIFIED / REMOVED delta markers</span>
-          </div>
+          <div class="num-text"><strong>Repeated setup</strong><span>Every session starts by re-explaining the schema.</span></div>
         </div>
         <div class="num-feature">
           <div class="num-circle">2</div>
-          <div class="num-text">
-            <strong>Apply</strong>
-            <span>Implement tasks from the approved spec checklist</span>
-          </div>
-        </div>
-        <div class="num-feature">
-          <div class="num-circle">3</div>
-          <div class="num-text">
-            <strong>Archive</strong>
-            <span>Completed specs become project history</span>
-          </div>
+          <div class="num-text"><strong>Model guesses</strong><span>Missing auth and RLS rules become accidental architecture.</span></div>
         </div>
       </div>
-
       <div class="card">
-        <div class="col-label" style="color: var(--gold);">Example proposal (no command syntax)</div>
-        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.4rem;">
-          <strong>Title:</strong> Add task filtering
-        </p>
-        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.35rem;">
-          <strong>Why:</strong> students need to quickly separate done vs pending work.
-        </p>
-        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim); margin-bottom: 0.35rem;">
-          <strong>What changes:</strong> add filter control, update task list behavior, keep "show all" default.
-        </p>
-        <p style="font-size: clamp(0.73rem, 1.12vw, 0.86rem); color: var(--fg-dim);">
-          <strong>Completion checklist:</strong> filter options visible, filtering correct, default behavior preserved.
+        <div class="col-label good">CLAUDE.md context</div>
+        <p style="font-family: var(--font-mono); font-size: clamp(0.7rem, 1.08vw, 0.84rem); color: var(--gold); margin-top: 0.3rem; line-height: 1.55;">
+          Table: tasks(id, title, user_id)<br>
+          Auth: Supabase email auth<br>
+          RLS: users CRUD only own rows<br>
+          Routes: /login, /dashboard
         </p>
       </div>
     </div>
-    <div class="card" style="margin-top: clamp(0.45rem, 1.2vh, 0.75rem);">
-      <div class="col-label" style="color: var(--gold);">Before vs After (team impact)</div>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim); margin-top: 0.2rem;">
-        <strong>Before spec:</strong> teammates interpret goals differently, rebuild features twice, and miss security expectations.
-      </p>
-      <p style="font-size: clamp(0.72rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
-        <strong>After spec:</strong> one checklist aligns everyone, delivery is faster, and auth/RLS requirements are explicit.
+
+    <div class="highlight-box" style="margin-top: clamp(0.6rem, 1.6vh, 1rem);">
+      <p style="font-size: clamp(0.82rem, 1.3vw, 1rem); color: var(--fg); text-align: center;">
+        A 30-line spec can prevent 300 lines of confident, insecure code.
       </p>
     </div>
 
-    <p style="font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
-      Free, no API keys. Works with Claude Code, Cursor, Copilot, and 20+ tools.
-    </p>
-
-    <div class="slide-num">35 / 37</div>
+    <div class="slide-num">22 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 36 — Your Spec Stack So Far
+     SLIDE 23 — AI Security Checklist
   -->
-  <section class="slide" id="s36">
-    <div class="overline">SPEC-DRIVEN AI</div>
-    <h2>Your Spec Stack So Far</h2>
+  <section class="slide" id="s23">
+    <div class="overline">40 / 20 / 40 &mdash; the testing 40%</div>
+    <h2>AI Security Checklist</h2>
     <div class="accent-line"></div>
 
-    <div class="num-feature">
-      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W3</div>
-      <div class="num-text">
-        <strong>Format Contract</strong>
-        <span>Data boundaries &mdash; agree on shape before processing</span>
+    <div class="card">
+      <div class="col-label" style="color: var(--gold);">Re-check AI-generated full-stack code for</div>
+      <div class="num-feature" style="margin-top: 0.2rem;">
+        <div class="num-circle">1</div>
+        <div class="num-text"><strong>RLS enabled</strong><span>on every table that holds user-specific data.</span></div>
       </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W4</div>
-      <div class="num-text">
-        <strong>CTOC</strong>
-        <span>Chart-level functional spec &mdash; what the visualization must show</span>
+      <div class="num-feature">
+        <div class="num-circle">2</div>
+        <div class="num-text"><strong>No service-role key in client code</strong><span>The <em>service-role key</em> is a Supabase admin key that bypasses RLS entirely. It must live only on the server &mdash; never in any code path the browser can reach.</span></div>
       </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W6</div>
-      <div class="num-text">
-        <strong>CLAUDE.md / PRD</strong>
-        <span>Persistent project context &mdash; re-read every session</span>
+      <div class="num-feature">
+        <div class="num-circle">3</div>
+        <div class="num-text"><strong><span class="inline-code">user_id</span> derived from the session</strong><span>not pulled from the request body.</span></div>
       </div>
-    </div>
-    <div class="num-feature">
-      <div class="num-circle" style="font-size: clamp(0.6rem, 0.9vw, 0.75rem);">W6</div>
-      <div class="num-text">
-        <strong>OpenSpec</strong>
-        <span>Enforced propose &rarr; apply &rarr; archive workflow</span>
+      <div class="num-feature">
+        <div class="num-circle">4</div>
+        <div class="num-text"><strong>Both <span class="inline-code">using</span> and <span class="inline-code">with check</span></strong><span>policies on tables that allow writes.</span></div>
+      </div>
+      <div class="num-feature">
+        <div class="num-circle">5</div>
+        <div class="num-text"><strong>Validation and two-user tests exist</strong><span>proving bad input is blocked and Alice cannot touch Bob&rsquo;s rows.</span></div>
       </div>
     </div>
 
-    <div class="highlight-box" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);">
-      <p style="font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--gold); text-align: center;">
-        Same principle at every scale: agree on <em>what</em> before writing <em>how</em>.
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.4vh, 0.85rem);">
+      <p style="font-size: clamp(0.78rem, 1.24vw, 0.95rem); color: var(--fg); text-align: center;">
+        Prompt to give your agent:
+        <em>&ldquo;Show me the ownership rule, the RLS policy, and one test that would fail if the policy were removed.&rdquo;</em>
       </p>
     </div>
 
-    <div class="slide-num">36 / 37</div>
+    <div class="slide-num">23 / 24</div>
   </section>
 
   <!-- ============================================================
-     SLIDE 37 — Closing
+     SLIDE 24 — Closing: 0 Rows Is The Goal
   -->
-  <section class="slide title-slide" id="s37">
-    <div class="overline">Week 6 Takeaway</div>
+  <section class="slide title-slide" id="s24">
+    <div class="overline">The Success State</div>
     <div class="accent-line"></div>
-    <h2>The Spec Is the Prompt</h2>
 
-    <div class="quote-block" style="text-align: left; max-width: 50ch; margin: clamp(0.5rem, 2vh, 1.5rem) auto;">
-      <p>&ldquo;The spec is the prompt &mdash; it just persists.&rdquo;</p>
+    <div class="card" style="max-width: 56ch; margin: clamp(0.5rem, 1.5vh, 1rem) auto 0;">
+      <p style="font-family: var(--font-mono); font-size: clamp(0.85rem, 1.35vw, 1.05rem); color: var(--gold); text-align: center;">
+        select * from tasks<br>
+        where user_id = '&lt;another-user&gt;';
+      </p>
+      <p style="font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold); text-align: center; margin-top: 0.6rem;">
+        <strong>0 rows returned</strong>
+      </p>
     </div>
 
-    <div
-      style="display: flex; width: min(85vw, 700px); height: clamp(32px, 5vh, 50px); border-radius: 4px; overflow: hidden; margin: clamp(1rem, 2.5vh, 2rem) auto;">
-      <div
-        style="flex: 40; background: linear-gradient(135deg, rgba(193,167,120,0.3), rgba(193,167,120,0.15)); display: flex; align-items: center; justify-content: center;">
-        <span
-          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--gold);">40%
-          Planning</span>
-      </div>
-      <div
-        style="flex: 20; background: linear-gradient(135deg, rgba(125,171,110,0.35), rgba(125,171,110,0.15)); display: flex; align-items: center; justify-content: center;">
-        <span
-          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--green-soft);">20%
-          Coding</span>
-      </div>
-      <div
-        style="flex: 40; background: linear-gradient(135deg, rgba(193,167,120,0.3), rgba(193,167,120,0.15)); display: flex; align-items: center; justify-content: center;">
-        <span
-          style="font-family: var(--font-mono); font-size: clamp(0.65rem, 1vw, 0.8rem); color: var(--gold);">40%
-          Testing</span>
-      </div>
+    <h1 style="margin-top: clamp(0.8rem, 2.2vh, 1.4rem);">0 Rows Is the Goal</h1>
+
+    <div class="highlight-box" style="margin-top: clamp(0.7rem, 1.8vh, 1.2rem); max-width: 64ch;">
+      <p style="font-size: clamp(0.85rem, 1.35vw, 1.05rem); color: var(--fg); text-align: center; line-height: 1.55;">
+        <strong style="color: var(--gold);">Auth</strong> establishes who.<br>
+        <strong style="color: var(--gold);">Ownership</strong> tags what.<br>
+        <strong style="color: var(--gold);">RLS</strong> enforces the boundary.<br>
+        <strong style="color: var(--gold);">Tests</strong> prove it.
+      </p>
     </div>
 
-    <p
-      style="font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.3rem, 1vh, 0.5rem);">
-      The antidote to the vibe coding hangover: write the spec in the planning phase, and it does the security work in
-      the coding phase.
+    <p style="font-size: clamp(0.74rem, 1.15vw, 0.88rem); color: var(--fg-dim); text-align: center; margin-top: clamp(0.6rem, 1.6vh, 1rem); max-width: 60ch;">
+      Next 105 minutes &mdash; break the boundaries on purpose, then defend them. When that query returns zero, you&rsquo;ve shipped Week 6.
     </p>
 
-    <div class="slide-num">37 / 37</div>
+    <div class="slide-num">24 / 24</div>
   </section>
 
 
