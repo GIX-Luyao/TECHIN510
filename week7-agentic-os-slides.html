@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHIN 510 Week 7 — Agentic OS</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/slides.css">
+  <link rel="stylesheet" href="css/site-nav.css">
+</head>
+
+<body>
+
+  <nav class="site-nav" id="site-nav">
+    <a href="index.html" class="site-nav-brand">TECHIN 510</a>
+    <button class="site-nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="site-nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="week1-slides.html">W1</a>
+      <a href="week2-slides.html">W2</a>
+      <a href="week3-slides.html">W3</a>
+      <a href="week4-slides.html">W4</a>
+      <a href="week5-slides.html">W5</a>
+      <a href="week5-tools-slides.html">W5+</a>
+      <a href="week6-slides.html">W6</a>
+      <a href="week7-agentic-os-slides.html">W7</a>
+    </div>
+  </nav>
+
+  <div id="progress"></div>
+  <div id="nav-dots"></div>
+  <button class="edit-btn" id="editBtn" title="Toggle edit mode (E)">E</button>
+
+  <!-- ============================================================
+     SLIDE 1 — Title
+  -->
+  <section class="slide title-slide" id="s1">
+    <div class="overline">TECHIN 510 &mdash; Spring 2026</div>
+    <div class="accent-line"></div>
+    <h1>Agentic OS<br></h1>
+    <div class="subtitle">Week 7: From single agents to a stateful operating system of skills</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="meta-line">University of Washington &bull; Global Innovation Exchange</div>
+    <div class="slide-num">01 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 2 — Learning Objectives
+  -->
+  <section class="slide" id="s2">
+    <div class="overline">What You Will Learn</div>
+    <h2>Learning Objectives</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Define what an agentic OS is and why a single agent is not enough</strong>
+        <span>Compare to single-shot runtimes like OpenClaw</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Wire agent context: <span class="inline-code">SOUL.md</span>, <span class="inline-code">USER.md</span>, daily memory, <span class="inline-code">learnings.md</span></strong>
+        <span>Understand what each file owns and how <span class="inline-code">CLAUDE.md</span> wires them together</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Decide what a skill should self-update vs. leave to the human</strong>
+        <span>Self-maintenance, skill/MCP reconciliation, no silent drift</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Chain skills and schedule cron jobs</strong>
+        <span>Skill relationships (upstream/downstream, I/O) + <span class="inline-code">crons/jobs/</span></span>
+      </div>
+    </div>
+
+    <div class="slide-num">02 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 3 — Section Divider: What is an Agentic OS
+  -->
+  <section class="slide title-slide" id="s3">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>What Is an Agentic OS?</h1>
+    <div class="subtitle">And why we need one</div>
+    <div class="slide-num">03 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 4 — Definition: The LLM Is the CPU
+  -->
+  <section class="slide" id="s4">
+    <div class="overline">Mental Model</div>
+    <h2>The LLM Is the CPU</h2>
+    <div class="accent-line"></div>
+
+    <div class="quote-block" style="text-align: left; max-width: 58ch;">
+      <p>"An agentic OS is the realization that the LLM is the CPU, and everything else &mdash; identity, memory, skills, schedule &mdash; can be expressed as text the CPU reads."</p>
+    </div>
+
+    <div class="slide-num">04 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 5 — Why: The Amnesia Gap
+  -->
+  <section class="slide" id="s5">
+    <div class="overline">The Problem</div>
+    <h2>Why a Single Agent Is Not Enough</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label bad">Plain Claude / one-shot agent</div>
+        <ul>
+          <li>Has no idea who you are</li>
+          <li>Forgets every session</li>
+          <li>Asks the same five questions each time</li>
+          <li>Cannot run on a schedule</li>
+          <li>Cannot route work to the right specialist</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          "Help me write a cover letter." &rarr; Generic. Hedged. No memory of yesterday's draft.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label good">Agentic OS</div>
+        <ul>
+          <li>Loads identity + user profile on every session</li>
+          <li>Appends to a daily memory file you can read</li>
+          <li>Carries open threads forward</li>
+          <li>Cron-style scheduled jobs</li>
+          <li>Skills auto-route by trigger phrase</li>
+        </ul>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          "Help me write a cover letter." &rarr; Pulls your resume, prior research, last week's draft, and your voice rules.
+        </p>
+      </div>
+    </div>
+
+    <div class="slide-num">05 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 6 — Section Divider: Brand Context
+  -->
+  <section class="slide title-slide" id="s6">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Brand Context</h1>
+    <div class="subtitle">Voice, positioning, and the customer in your head</div>
+    <div class="slide-num">06 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 7 — Three Brand Layers
+  -->
+  <section class="slide" id="s7">
+    <div class="overline">Before You Write a Skill</div>
+    <h2>Three Brand Layers, In Order</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>Voice profile &mdash; how it speaks</strong>
+        <span>Tone, banned words, defaults under pressure. Lives in <span class="inline-code">SOUL.md</span>.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>Positioning &mdash; what it is and is not</strong>
+        <span>The one-line answer to "what does this agent do?" + an explicit non-goals list.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>Ideal customer profile &mdash; who it is for</strong>
+        <span>One real persona, not a market segment. Skills tune output to this person.</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
+        Skip these and every skill you write will sound like a generic chatbot wearing a costume.
+      </p>
+    </div>
+
+    <div class="slide-num">07 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 8 — Voice Profile (job-agent example)
+  -->
+  <section class="slide" id="s8">
+    <div class="overline">Example &mdash; Job Application Agent</div>
+    <h2>Voice Profile in <span class="inline-code">SOUL.md</span></h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--gold);"># SOUL.md &mdash; Agent Personality</span>
+
+You are a personal job-application agent. Think of yourself as a sharp
+friend who has read every "how to land an internship" guide.
+
+<span style="color: var(--gold);">## Voice</span>
+- <span style="color: var(--green-soft);">Direct.</span> Lead with the answer. No throat-clearing.
+- <span style="color: var(--green-soft);">Honest about gaps.</span> If the user lacks a qualification, say so.
+- <span style="color: var(--green-soft);">Concrete over abstract.</span> Name the bullet, name the company.
+- <span style="color: var(--green-soft);">Calm, not hyped.</span> No emoji. No "absolutely crushing it."
+
+<span style="color: var(--gold);">## Words to avoid</span>
+leverage, synergy, robust, passionate, journey, in today's world</code></pre>
+
+    <p style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem); font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+      Voice is the most undervalued line of defense against AI slop. Two paragraphs in <span class="inline-code">SOUL.md</span> beat 1,000 lines of prompt engineering downstream.
+    </p>
+
+    <div class="slide-num">08 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 9 — Positioning + ICP
+  -->
+  <section class="slide" id="s9">
+    <div class="overline">Example &mdash; Job Application Agent</div>
+    <h2>Positioning &amp; ICP</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Positioning &mdash; what it is</div>
+        <p><em>"Drafts and tailors application materials. The user always reviews and submits."</em></p>
+        <p style="margin-top: 0.5rem; font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+          <strong>Non-goals (in <span class="inline-code">SOUL.md</span>):</strong>
+        </p>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem); color: var(--fg-dim);">
+          <li>Does NOT submit applications</li>
+          <li>Does NOT scrape sites you didn't point it at</li>
+          <li>Does NOT invent skills or experience</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">ICP &mdash; who it serves</div>
+        <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem);">From <span class="inline-code">USER.md</span>:</p>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li>3rd-year UW Informatics student</li>
+          <li>Targeting agentic-AI internships, fall back to FAANG</li>
+          <li>Has 4 named projects with metrics</li>
+          <li>Two named weaknesses to address honestly</li>
+          <li>Dislikes the words "leverage", "synergy", "robust"</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem); font-size: clamp(0.75rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      A real ICP &mdash; not a market segment. The agent tunes everything to <em>this</em> student.
+    </p>
+
+    <div class="slide-num">09 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 10 — Section Divider: Agent Context
+  -->
+  <section class="slide title-slide" id="s10">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Agent Context</h1>
+    <div class="subtitle">SOUL, USER, memory, learning &mdash; and how they wire together</div>
+    <div class="slide-num">10 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 11 — Four Files at a Glance
+  -->
+  <section class="slide" id="s11">
+    <div class="overline">The Four Context Files</div>
+    <h2>Each File Owns One Thing</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table" style="width: 100%; font-size: clamp(0.74rem, 1.2vw, 0.9rem); border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.4);">
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">File</th>
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Owns</th>
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Lifecycle</th>
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Who edits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">SOUL.md</span></td>
+          <td style="padding: 0.5em 0.4em;">Personality, voice, principles, non-goals</td>
+          <td style="padding: 0.5em 0.4em;">Rarely changes</td>
+          <td style="padding: 0.5em 0.4em;">Human</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">USER.md</span></td>
+          <td style="padding: 0.5em 0.4em;">Who the user is, strengths, weaknesses, preferences</td>
+          <td style="padding: 0.5em 0.4em;">Slow drift</td>
+          <td style="padding: 0.5em 0.4em;">Human (agent suggests)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">memory/{YYYY-MM-DD}.md</span></td>
+          <td style="padding: 0.5em 0.4em;">Session #, project, goal, deliverable, open threads</td>
+          <td style="padding: 0.5em 0.4em;">One file per day</td>
+          <td style="padding: 0.5em 0.4em;">Agent appends</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">learnings.md</span></td>
+          <td style="padding: 0.5em 0.4em;">What worked / didn't / lessons per skill, after shipping each deliverable</td>
+          <td style="padding: 0.5em 0.4em;">Append-only</td>
+          <td style="padding: 0.5em 0.4em;">Agent (human reviews)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem); font-size: clamp(0.74rem, 1.2vw, 0.9rem); color: var(--fg-dim); text-align: center;">
+      One concern per file. If two files want to own the same fact, the design is wrong.
+    </p>
+
+    <div class="slide-num">11 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 12 — SOUL vs USER
+  -->
+  <section class="slide" id="s12">
+    <div class="overline">Identity Layer</div>
+    <h2><span class="inline-code">SOUL.md</span> vs. <span class="inline-code">USER.md</span></h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">SOUL.md &mdash; about the agent</div>
+        <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem);">Bootstrap prompt:</p>
+        <pre style="font-size: clamp(0.65rem, 1vw, 0.78rem); padding: 0.5rem 0.7rem;"><code>Ask me 5 questions so we can agree
+on your personality: what I expect,
+what I disallow, working principles.</code></pre>
+        <p style="margin-top: 0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          Voice, principles, non-goals. Stable across users of the same template.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">USER.md &mdash; about the human</div>
+        <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem);">Bootstrap prompt:</p>
+        <pre style="font-size: clamp(0.65rem, 1vw, 0.78rem); padding: 0.5rem 0.7rem;"><code>Ask me 15 questions one at a time
+to update @context/USER.md:
+identity, likes/dislikes, what to
+avoid, preferences, goals &amp;
+working style.</code></pre>
+        <p style="margin-top: 0.3rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem); color: var(--fg-dim);">
+          One per person. Forks when you onboard a new user.
+        </p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Both load on every session</strong> via <span class="inline-code">@context/SOUL.md</span> and <span class="inline-code">@context/USER.md</span> imports in <span class="inline-code">CLAUDE.md</span>.
+      </p>
+    </div>
+
+    <div class="slide-num">12 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 13 — Daily Memory
+  -->
+  <section class="slide" id="s13">
+    <div class="overline">State Layer</div>
+    <h2>Daily Memory &mdash; The Ledger</h2>
+    <div class="accent-line"></div>
+
+    <pre><code><span style="color: var(--fg-dim);"># context/memory/2026-05-09.md &mdash; one file per day</span>
+
+<span style="color: var(--gold);">## Session 1</span>
+
+<span style="color: var(--gold);">### Project</span>
+job-application-agent
+
+<span style="color: var(--gold);">### Goal</span>
+Apply to Anthropic SWE internship by Friday.
+
+<span style="color: var(--gold);">### Deliverable</span>
+- <span class="inline-code">projects/job-tailor-resume/2026-05-09_anthropic-swe.md</span>
+- <span class="inline-code">projects/job-cover-letter/2026-05-09_anthropic-swe.md</span>
+
+<span style="color: var(--gold);">### Open threads</span>
+- CS 452 enrollment confirmation &mdash; mention in follow-up email if asked.
+- Distributed-systems gap &mdash; address honestly in next draft.</code></pre>
+
+    <p style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem); font-size: clamp(0.74rem, 1.2vw, 0.9rem); color: var(--fg-dim);">
+      Five fields per session: <strong style="color: var(--gold);">session #, project, goal, deliverable, open threads</strong>. New sessions read today's file <em>and</em> yesterday's &mdash; <strong style="color: var(--gold);">open threads</strong> become tomorrow's starting context.
+    </p>
+
+    <div class="slide-num">13 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 14 — learning.md
+  -->
+  <section class="slide" id="s14">
+    <div class="overline">Compounding Layer</div>
+    <h2><span class="inline-code">learnings.md</span> &mdash; What Worked, Per Skill</h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">When it's updated</div>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li><strong>After shipping each major deliverable</strong></li>
+          <li>Per skill: what went well</li>
+          <li>Per skill: what did <em>not</em> go well</li>
+          <li>Per skill: what should be learned next time</li>
+        </ul>
+        <p style="margin-top: 0.3rem; font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim);">
+          Wired into <span class="inline-code">CLAUDE.md</span> so the agent updates it automatically.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">What it does NOT store</div>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li>One-off session details (those go in memory)</li>
+          <li>Identity facts (those go in USER.md)</li>
+          <li>Skill mechanics (those go in the skill itself)</li>
+          <li>Anything the agent isn't sure about</li>
+        </ul>
+      </div>
+    </div>
+
+    <pre style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem); padding: 0.6rem 0.8rem; font-size: clamp(0.7rem, 1.1vw, 0.85rem);"><code><span style="color: var(--fg-dim);"># context/learnings.md &mdash; append-only</span>
+
+<span style="color: var(--gold);">## draft-cover-letter &mdash; 2026-05-08</span>
+- Went well: leading with the project, not the role.
+- Didn't: opening with "I am writing to express." User rejected x3. Banned.
+- Learn: pull the hook from the user's most recent shipped artifact.
+
+<span style="color: var(--gold);">## draft-resume &mdash; 2026-05-09</span>
+- Went well: metrics in 2nd clause &mdash; "Built X, cutting Y by Z%".
+- Didn't: padding bullets to fill space.
+- Learn: cut to 4 bullets per role unless the user asks otherwise.</code></pre>
+
+    <div class="slide-num">14 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 15 — How They Connect (Diagram)
+  -->
+  <section class="slide" id="s15">
+    <div class="overline">Load Order</div>
+    <h2>How the Four Files Wire Together</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" style="max-height: 48vh;">
+        <!-- CLAUDE.md root -->
+        <rect x="350" y="10" width="220" height="56" rx="4" fill="none" stroke="#c1a778" stroke-width="1.6" />
+        <text x="460" y="34" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="1.5">CLAUDE.md</text>
+        <text x="460" y="52" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.7">runtime rules + @imports</text>
+
+        <!-- Session start -->
+        <line x1="460" y1="66" x2="460" y2="92" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="456,90 460,100 464,90" fill="#c1a778" opacity="0.5" />
+
+        <!-- Step 1: SOUL + USER -->
+        <rect x="70" y="100" width="200" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.7" />
+        <text x="170" y="124" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">1. SOUL.md</text>
+        <text x="170" y="144" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.65">personality + rules</text>
+
+        <rect x="290" y="100" width="200" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.7" />
+        <text x="390" y="124" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">2. USER.md</text>
+        <text x="390" y="144" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.65">who is being served</text>
+
+        <rect x="510" y="100" width="200" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.7" />
+        <text x="610" y="124" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">3. memory/{today}.md</text>
+        <text x="610" y="144" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.65">recent state + threads</text>
+
+        <rect x="730" y="100" width="160" height="60" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.7" />
+        <text x="810" y="124" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="11" font-weight="600">4. learnings.md</text>
+        <text x="810" y="144" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.65">accrued patterns</text>
+
+        <!-- Down arrows -->
+        <line x1="170" y1="160" x2="170" y2="200" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <line x1="390" y1="160" x2="390" y2="200" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <line x1="610" y1="160" x2="610" y2="200" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+        <line x1="810" y1="160" x2="810" y2="200" stroke="#c1a778" stroke-width="1.2" opacity="0.4" />
+
+        <!-- Aggregator: agent context -->
+        <rect x="170" y="210" width="640" height="60" rx="4" fill="rgba(193,167,120,0.07)" stroke="#c1a778" stroke-width="1.6" />
+        <text x="490" y="234" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="12" font-weight="600" letter-spacing="1.2">AGENT CONTEXT (loaded on every session)</text>
+        <text x="490" y="254" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="11" opacity="0.7">Identity + state + learnings &mdash; before any skill runs</text>
+
+        <!-- Down to skills -->
+        <line x1="490" y1="270" x2="490" y2="300" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="486,298 490,308 494,298" fill="#c1a778" opacity="0.5" />
+
+        <!-- Skills lazy-load -->
+        <rect x="290" y="310" width="400" height="42" rx="4" fill="none" stroke="#7dab6e" stroke-width="1.4" />
+        <text x="490" y="336" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="12" font-weight="600">Skills lazy-load job_context/* per Context Matrix</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">15 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 16 — Section Divider: Self-Maintenance
+  -->
+  <section class="slide title-slide" id="s16">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Skill Self-Maintenance</h1>
+    <div class="subtitle">What to update, when to update, what to leave alone</div>
+    <div class="slide-num">16 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 17 — What Updates / What Doesn't
+  -->
+  <section class="slide" id="s17">
+    <div class="overline">The Boundary</div>
+    <h2>What a Skill May Update On Its Own</h2>
+    <div class="accent-line"></div>
+
+    <table class="slide-table" style="width: 100%; font-size: clamp(0.72rem, 1.18vw, 0.88rem); border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.4);">
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Surface</th>
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Auto-update?</th>
+          <th style="text-align: left; padding: 0.5em 0.4em; color: var(--gold);">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">memory/{date}.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--green-soft);">Yes &mdash; append</td>
+          <td style="padding: 0.5em 0.4em;">Append-only ledger; agent owns it</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">learnings.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--green-soft);">Yes &mdash; append after each shipped deliverable</td>
+          <td style="padding: 0.5em 0.4em;">Per-skill: went well / didn't / learn</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">job_context/companies.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--green-soft);">Yes &mdash; append a paragraph</td>
+          <td style="padding: 0.5em 0.4em;">Owned by <span class="inline-code">job-research-company</span> per the matrix</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">applications.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--green-soft);">Yes &mdash; append, never overwrite</td>
+          <td style="padding: 0.5em 0.4em;">Audit trail must not be rewritten</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">USER.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--gold-bright);">Suggest only</td>
+          <td style="padding: 0.5em 0.4em;">Identity is human-edited; agent proposes a diff</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(193,167,120,0.12);">
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">SOUL.md</span></td>
+          <td style="padding: 0.5em 0.4em; color: var(--red-soft);">No</td>
+          <td style="padding: 0.5em 0.4em;">Personality is a contract. Humans only.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5em 0.4em;"><span class="inline-code">SKILL.md</span> body</td>
+          <td style="padding: 0.5em 0.4em; color: var(--red-soft);">No</td>
+          <td style="padding: 0.5em 0.4em;">A skill rewriting itself is how silent drift starts</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="slide-num">17 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 18 — When and How
+  -->
+  <section class="slide" id="s18">
+    <div class="overline">Update Protocol</div>
+    <h2>When Skills Update Themselves</h2>
+    <div class="accent-line"></div>
+
+    <div class="num-feature">
+      <div class="num-circle">1</div>
+      <div class="num-text">
+        <strong>After every deliverable &rarr; append to today's memory</strong>
+        <span>Goal, deliverables, decisions, open threads. Silent. No "I logged that."</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">2</div>
+      <div class="num-text">
+        <strong>After shipping each major deliverable &rarr; append to <span class="inline-code">learnings.md</span></strong>
+        <span>What went well, what didn't, what to learn next &mdash; per skill. Wired in <span class="inline-code">CLAUDE.md</span>.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">3</div>
+      <div class="num-text">
+        <strong>End of every session &rarr; reconcile</strong>
+        <span>Update memory, log learnings, propose personality tweaks if needed.</span>
+      </div>
+    </div>
+    <div class="num-feature">
+      <div class="num-circle">4</div>
+      <div class="num-text">
+        <strong>Human-only updates surface as a diff, never as silent edits</strong>
+        <span><span class="inline-code">USER.md</span> / <span class="inline-code">SOUL.md</span> changes: "Want me to add 'Go (learning)' to your skills line?"</span>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
+        <strong style="color: var(--gold);">Iron rule:</strong> the agent's writes are auditable. Open the file, read what was added. If you can't tell what changed, the write was wrong.
+      </p>
+    </div>
+
+    <div class="slide-num">18 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 19 — Section Divider: Skill Collaboration
+  -->
+  <section class="slide title-slide" id="s19">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Skill Collaboration</h1>
+    <div class="subtitle">How skills hand work to each other</div>
+    <div class="slide-num">19 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 20 — Skill Chain Example
+  -->
+  <section class="slide" id="s20">
+    <div class="overline">Job-Agent Example</div>
+    <h2>One User Goal &rarr; Four Skills, In Sequence</h2>
+    <div class="accent-line"></div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 920 280" xmlns="http://www.w3.org/2000/svg" style="max-height: 38vh;">
+        <!-- User goal -->
+        <rect x="320" y="10" width="280" height="44" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" opacity="0.6" />
+        <text x="460" y="38" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="12" opacity="0.85">"Apply to Anthropic SWE internship"</text>
+
+        <line x1="460" y1="54" x2="460" y2="80" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="456,78 460,88 464,78" fill="#c1a778" opacity="0.5" />
+
+        <!-- 4 skills in a row -->
+        <g>
+          <rect x="20" y="90" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" />
+          <text x="120" y="113" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10.5" font-weight="600">research-company</text>
+          <text x="120" y="133" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">writes companies.md</text>
+          <text x="120" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">picks the angle</text>
+        </g>
+
+        <line x1="220" y1="125" x2="248" y2="125" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="246,121 256,125 246,129" fill="#c1a778" opacity="0.5" />
+
+        <g>
+          <rect x="248" y="90" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" />
+          <text x="348" y="113" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10.5" font-weight="600">draft-resume</text>
+          <text x="348" y="133" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">reads resume + roles</text>
+          <text x="348" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">emits tailored bullets</text>
+        </g>
+
+        <line x1="448" y1="125" x2="476" y2="125" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="474,121 484,125 474,129" fill="#c1a778" opacity="0.5" />
+
+        <g>
+          <rect x="476" y="90" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" />
+          <text x="576" y="113" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10.5" font-weight="600">draft-cover-letter</text>
+          <text x="576" y="133" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">uses brief + resume</text>
+          <text x="576" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">draft, never sent</text>
+        </g>
+
+        <line x1="676" y1="125" x2="704" y2="125" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="702,121 712,125 702,129" fill="#c1a778" opacity="0.5" />
+
+        <g>
+          <rect x="704" y="90" width="200" height="70" rx="4" fill="none" stroke="#c1a778" stroke-width="1.4" />
+          <text x="804" y="113" text-anchor="middle" fill="#c1a778" font-family="Inter, sans-serif" font-size="10.5" font-weight="600">track-application</text>
+          <text x="804" y="133" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">appends applications.md</text>
+          <text x="804" y="148" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10" opacity="0.65">starts the audit trail</text>
+        </g>
+
+        <!-- Shared bus: job_context/ -->
+        <rect x="20" y="190" width="884" height="48" rx="4" fill="rgba(125,171,110,0.07)" stroke="#7dab6e" stroke-width="1.4" />
+        <text x="462" y="214" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="11.5" font-weight="600" letter-spacing="1.2">SHARED CONTEXT &mdash; job_context/ (resume, target-roles, companies, applications)</text>
+        <text x="462" y="230" text-anchor="middle" fill="#e8e4dd" font-family="Inter, sans-serif" font-size="10.5" opacity="0.65">Skills read what they need, write what they own</text>
+
+        <!-- Connect skills to bus -->
+        <line x1="120" y1="160" x2="120" y2="190" stroke="#7dab6e" stroke-width="1" opacity="0.45" stroke-dasharray="3 3" />
+        <line x1="348" y1="160" x2="348" y2="190" stroke="#7dab6e" stroke-width="1" opacity="0.45" stroke-dasharray="3 3" />
+        <line x1="576" y1="160" x2="576" y2="190" stroke="#7dab6e" stroke-width="1" opacity="0.45" stroke-dasharray="3 3" />
+        <line x1="804" y1="160" x2="804" y2="190" stroke="#7dab6e" stroke-width="1" opacity="0.45" stroke-dasharray="3 3" />
+
+        <!-- bottom arrow back to user -->
+        <line x1="462" y1="238" x2="462" y2="262" stroke="#c1a778" stroke-width="1.2" opacity="0.5" />
+        <polygon points="458,260 462,270 466,260" fill="#c1a778" opacity="0.5" />
+        <text x="462" y="276" text-anchor="middle" fill="#7dab6e" font-family="Inter, sans-serif" font-size="11" font-weight="600">User reviews drafts. User submits.</text>
+      </svg>
+    </div>
+
+    <div class="slide-num">20 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 21 — Context Matrix as Handoff Contract
+  -->
+  <section class="slide" id="s21">
+    <div class="overline">The Skill Contract</div>
+    <h2>Every Skill Declares Its Relationships &amp; I/O</h2>
+    <div class="accent-line"></div>
+
+    <pre style="font-size: clamp(0.7rem, 1.1vw, 0.85rem);"><code><span style="color: var(--gold);"># .claude/skills/draft-cover-letter/SKILL.md</span>
+
+<span style="color: var(--gold);">## Upstream (depends on)</span>
+- <span class="inline-code">draft-resume</span>          &rarr; tailored resume bullets
+- <span class="inline-code">research-company</span>      &rarr; company brief + angle
+
+<span style="color: var(--gold);">## Downstream (feeds)</span>
+- <span class="inline-code">track-application</span>     &rarr; logs the submitted artifact
+
+<span style="color: var(--gold);">## Input</span>      job posting URL, target company name
+<span style="color: var(--gold);">## Output</span>     markdown cover letter, ~350 words
+<span style="color: var(--gold);">## Format</span>     <span class="inline-code">{date}_{company}_{role}.md</span>
+<span style="color: var(--gold);">## Stored at</span> <span class="inline-code">projects/job-cover-letter/</span></code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Each skill must specify</div>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li>Upstream + downstream skills</li>
+          <li>What it takes as <strong>input</strong></li>
+          <li>What it produces as <strong>output</strong></li>
+          <li><strong>Format</strong> + <strong>where</strong> to store</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Why this matters</div>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li>Skills compose without calling each other</li>
+          <li>Every handoff is a file you can <span class="inline-code">cat</span></li>
+          <li>Add or remove a skill without breaking the chain</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slide-num">21 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 22 — Section Divider: Multi-Client / Project Work
+  -->
+  <section class="slide title-slide" id="s22">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="accent-line"></div>
+    <h1>Reconciliation &amp; Scheduling</h1>
+    <div class="subtitle">Keeping the OS honest, and running it on a clock</div>
+    <div class="slide-num">22 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 23 — Multi-Client Setup
+  -->
+  <section class="slide" id="s23">
+    <div class="overline">Self-Audit</div>
+    <h2>Skill &amp; MCP Reconciliation</h2>
+    <div class="accent-line"></div>
+
+    <pre style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);"><code><span style="color: var(--gold);"># Excerpt from CLAUDE.md</span>
+
+<span style="color: var(--gold);">## Skill reconciliation</span>
+On session start, compare what is on disk in <span class="inline-code">.claude/skills/</span>
+against what is registered in this file and <span class="inline-code">learnings.md</span>.
+
+- <span style="color: var(--green-soft);">Additions</span>: register silently. Add to the skill table below.
+- <span style="color: var(--gold-bright);">Removals</span>: confirm with the user before deleting entries.
+- <span style="color: var(--green-soft);">Drift</span>: if a skill's input/output spec on disk diverges from
+  the registered version, surface a diff &mdash; never edit silently.</code></pre>
+
+    <div class="two-col" style="margin-top: clamp(0.4rem, 1.2vh, 0.8rem);">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">The asymmetry</div>
+        <ul style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">
+          <li>Adding a capability is safe &rarr; auto-register</li>
+          <li>Removing one breaks chains &rarr; require confirmation</li>
+          <li>Same rule applies to MCP servers</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Why this is in <span class="inline-code">CLAUDE.md</span></div>
+        <p style="font-size: clamp(0.72rem, 1.15vw, 0.88rem);">It runs every session. The OS audits itself before it does anything else &mdash; the same way <span class="inline-code">fsck</span> runs before mount.</p>
+      </div>
+    </div>
+
+    <div class="slide-num">23 / 24</div>
+  </section>
+
+  <!-- ============================================================
+     SLIDE 24 — Project Sub-OS Pattern
+  -->
+  <section class="slide" id="s24">
+    <div class="overline">The Cron Daemon</div>
+    <h2>Scheduled Jobs &mdash; <span class="inline-code">crons/jobs/</span></h2>
+    <div class="accent-line"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">Folder shape</div>
+        <pre style="font-size: clamp(0.7rem, 1.1vw, 0.82rem); padding: 0.5rem 0.7rem;"><code>job-agent/
+├── crons/
+│   └── jobs/
+│       ├── daily-job-scan.md
+│       ├── weekly-applications-digest.md
+│       └── monthly-resume-refresh.md
+└── scripts/
+    └── start-crons.sh   <span style="color: var(--fg-dim);"># registers all jobs</span></code></pre>
+        <p style="margin-top: 0.3rem; font-size: clamp(0.68rem, 1.05vw, 0.82rem); color: var(--fg-dim);">
+          Jobs are markdown files. The shell script reads them and schedules system cron entries.
+        </p>
+      </div>
+      <div class="card">
+        <div class="col-label" style="color: var(--gold);">A job file</div>
+        <pre style="font-size: clamp(0.7rem, 1.1vw, 0.82rem); padding: 0.5rem 0.7rem;"><code><span style="color: var(--fg-dim);"># crons/jobs/daily-job-scan.md</span>
+<span style="color: var(--gold);">schedule:</span> 0 8 * * *
+<span style="color: var(--gold);">skill:</span> research-company
+<span style="color: var(--gold);">input:</span> watchlist.md
+<span style="color: var(--gold);">output:</span> companies.md (append)
+
+<span style="color: var(--gold);">## What it does</span>
+Pulls fresh openings for tracked
+companies and appends new roles
+to the brief. Surfaces matches.</code></pre>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <p style="font-size: clamp(0.78rem, 1.25vw, 0.95rem); color: var(--fg);">
+        <strong style="color: var(--gold);">No external service required.</strong> The whole agentic OS runs from local files + system cron.
+      </p>
+    </div>
+
+    <div class="slide-num">24 / 24</div>
+  </section>
+
+  <script src="js/slides.js"></script>
+  <script src="js/site-nav.js"></script>
+</body>
+
+</html>

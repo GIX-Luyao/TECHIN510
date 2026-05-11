@@ -63,6 +63,94 @@ html {
   z-index: 1;
 }
 
+/* --- Classroom Readability Overrides ---
+   Weekly slide files include many compact inline font sizes. This layer keeps
+   presentation text readable from the back of a room while preserving layout.
+*/
+.slide {
+  --readable-body: clamp(1.38rem, 2.12vw, 1.72rem);
+  --readable-small: clamp(1.24rem, 1.75vw, 1.5rem);
+  --readable-micro: clamp(1.12rem, 1.45vw, 1.32rem);
+}
+
+.slide :where(h1) {
+  font-size: clamp(3.2rem, 6.6vw, 5.9rem) !important;
+  line-height: 1.03 !important;
+}
+
+.slide :where(h2) {
+  font-size: clamp(2.65rem, 5vw, 4.15rem) !important;
+  line-height: 1.08 !important;
+}
+
+.slide :where(h3) {
+  font-size: clamp(1.65rem, 2.4vw, 2rem) !important;
+  line-height: 1.18 !important;
+}
+
+.slide :where(.subtitle) {
+  font-size: clamp(1.62rem, 2.9vw, 2.35rem) !important;
+  line-height: 1.28 !important;
+}
+
+.slide,
+.slide :where(h1, h2, h3, h4, p, li, strong, span, div, table, text) {
+  font-family: var(--font-sans) !important;
+  letter-spacing: 0 !important;
+}
+
+.slide :where(p, li, .card p, .highlight-box p, .num-text strong, .num-text span, .checklist li),
+.slide :where([style*="font-size: clamp(0."], [style*="font-size:clamp(0."]) {
+  font-size: var(--readable-body) !important;
+  line-height: 1.45 !important;
+}
+
+.slide :where(.overline, .meta-line, .quote-attr, .col-label, .slide-table th, .compare-table th),
+.slide :where([style*="font-size: clamp(0.6"], [style*="font-size:clamp(0.6"], [style*="font-size: clamp(0.7"], [style*="font-size:clamp(0.7"]) {
+  font-size: var(--readable-small) !important;
+  line-height: 1.35 !important;
+}
+
+.slide :where(code, .inline-code, .kbd, .slide-num, .timeline-week, .nav-dot) {
+  font-family: var(--font-mono) !important;
+}
+
+.slide :where(pre code, code) {
+  font-size: clamp(1.06rem, 1.62vw, 1.28rem) !important;
+  line-height: 1.5 !important;
+}
+
+.slide :where(.num-circle) {
+  width: clamp(34px, 3.5vw, 46px) !important;
+  height: clamp(34px, 3.5vw, 46px) !important;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem) !important;
+}
+
+.slide :where(svg text) {
+  font-family: var(--font-sans) !important;
+  letter-spacing: 0 !important;
+}
+
+.slide :where(.slide-table td, .compare-table td, .timeline-desc) {
+  font-size: var(--readable-small) !important;
+  line-height: 1.4 !important;
+}
+
+.slide :where(.step-num, .step-tool, .step-desc, .cmd, .cmd-desc, .tool-chip, .timeline-desc),
+.slide :where(.pipeline-step, .loop-step, .card, .highlight-box) :where(span, div:not(.num-circle)) {
+  font-size: var(--readable-small) !important;
+  line-height: 1.4 !important;
+}
+
+.slide :where(.step-title, .pipeline-step h3, .loop-step h3) {
+  font-size: clamp(1.62rem, 2.35vw, 1.9rem) !important;
+  line-height: 1.2 !important;
+}
+
+.slide :where(svg text[font-size="8"], svg text[font-size="9"], svg text[font-size="10"], svg text[font-size="11"], svg text[font-size="12"], svg text[font-size="13"]) {
+  font-size: 18px !important;
+}
+
 /* --- Title Slides --- */
 .slide.title-slide {
   align-items: center;
@@ -88,7 +176,7 @@ html {
   bottom: clamp(1rem, 2vh, 1.8rem);
   right: clamp(1.5rem, 3vw, 2.5rem);
   font-family: var(--font-mono);
-  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-size: clamp(0.78rem, 1.15vw, 0.95rem);
   color: var(--fg-muted);
   z-index: 2;
 }

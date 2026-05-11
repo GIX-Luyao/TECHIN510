@@ -2,7 +2,7 @@
    TECHIN 510 – Shared Dark Botanical Theme
    ====================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* --- Reset & Base --- */
 *,
@@ -26,8 +26,8 @@
   --red-soft: #c45c5c;
   --green-soft: #7dab6e;
   --code-bg: rgba(0, 0, 0, 0.45);
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Atkinson Hyperlegible', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Atkinson Hyperlegible', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
   --slide-pad: clamp(2.5rem, 6vw, 5rem);
 }
@@ -58,28 +58,28 @@ body {
 }
 
 h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-family: var(--font-sans);
+  font-size: clamp(2.8rem, 6vw, 5.2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #f5f0e8;
+  margin-bottom: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(2.3rem, 4.5vw, 3.6rem);
   font-weight: 700;
   line-height: 1.1;
   color: #f5f0e8;
   margin-bottom: clamp(0.5rem, 1.5vh, 1rem);
 }
 
-h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3.5vw, 2.8rem);
-  font-weight: 700;
-  line-height: 1.15;
-  color: #f5f0e8;
-  margin-bottom: clamp(0.5rem, 1.5vh, 1rem);
-}
-
 .subtitle {
-  font-family: var(--font-serif);
-  font-size: clamp(0.95rem, 2.2vw, 1.6rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   color: var(--gold);
   margin-bottom: clamp(0.8rem, 2vh, 1.5rem);
 }
@@ -94,8 +94,8 @@ h2 {
 
 p,
 li {
-  font-size: clamp(0.85rem, 1.6vw, 1.15rem);
-  line-height: 1.65;
+  font-size: clamp(1.2rem, 1.95vw, 1.5rem);
+  line-height: 1.55;
   color: var(--fg);
 }
 
@@ -135,7 +135,7 @@ pre {
 
 code {
   font-family: var(--font-mono);
-  font-size: clamp(0.65rem, 1.2vw, 0.9rem);
+  font-size: clamp(0.92rem, 1.45vw, 1.12rem);
   line-height: 1.6;
   color: #c8d6c0;
 }
@@ -157,10 +157,10 @@ code {
 }
 
 .quote-block p {
-  font-family: var(--font-serif);
-  font-size: clamp(1.05rem, 2.2vw, 1.6rem);
-  font-style: italic;
-  line-height: 1.55;
+  font-family: var(--font-sans);
+  font-size: clamp(1.4rem, 2.5vw, 1.95rem);
+  font-style: normal;
+  line-height: 1.45;
   color: #f5f0e8;
 }
 
@@ -256,21 +256,21 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-serif);
-  font-size: clamp(0.75rem, 1.3vw, 1rem);
+  font-family: var(--font-sans);
+  font-size: clamp(0.9rem, 1.35vw, 1.1rem);
   font-weight: 600;
   color: var(--gold);
 }
 
 .num-text strong {
   display: block;
-  font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+  font-size: clamp(1.22rem, 1.85vw, 1.5rem);
   color: #f5f0e8;
   margin-bottom: 0.15rem;
 }
 
 .num-text span {
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-size: clamp(1.12rem, 1.6vw, 1.32rem);
   color: var(--fg-dim);
   line-height: 1.45;
 }
@@ -297,7 +297,7 @@ code {
 
 .slide-table th {
   font-family: var(--font-sans);
-  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-size: clamp(0.95rem, 1.3vw, 1.12rem);
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -308,7 +308,7 @@ code {
 }
 
 .slide-table td {
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-size: clamp(1.08rem, 1.55vw, 1.3rem);
   color: var(--fg);
   padding: clamp(0.4rem, 1vw, 0.7rem) clamp(0.5rem, 1.2vw, 1rem);
   border-bottom: 1px solid rgba(193, 167, 120, 0.06);
@@ -331,7 +331,7 @@ code {
   position: relative;
   padding-left: 1.6em;
   margin-bottom: 0.5em;
-  font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+  font-size: clamp(1.2rem, 1.85vw, 1.45rem);
 }
 
 .checklist li::before {
@@ -357,13 +357,13 @@ code {
   padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.6rem, 1.5vw, 1.2rem);
   text-align: left;
   border-bottom: 1px solid rgba(193, 167, 120, 0.1);
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-size: clamp(1.08rem, 1.55vw, 1.3rem);
 }
 
 .compare-table th {
   color: var(--gold);
   font-weight: 600;
-  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-size: clamp(0.95rem, 1.3vw, 1.12rem);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -373,7 +373,7 @@ code {
 }
 
 .compare-table code {
-  font-size: clamp(0.6rem, 1.1vw, 0.82rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
 }
 
 /* --- Timeline (from Week 8) --- */
@@ -392,9 +392,9 @@ code {
 
 .timeline-week {
   flex-shrink: 0;
-  width: clamp(36px, 4vw, 48px);
+  width: clamp(40px, 4.4vw, 56px);
   font-family: var(--font-mono);
-  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-size: clamp(0.95rem, 1.3vw, 1.12rem);
   font-weight: 500;
   color: var(--gold);
   text-align: right;
@@ -415,7 +415,7 @@ code {
 }
 
 .timeline-desc {
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-size: clamp(1.12rem, 1.55vw, 1.3rem);
   color: var(--fg-dim);
   line-height: 1.4;
 }
@@ -423,26 +423,26 @@ code {
 /* === Responsive === */
 @media (max-height: 700px) {
   h1 {
-    font-size: clamp(1.6rem, 4.5vw, 3rem);
+    font-size: clamp(2rem, 5vw, 3.6rem);
   }
 
   h2 {
-    font-size: clamp(1.3rem, 3vw, 2.2rem);
+    font-size: clamp(1.6rem, 3.5vw, 2.7rem);
   }
 }
 
 @media (max-height: 600px) {
   h1 {
-    font-size: clamp(1.4rem, 4vw, 2.5rem);
+    font-size: clamp(1.7rem, 4.5vw, 3rem);
   }
 
   h2 {
-    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
   }
 
   p,
   li {
-    font-size: clamp(0.75rem, 1.4vw, 1rem);
+    font-size: clamp(1rem, 1.65vw, 1.25rem);
   }
 
   pre {
@@ -450,7 +450,7 @@ code {
   }
 
   code {
-    font-size: clamp(0.6rem, 1.1vw, 0.8rem);
+    font-size: clamp(0.85rem, 1.3vw, 1.05rem);
   }
 }
 
@@ -552,6 +552,21 @@ code {
 
 [data-theme="light"] .slide svg *[stroke="#c45c5c"] {
   stroke: var(--red-soft) !important;
+}
+
+/* Pale variants used in week 3 (sensor pipeline) and week 4 (data-flow) diagrams.
+   On dark slide backgrounds they read fine, but on the cream light-mode background
+   they fall to ~2:1 contrast. Map them to themed equivalents. */
+[data-theme="light"] .slide svg text[fill="#d4be8e"] {
+  fill: var(--gold-bright) !important;
+}
+
+[data-theme="light"] .slide svg text[fill="#d4a89a"] {
+  fill: var(--red-soft) !important;
+}
+
+[data-theme="light"] .slide svg text[fill="#a8c4a0"] {
+  fill: var(--green-soft) !important;
 }
 
 /* === Reduced Motion === */
